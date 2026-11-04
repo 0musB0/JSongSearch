@@ -1,18 +1,23 @@
 /**
  * 일본곡 노래방 검색기 - Soft & Cozy Frontend Application
  * Features:
- * - convertPitch("3옥 도#" -> "C#5") & semitone calculator
+ * - convertPitch("3옥 도#" -> "C#5") & real-time semitone key shifter (♭ / 원키 / ♯)
  * - Korean Initial Consonant (초성: ㅂㅌㅇ -> 베텔기우스, ㅊㅂㅇ -> 천본앵) search
  * - My Vocal Range Key Calculator (원키 가능 / -2키 추천 등 자동 계산)
+ * - Karaoke Room Machine Mode (전체 / TJ방 / 금영방)
+ * - 1-Click Artist/Composer Filter & YouTube Original / TJ MR Listen Links
  * - Favorites / Karaoke Bookmark List (찜 목록 + 카톡 일괄 복사)
  * - Random Song Roulette & Recently Copied Numbers History
- * - Soft Light / Cozy Dark Theme Switcher
+ * - Cross-platform iOS/Android/PC clipboard fallback & tactile visual feedback
  */
 
 const NOTE_MAP = { '도': 'C', '레': 'D', '미': 'E', '파': 'F', '솔': 'G', '라': 'A', '시': 'B' };
 const NOTE_MAP_REV = { 'C': '도', 'D': '레', 'E': '미', 'F': '파', 'G': '솔', 'A': '라', 'B': '시' };
 const NOTE_ORDER = ['도', '레', '미', '파', '솔', '라', '시'];
 const SEMITONE_OFFSET = { '도': 0, '레': 2, '미': 4, '파': 5, '솔': 7, '라': 9, '시': 11 };
+const SEMITONE_TO_KOR = [
+  '도', '도#', '레', '레#', '미', '파', '파#', '솔', '솔#', '라', '라#', '시'
+];
 
 const CHOSUNG_LIST = [
   'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ',
@@ -21,10 +26,48 @@ const CHOSUNG_LIST = [
 
 let allSongs = [];
 let activeFilter = 'all';
+let machineMode = 'all'; // 'all' | 'tj' | 'ky'
 let toastTimer = null;
 let favoriteIds = new Set();
 let recentCopied = [];
 let myComfortPitch = '';
+const cardKeyOffsets = new Map(); // songId -> semitone shift (-6 .. +6)
+
+/**
+ * Cross-platform clipboard copy with iOS WebView / KakaoTalk fallback
+ */
+async function copyTextSafe(text) {
+  if (!text) return false;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      navigator.vibrate?.(12);
+      return true;
+    }
+  } catch {
+    // Fallback below for iOS In-App WebViews
+  }
+
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-9999px';
+    ta.style.left = '-9999px';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (ok) navigator.vibrate?.(12);
+    return ok;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Load persisted user state from localStorage
@@ -56,6 +99,10 @@ function applyTheme(theme) {
   const icon = document.getElementById('themeIcon');
   if (icon) {
     icon.textContent = theme === 'soft-dark' ? '☀️' : '🌙';
+  }
+  const metaTheme = document.getElementById('metaThemeColor');
+  if (metaTheme) {
+    metaTheme.setAttribute('content', theme === 'soft-dark' ? '#191820' : '#fdf9f5');
   }
   try {
     localStorage.setItem('jsong_theme', theme);
@@ -110,9 +157,23 @@ function parsePitchRank(koreanPitch) {
   const noteKor = match[2];
   const noteIdx = NOTE_ORDER.indexOf(noteKor);
   const sharp = match[3] === '#' ? 1 : 0;
-  const score = octave * 100 + (noteIdx >= 0 ? noteIdx * 10 : 90) + sharp;
   const semitones = (octave + 2) * 12 + (SEMITONE_OFFSET[noteKor] ?? 0) + sharp;
+  const score = octave * 100 + (noteIdx >= 0 ? noteIdx * 10 : 90) + sharp;
   return { valid: true, octave, noteIdx, sharp, score, semitones };
+}
+
+/**
+ * Shift a Korean pitch by N semitones (-6 to +6) and return new Korean pitch
+ */
+function shiftKoreanPitch(koreanPitch, semitoneDelta = 0) {
+  if (!semitoneDelta) return koreanPitch;
+  const rank = parsePitchRank(koreanPitch);
+  if (!rank.valid) return koreanPitch;
+  const targetSemitones = rank.semitones + semitoneDelta;
+  const sciOctave = Math.floor(targetSemitones / 12);
+  const korOctave = sciOctave - 2;
+  const noteIndex = ((targetSemitones % 12) + 12) % 12;
+  return `${korOctave}옥 ${SEMITONE_TO_KOR[noteIndex]}`;
 }
 
 /**
@@ -131,9 +192,10 @@ function getKeyRecommendation(songPitch) {
   if (diff > 2) {
     return { text: `원키 여유 (+${Math.min(diff, 6)}키 가능)`, isDown: false };
   }
-  // Song is higher than user's comfort pitch
-  const downKey = Math.max(diff, -8);
-  return { text: `${downKey}키 추천`, isDown: true };
+  if (diff >= -6) {
+    return { text: `${diff}키 추천`, isDown: true };
+  }
+  return { text: `${diff}키 (고음 주의)`, isDown: true };
 }
 
 function formatSongTitle(title) {
@@ -191,8 +253,14 @@ function getFilteredAndSortedSongs() {
     }
   }
 
-  // 1. Apply quick filter chip
+  // 1. Apply machine mode + quick filter chip
   let list = allSongs.filter(song => {
+    if (machineMode === 'tj') {
+      if (!song.tj_num || song.tj_num === 'XXX' || song.tj_num === '-') return false;
+    } else if (machineMode === 'ky') {
+      if (!song.ky_num || song.ky_num === 'XXX' || song.ky_num === '-') return false;
+    }
+
     if (activeFilter === 'all') return true;
     if (activeFilter === 'favorites') {
       return favoriteIds.has(Number(song.id));
@@ -201,7 +269,7 @@ function getFilteredAndSortedSongs() {
       if (!myComfortPitch) return true;
       const u = parsePitchRank(myComfortPitch);
       const s = parsePitchRank(song.pitch);
-      return u.valid && s.valid && s.semitones <= u.semitones + 1 && s.semitones >= u.semitones - 5;
+      return u.valid && s.valid && s.semitones <= u.semitones;
     }
     if (activeFilter === 'pitch-2down') {
       const r = parsePitchRank(song.pitch);
@@ -242,6 +310,7 @@ function getFilteredAndSortedSongs() {
       const artistNs = (song.artist || '').replace(/\s+/g, '').toLowerCase();
       const artistChosung = extractChosung(artistNs);
       const composerNs = (song.composer || '').replace(/\s+/g, '').toLowerCase();
+      const composerChosung = extractChosung(composerNs);
       const tjNs = (song.tj_num || '').replace(/\s+/g, '').toLowerCase();
       const kyNs = (song.ky_num || '').replace(/\s+/g, '').toLowerCase();
 
@@ -261,6 +330,7 @@ function getFilteredAndSortedSongs() {
         artistNs.includes(searchNoSpace) ||
         artistChosung.includes(rawNoSpace) ||
         composerNs.includes(searchNoSpace) ||
+        composerChosung.includes(rawNoSpace) ||
         tjNs.includes(rawNoSpace) ||
         kyNs.includes(rawNoSpace)
       );
@@ -278,14 +348,14 @@ function getFilteredAndSortedSongs() {
       const ra = parsePitchRank(a.pitch);
       const rb = parsePitchRank(b.pitch);
       if (ra.valid !== rb.valid) return ra.valid ? -1 : 1;
-      if (ra.score !== rb.score) return ra.score - rb.score;
+      if (ra.semitones !== rb.semitones) return ra.semitones - rb.semitones;
       return (a.title || '').localeCompare(b.title || '', 'ko');
     }
     if (sortMode === 'pitch-desc') {
       const ra = parsePitchRank(a.pitch);
       const rb = parsePitchRank(b.pitch);
       if (ra.valid !== rb.valid) return ra.valid ? -1 : 1;
-      if (ra.score !== rb.score) return rb.score - ra.score;
+      if (ra.semitones !== rb.semitones) return rb.semitones - ra.semitones;
       return (a.title || '').localeCompare(b.title || '', 'ko');
     }
     if (sortMode === 'tj-asc') {
@@ -294,10 +364,33 @@ function getFilteredAndSortedSongs() {
       if (na !== nb) return na - nb;
       return (a.title || '').localeCompare(b.title || '', 'ko');
     }
+    if (sortMode === 'ky-asc') {
+      const na = parseInt(String(a.ky_num).replace(/\D/g, ''), 10) || 999999;
+      const nb = parseInt(String(b.ky_num).replace(/\D/g, ''), 10) || 999999;
+      if (na !== nb) return na - nb;
+      return (a.title || '').localeCompare(b.title || '', 'ko');
+    }
     return (a.title || '').localeCompare(b.title || '', 'ko');
   });
 
   return list;
+}
+
+function buildPitchMarkup(song) {
+  const offset = cardKeyOffsets.get(Number(song.id)) || 0;
+  const basePitch = song.pitch && song.pitch !== 'X' ? song.pitch : '-';
+  const effectivePitch = offset !== 0 && basePitch !== '-' ? shiftKoreanPitch(basePitch, offset) : basePitch;
+  const converted = convertPitch(effectivePitch);
+  const keyAdvice = getKeyRecommendation(effectivePitch);
+  const offsetLabel = offset === 0 ? '원키' : (offset > 0 ? `+${offset}키` : `${offset}키`);
+
+  return {
+    effectivePitch,
+    converted,
+    keyAdvice,
+    offset,
+    offsetLabel
+  };
 }
 
 function renderSongs() {
@@ -328,17 +421,19 @@ function renderSongs() {
 
   const html = filtered
     .map(song => {
-      const converted = convertPitch(song.pitch);
-      const korPitch = song.pitch && song.pitch !== 'X' ? song.pitch : '-';
-      const pitchRank = parsePitchRank(song.pitch);
+      const { effectivePitch, converted, keyAdvice, offset, offsetLabel } = buildPitchMarkup(song);
+      const pitchRank = parsePitchRank(effectivePitch);
       const isHighPitch = pitchRank.valid && pitchRank.score >= 330; // >= 3옥 파
       const isFav = favoriteIds.has(Number(song.id));
-      const keyAdvice = getKeyRecommendation(song.pitch);
 
       const tjDisplay = song.tj_num && song.tj_num !== 'XXX' ? escapeHtml(song.tj_num) : '미수록';
       const kyDisplay = song.ky_num && song.ky_num !== 'XXX' ? escapeHtml(song.ky_num) : '미수록';
       const tjDisabled = tjDisplay === '미수록' ? 'disabled' : '';
       const kyDisabled = kyDisplay === '미수록' ? 'disabled' : '';
+
+      const korTitleOnly = (song.title || '').split('(')[0].trim();
+      const ytOriginalUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${song.title} ${song.artist || ''}`)}`;
+      const ytKaraokeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`TJ 노래방 ${korTitleOnly} ${song.tj_num !== 'XXX' ? song.tj_num : ''}`)}`;
 
       return `
         <article class="song-card ${isHighPitch ? 'high-pitch' : ''}" data-song-id="${song.id}">
@@ -347,10 +442,18 @@ function renderSongs() {
               <div class="card-title">${formatSongTitle(song.title)}</div>
             </div>
             <div class="card-top-right">
-              <div class="card-pitch" title="최고음: ${escapeHtml(korPitch)} (${escapeHtml(converted)})">
-                <span class="pitch-label">${korPitch !== '-' ? escapeHtml(korPitch) : '최고음'}</span>
-                <strong>${escapeHtml(converted)}</strong>
-                ${keyAdvice ? `<span class="key-advice-pill ${keyAdvice.isDown ? 'key-down' : ''}">${escapeHtml(keyAdvice.text)}</span>` : ''}
+              <div class="card-pitch-stack">
+                <div class="card-pitch ${offset !== 0 ? 'key-shifted' : ''}" data-pitch-box="${song.id}" title="최고음: ${escapeHtml(effectivePitch)} (${escapeHtml(converted)})">
+                  <span class="pitch-label">${effectivePitch !== '-' ? escapeHtml(effectivePitch) : '최고음'}</span>
+                  <strong>${escapeHtml(converted)}</strong>
+                  ${keyAdvice ? `<span class="key-advice-pill ${keyAdvice.isDown ? 'key-down' : ''}">${escapeHtml(keyAdvice.text)}</span>` : ''}
+                </div>
+                ${effectivePitch !== '-' ? `
+                <div class="card-key-stepper" aria-label="이 곡 키 조절 시뮬레이터">
+                  <button type="button" class="key-step-btn" data-key-step="-1" data-song-id="${song.id}" title="반음 내리기 (♭)">♭</button>
+                  <span class="key-step-label ${offset !== 0 ? 'shifted' : ''}" data-key-reset="${song.id}" title="클릭시 원키로 초기화">${offsetLabel}</span>
+                  <button type="button" class="key-step-btn" data-key-step="1" data-song-id="${song.id}" title="반음 올리기 (♯)">♯</button>
+                </div>` : ''}
               </div>
               <button type="button" class="btn-fav-card ${isFav ? 'active' : ''}" data-fav-id="${song.id}" aria-label="애창곡 찜하기" title="내 애창곡 찜 목록에 추가/제거">
                 ${isFav ? '♥' : '♡'}
@@ -358,11 +461,21 @@ function renderSongs() {
             </div>
           </div>
           <div class="card-bottom">
-            <div class="card-info">
-              <span class="info-label">부른이</span>
-              <span class="info-val">${escapeHtml(song.artist || '-')}</span>
-              <span class="info-label">작곡가</span>
-              <span class="info-val">${escapeHtml(song.composer || '-')}</span>
+            <div class="card-info-row">
+              <div class="card-info">
+                <span class="info-label">부른이</span>
+                <span class="info-val">
+                  <button type="button" class="info-link-btn" data-quick-search="${escapeHtml(song.artist || '')}" title="이 가수의 곡 모아보기">${escapeHtml(song.artist || '-')}</button>
+                </span>
+                <span class="info-label">작곡가</span>
+                <span class="info-val">
+                  <button type="button" class="info-link-btn" data-quick-search="${escapeHtml(song.composer || '')}" title="이 작곡가의 곡 모아보기">${escapeHtml(song.composer || '-')}</button>
+                </span>
+              </div>
+              <div class="card-listen-links">
+                <a href="${ytOriginalUrl}" target="_blank" rel="noopener noreferrer" class="btn-listen-mini" title="유튜브에서 원곡 듣기">▶ 원곡</a>
+                <a href="${ytKaraokeUrl}" target="_blank" rel="noopener noreferrer" class="btn-listen-mini" title="유튜브에서 TJ 노래방 반주 듣기">🎤 반주</a>
+              </div>
             </div>
             <div class="card-numbers">
               <button type="button" class="num-badge tj-badge tj-num ${tjDisabled}" data-copy="${escapeHtml(song.tj_num)}" data-brand="TJ" data-title="${escapeHtml(song.title)}" ${tjDisabled}>
@@ -383,6 +496,46 @@ function renderSongs() {
     .join('');
 
   cardList.innerHTML = html;
+}
+
+/**
+ * Update a single song card's key stepper in-place (60fps, no scroll jump)
+ */
+function updateCardKeyShiftInPlace(songId, deltaOrReset) {
+  const id = Number(songId);
+  const song = allSongs.find(s => Number(s.id) === id);
+  if (!song) return;
+
+  const current = cardKeyOffsets.get(id) || 0;
+  const next = deltaOrReset === 'reset' ? 0 : Math.max(-7, Math.min(7, current + Number(deltaOrReset)));
+  if (next === 0) {
+    cardKeyOffsets.delete(id);
+  } else {
+    cardKeyOffsets.set(id, next);
+  }
+
+  const cardEl = document.querySelector(`.song-card[data-song-id="${id}"]`);
+  if (!cardEl) return;
+
+  const { effectivePitch, converted, keyAdvice, offset, offsetLabel } = buildPitchMarkup(song);
+  const pitchRank = parsePitchRank(effectivePitch);
+  cardEl.classList.toggle('high-pitch', pitchRank.valid && pitchRank.score >= 330);
+
+  const pitchBox = cardEl.querySelector(`[data-pitch-box="${id}"]`);
+  if (pitchBox) {
+    pitchBox.classList.toggle('key-shifted', offset !== 0);
+    pitchBox.innerHTML = `
+      <span class="pitch-label">${effectivePitch !== '-' ? escapeHtml(effectivePitch) : '최고음'}</span>
+      <strong>${escapeHtml(converted)}</strong>
+      ${keyAdvice ? `<span class="key-advice-pill ${keyAdvice.isDown ? 'key-down' : ''}">${escapeHtml(keyAdvice.text)}</span>` : ''}
+    `;
+  }
+
+  const resetLabel = cardEl.querySelector(`[data-key-reset="${id}"]`);
+  if (resetLabel) {
+    resetLabel.textContent = offsetLabel;
+    resetLabel.classList.toggle('shifted', offset !== 0);
+  }
 }
 
 /**
@@ -532,6 +685,7 @@ export function toggleSidebar(open) {
   if (!sidebar || !overlay) return;
 
   if (open) {
+    document.body.classList.add('sidebar-open');
     overlay.classList.remove('hidden');
     overlay.style.display = 'block';
     setTimeout(() => {
@@ -540,6 +694,7 @@ export function toggleSidebar(open) {
       sidebar.setAttribute('aria-hidden', 'false');
     }, 10);
   } else {
+    document.body.classList.remove('sidebar-open');
     sidebar.classList.remove('active');
     overlay.classList.remove('active');
     sidebar.setAttribute('aria-hidden', 'true');
@@ -656,10 +811,15 @@ async function initApp() {
 }
 
 function bindEvents() {
+  const searchForm = document.getElementById('searchForm');
   const searchInput = document.getElementById('searchInput');
   const clearBtn = document.getElementById('clearBtn');
   const sortSelect = document.getElementById('sortSelect');
   const filterChips = document.getElementById('filterChips');
+  const filterChipsScroll = document.getElementById('filterChipsScroll');
+  const chipScrollLeft = document.getElementById('chipScrollLeft');
+  const chipScrollRight = document.getElementById('chipScrollRight');
+  const machineModeGroup = document.getElementById('machineModeGroup');
   const brandBtn = document.getElementById('brandBtn');
   const emptyResetBtn = document.getElementById('emptyResetBtn');
   const menuBtn = document.getElementById('menuBtn');
@@ -673,6 +833,7 @@ function bindEvents() {
   const themeToggleBtn = document.getElementById('themeToggleBtn');
   const headerFavBtn = document.getElementById('headerFavBtn');
   const myPitchSelect = document.getElementById('myPitchSelect');
+  const myRangeActiveBadge = document.getElementById('myRangeActiveBadge');
   const filterMyRangeBtn = document.getElementById('filterMyRangeBtn');
   const copyAllFavsBtn = document.getElementById('copyAllFavsBtn');
   const clearAllFavsBtn = document.getElementById('clearAllFavsBtn');
@@ -680,6 +841,14 @@ function bindEvents() {
   const recentCopiedList = document.getElementById('recentCopiedList');
   const quickRandomBtn = document.getElementById('quickRandomBtn');
   const shareSiteBtn = document.getElementById('shareSiteBtn');
+  const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+  // Dismiss mobile/iOS virtual keyboard on Search Enter
+  searchForm?.addEventListener('submit', e => {
+    e.preventDefault();
+    searchInput?.blur();
+    renderSongs();
+  });
 
   searchInput?.addEventListener('input', () => renderSongs());
 
@@ -692,6 +861,33 @@ function bindEvents() {
   });
 
   sortSelect?.addEventListener('change', () => renderSongs());
+
+  // Desktop horizontal scroll via mouse wheel & arrow buttons on filter chips
+  const updateChipArrows = () => {
+    if (!filterChipsScroll || !chipScrollLeft || !chipScrollRight) return;
+    const maxScroll = filterChipsScroll.scrollWidth - filterChipsScroll.clientWidth;
+    chipScrollLeft.classList.toggle('hidden', filterChipsScroll.scrollLeft <= 8);
+    chipScrollRight.classList.toggle('hidden', filterChipsScroll.scrollLeft >= maxScroll - 8);
+  };
+
+  filterChipsScroll?.addEventListener('scroll', updateChipArrows, { passive: true });
+  window.addEventListener('resize', updateChipArrows, { passive: true });
+  setTimeout(updateChipArrows, 100);
+
+  filterChipsScroll?.addEventListener('wheel', e => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      e.preventDefault();
+      filterChipsScroll.scrollLeft += e.deltaY;
+    }
+  }, { passive: false });
+
+  chipScrollLeft?.addEventListener('click', () => {
+    filterChipsScroll?.scrollBy({ left: -240, behavior: 'smooth' });
+  });
+
+  chipScrollRight?.addEventListener('click', () => {
+    filterChipsScroll?.scrollBy({ left: 240, behavior: 'smooth' });
+  });
 
   filterChips?.addEventListener('click', e => {
     const chip = e.target.closest('.chip');
@@ -707,6 +903,18 @@ function bindEvents() {
     renderSongs();
   });
 
+  // Karaoke Machine Mode Toggle (전체 / TJ방 / 금영방)
+  machineModeGroup?.addEventListener('click', e => {
+    const btn = e.target.closest('.machine-btn');
+    if (!btn) return;
+    machineMode = btn.dataset.machine || 'all';
+    machineModeGroup.querySelectorAll('.machine-btn').forEach(b => b.classList.toggle('active', b === btn));
+    document.body.setAttribute('data-machine-mode', machineMode);
+    renderSongs();
+    if (machineMode === 'tj') showToast('🎤 TJ 노래방 수록곡 모드로 전환되었어요.');
+    if (machineMode === 'ky') showToast('🎶 금영(KY) 노래방 수록곡 모드로 전환되었어요.');
+  });
+
   headerFavBtn?.addEventListener('click', () => {
     activeFilter = activeFilter === 'favorites' ? 'all' : 'favorites';
     filterChips?.querySelectorAll('.chip').forEach(c => {
@@ -719,6 +927,8 @@ function bindEvents() {
     const current = document.documentElement.getAttribute('data-theme') || 'soft-light';
     applyTheme(current === 'soft-dark' ? 'soft-light' : 'soft-dark');
   });
+
+  myRangeActiveBadge?.addEventListener('click', () => toggleSidebar(true));
 
   myPitchSelect?.addEventListener('change', () => {
     myComfortPitch = myPitchSelect.value || '';
@@ -747,6 +957,12 @@ function bindEvents() {
   const resetAll = () => {
     if (searchInput) searchInput.value = '';
     activeFilter = 'all';
+    machineMode = 'all';
+    cardKeyOffsets.clear();
+    document.body.removeAttribute('data-machine-mode');
+    machineModeGroup?.querySelectorAll('.machine-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.machine === 'all');
+    });
     filterChips?.querySelectorAll('.chip').forEach(c => {
       c.classList.toggle('active', c.dataset.filter === 'all');
     });
@@ -786,10 +1002,39 @@ function bindEvents() {
     }
   });
 
+  // Card Interactions: Favorites, Key Stepper, Quick Artist Filter, and Number Copy
   cardList?.addEventListener('click', async e => {
     const favBtn = e.target.closest('.btn-fav-card');
     if (favBtn) {
       toggleFavorite(favBtn.dataset.favId);
+      return;
+    }
+
+    const keyStepBtn = e.target.closest('[data-key-step]');
+    if (keyStepBtn) {
+      updateCardKeyShiftInPlace(keyStepBtn.dataset.songId, Number(keyStepBtn.dataset.keyStep));
+      return;
+    }
+
+    const keyResetBtn = e.target.closest('[data-key-reset]');
+    if (keyResetBtn) {
+      updateCardKeyShiftInPlace(keyResetBtn.dataset.keyReset, 'reset');
+      return;
+    }
+
+    const quickSearchBtn = e.target.closest('[data-quick-search]');
+    if (quickSearchBtn) {
+      const q = (quickSearchBtn.dataset.quickSearch || '').trim();
+      if (q && q !== '-' && searchInput) {
+        searchInput.value = q;
+        activeFilter = 'all';
+        filterChips?.querySelectorAll('.chip').forEach(c => {
+          c.classList.toggle('active', c.dataset.filter === 'all');
+        });
+        renderSongs();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        showToast(`🔎 '${q}' 관련 곡을 모아봅니다.`);
+      }
       return;
     }
 
@@ -800,13 +1045,20 @@ function bindEvents() {
     const title = badge.dataset.title || '';
     const cleanNum = rawNum.replace(/[ⓗⓢ]/g, '').trim();
     if (!cleanNum || cleanNum === 'XXX') return;
-    try {
-      await navigator.clipboard.writeText(cleanNum);
-      recordCopiedNumber(brand, cleanNum, title);
-      showToast(`${brand} 노래방 번호 [${cleanNum}] 복사 완료!`);
-    } catch {
-      showToast(`번호: ${cleanNum}`);
-    }
+
+    const ok = await copyTextSafe(cleanNum);
+    recordCopiedNumber(brand, cleanNum, title);
+
+    // Visual feedback on the clicked button itself
+    const iconEl = badge.querySelector('.copy-icon');
+    badge.classList.add('copied');
+    if (iconEl) iconEl.textContent = '✓ 복사됨';
+    setTimeout(() => {
+      badge.classList.remove('copied');
+      if (iconEl) iconEl.textContent = '📋';
+    }, 1200);
+
+    showToast(ok ? `${brand} 노래방 번호 [${cleanNum}] 복사 완료!` : `번호: ${cleanNum}`);
   });
 
   favListContainer?.addEventListener('click', async e => {
@@ -818,7 +1070,7 @@ function bindEvents() {
     const copyEl = e.target.closest('[data-copy]');
     if (copyEl) {
       const cleanNum = (copyEl.dataset.copy || '').replace(/[ⓗⓢ]/g, '').trim();
-      await navigator.clipboard.writeText(cleanNum);
+      await copyTextSafe(cleanNum);
       showToast(`${copyEl.dataset.brand || ''} [${cleanNum}] 복사 완료!`);
     }
   });
@@ -827,7 +1079,7 @@ function bindEvents() {
     const chip = e.target.closest('[data-copy]');
     if (!chip) return;
     const cleanNum = (chip.dataset.copy || '').replace(/[ⓗⓢ]/g, '').trim();
-    await navigator.clipboard.writeText(cleanNum);
+    await copyTextSafe(cleanNum);
     showToast(`${chip.dataset.brand || ''} [${cleanNum}] 다시 복사 완료!`);
   });
 
@@ -844,10 +1096,8 @@ function bindEvents() {
       }),
       '👉 검색기: https://jsongsearch.vercel.app'
     ];
-    try {
-      await navigator.clipboard.writeText(textLines.join('\n'));
-      showToast('📋 찜한 애창곡 리스트가 복사되었어요! 카톡에 붙여넣기 해보세요.');
-    } catch {}
+    await copyTextSafe(textLines.join('\n'));
+    showToast('📋 찜한 애창곡 리스트가 복사되었어요! 카톡에 붙여넣기 해보세요.');
   });
 
   clearAllFavsBtn?.addEventListener('click', () => {
@@ -870,7 +1120,7 @@ function bindEvents() {
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        await navigator.clipboard.writeText(shareData.url);
+        await copyTextSafe(shareData.url);
         showToast('🔗 사이트 주소가 복사되었어요! 카톡이나 인스타에 붙여넣어 보세요.');
       }
     } catch {}
@@ -880,7 +1130,7 @@ function bindEvents() {
     const feedback = document.getElementById('syncFeedback');
     if (feedback) {
       feedback.classList.remove('hidden');
-      feedback.textContent = '나무위키 신곡 목록을 확인하고 있습니다 (Gemini 3.8 Flash)...';
+      feedback.textContent = '나무위키 신곡 목록을 확인하고 있습니다...';
     }
     try {
       const res = await fetch('/api/cron-sync');
@@ -893,7 +1143,40 @@ function bindEvents() {
         if (feedback) feedback.textContent = `동기화 완료 (현재 최신 상태: ${allSongs.length}곡)`;
       }
     } catch {
-      if (feedback) feedback.textContent = `로컬 최신 데이터 유지 중 (총 ${allSongs.length}곡)`;
+      if (feedback) feedback.textContent = `최신 데이터 유지 중 (총 ${allSongs.length}곡)`;
+    }
+  });
+
+  // Floating Scroll-to-Top Button
+  window.addEventListener('scroll', () => {
+    if (!scrollTopBtn) return;
+    scrollTopBtn.classList.toggle('hidden', window.scrollY < 380);
+  }, { passive: true });
+
+  scrollTopBtn?.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Global Keyboard Shortcuts (PC UX: '/' or Ctrl+K to search, Escape to close menu)
+  window.addEventListener('keydown', e => {
+    const sidebar = document.getElementById('sidebar');
+    if (e.key === 'Escape') {
+      if (sidebar?.classList.contains('active')) {
+        toggleSidebar(false);
+        return;
+      }
+      if (document.activeElement === searchInput && searchInput?.value) {
+        searchInput.value = '';
+        renderSongs();
+      }
+      return;
+    }
+
+    const isInputFocused = ['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName || '');
+    if ((e.key === '/' && !isInputFocused) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
+      e.preventDefault();
+      searchInput?.focus();
+      searchInput?.select();
     }
   });
 }

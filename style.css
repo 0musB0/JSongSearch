@@ -17,7 +17,7 @@
   --bg-gradient: radial-gradient(circle at 12% 8%, rgba(255, 200, 196, 0.28) 0%, transparent 45%),
                  radial-gradient(circle at 88% 12%, rgba(190, 222, 255, 0.30) 0%, transparent 48%),
                  #fdf9f5;
-  --bg-header: rgba(253, 249, 245, 0.86);
+  --bg-header: rgba(253, 249, 245, 0.88);
   --bg-surface: #f6efe9;
   --bg-card: #ffffff;
   --bg-card-hover: #fffdfb;
@@ -52,10 +52,10 @@
   --accent-primary: #ff758f;
   --accent-primary-soft: rgba(255, 117, 143, 0.14);
   --accent-sky: #4b7bec;
-  --accent-mint: #20bf6b;
-  --accent-mint-bg: rgba(32, 191, 107, 0.13);
-  --accent-amber: #eb8f28;
-  --accent-amber-bg: rgba(235, 143, 40, 0.13);
+  --accent-mint: #1eb967;
+  --accent-mint-bg: rgba(30, 185, 103, 0.14);
+  --accent-amber: #e5851f;
+  --accent-amber-bg: rgba(229, 133, 31, 0.14);
   --accent-lavender: #8854d0;
   --accent-lavender-bg: rgba(136, 84, 208, 0.12);
 
@@ -91,7 +91,7 @@
   --bg-gradient: radial-gradient(circle at 12% 8%, rgba(255, 117, 143, 0.12) 0%, transparent 45%),
                  radial-gradient(circle at 88% 12%, rgba(91, 141, 239, 0.14) 0%, transparent 48%),
                  #191820;
-  --bg-header: rgba(25, 24, 32, 0.86);
+  --bg-header: rgba(25, 24, 32, 0.88);
   --bg-surface: #23212c;
   --bg-card: #24222e;
   --bg-card-hover: #2b2937;
@@ -143,11 +143,12 @@
   --shadow-pop: 0 16px 36px -6px rgba(0, 0, 0, 0.5);
 }
 
-/* Base Reset */
+/* Base Reset & Touch Polish */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
@@ -159,14 +160,20 @@ html {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
   transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+body.sidebar-open {
+  overflow: hidden;
 }
 
 a {
@@ -184,6 +191,17 @@ button {
   border: none;
   background: none;
   cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* Remove native WebKit search input decoration */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
 }
 
 .hidden {
@@ -227,7 +245,8 @@ button {
 .brand-title-wrap {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.65rem;
+  min-width: 0;
 }
 
 .brand-logo {
@@ -247,6 +266,7 @@ button {
 .brand-text-group {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .brand-title {
@@ -257,6 +277,8 @@ button {
   color: var(--text-primary);
   line-height: 1.2;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand-subtitle {
@@ -265,12 +287,15 @@ button {
   font-weight: 500;
   margin-top: 0.1rem;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand-badges {
   display: flex;
   align-items: center;
   gap: 0.45rem;
+  flex-shrink: 0;
 }
 
 .badge {
@@ -295,7 +320,7 @@ button {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   flex-shrink: 0;
 }
 
@@ -373,16 +398,16 @@ button {
   width: 100%;
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 1.5rem 1.25rem 3.5rem;
+  padding: 1.4rem 1.25rem 3.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;
+  gap: 1.3rem;
 }
 
 .search-section {
   display: flex;
   flex-direction: column;
-  gap: 0.95rem;
+  gap: 0.9rem;
 }
 
 .search-input-box {
@@ -392,7 +417,7 @@ button {
   background-color: var(--bg-input);
   border: 2px solid var(--border-card);
   border-radius: var(--radius-pill);
-  padding: 0 1.25rem;
+  padding: 0 1.15rem;
   transition: all var(--transition-base);
   box-shadow: var(--shadow-sm);
 }
@@ -408,36 +433,56 @@ button {
   height: 20px;
   color: var(--accent-primary);
   flex-shrink: 0;
-  margin-right: 0.8rem;
+  margin-right: 0.75rem;
 }
 
 .search-input-box input {
   flex: 1;
-  height: 54px;
+  height: 52px;
   border: none;
   background: transparent;
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: 1.07rem; /* >= 16px to prevent iOS Safari auto-zoom */
   font-family: inherit;
   outline: none;
+  min-width: 0;
 }
 
 .search-input-box input::placeholder {
   color: var(--text-muted);
-  font-size: 0.93rem;
+  font-size: 0.92rem;
+}
+
+.search-shortcut-hint {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 0.15rem 0.45rem;
+  margin-left: 0.4rem;
+  user-select: none;
+  pointer-events: none;
+}
+
+.search-input-box:focus-within .search-shortcut-hint {
+  display: none;
 }
 
 .clear-btn {
   color: var(--text-muted);
   font-size: 0.9rem;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background-color: var(--bg-chip);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all var(--transition-fast);
+  flex-shrink: 0;
+  margin-left: 0.35rem;
 }
 
 .clear-btn:hover {
@@ -445,13 +490,45 @@ button {
   background-color: var(--bg-chip-hover);
 }
 
-/* Filter Chips */
+/* Filter Chips with Desktop Scroll Arrows */
+.filter-chips-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.chip-scroll-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+  z-index: 2;
+}
+
+.chip-scroll-btn:hover {
+  background-color: var(--tj-red-bg);
+  color: var(--tj-text);
+  border-color: var(--tj-red-border);
+}
+
 .filter-chips-scroll {
+  flex: 1;
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  margin: 0 -0.25rem;
-  padding: 0.2rem 0.25rem;
+  padding: 0.2rem 0.15rem;
+  scroll-behavior: smooth;
 }
 
 .filter-chips-scroll::-webkit-scrollbar {
@@ -469,7 +546,7 @@ button {
   align-items: center;
   font-size: 0.86rem;
   font-weight: 600;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.95rem;
   background-color: var(--bg-chip);
   color: var(--text-secondary);
   border: 1px solid var(--border-subtle);
@@ -492,14 +569,14 @@ button {
   box-shadow: 0 4px 12px rgba(255, 117, 143, 0.30);
 }
 
-/* Controls Bar */
+/* Controls Bar & Machine Mode Selector */
 .controls-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  padding: 0.4rem 0.25rem;
+  gap: 0.7rem;
+  padding: 0.25rem 0.15rem;
 }
 
 .result-stats {
@@ -525,9 +602,9 @@ button {
 .my-range-badge {
   font-size: 0.76rem;
   font-weight: 600;
-  padding: 0.22rem 0.65rem;
+  padding: 0.24rem 0.68rem;
   border-radius: var(--radius-pill);
-  margin-left: 0.35rem;
+  margin-left: 0.25rem;
 }
 
 .pitch-sort-badge {
@@ -538,12 +615,55 @@ button {
 .my-range-badge {
   background-color: var(--accent-lavender-bg);
   color: var(--accent-lavender);
+  border: 1px solid var(--pitch-border);
+  cursor: pointer;
 }
 
 .controls-right {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Karaoke Machine Toggle (전체 / TJ방 / 금영방) */
+.machine-mode-group {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--bg-chip);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 0.18rem;
+  gap: 0.15rem;
+}
+
+.machine-btn {
+  padding: 0.32rem 0.72rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.machine-btn:hover {
+  color: var(--text-primary);
+}
+
+.machine-btn.active {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.machine-btn.tj.active {
+  background-color: var(--tj-red);
+  color: #fff;
+}
+
+.machine-btn.ky.active {
+  background-color: var(--ky-blue);
+  color: #fff;
 }
 
 .btn-random-mini {
@@ -566,21 +686,38 @@ button {
 .sort-selector-wrap {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
 }
 
 .sort-label {
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
+}
+
+.select-custom-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.select-custom-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 0.8rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  pointer-events: none;
 }
 
 .sort-select,
 .soft-select {
+  -webkit-appearance: none;
+  appearance: none;
   background-color: var(--bg-card);
   color: var(--text-primary);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-pill);
-  padding: 0.45rem 0.9rem;
+  padding: 0.45rem 1.9rem 0.45rem 0.85rem;
   font-size: 0.85rem;
   font-family: inherit;
   outline: none;
@@ -592,7 +729,7 @@ button {
 .soft-select {
   width: 100%;
   border-radius: var(--radius-md);
-  padding: 0.65rem 0.9rem;
+  padding: 0.65rem 2rem 0.65rem 0.9rem;
 }
 
 .sort-select:focus,
@@ -608,13 +745,15 @@ button {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 0.7rem 1rem;
-  font-size: 0.83rem;
+  padding: 0.68rem 1rem;
+  font-size: 0.82rem;
   color: var(--text-secondary);
+  line-height: 1.45;
 }
 
 .legend-icon {
   font-size: 1.05rem;
+  flex-shrink: 0;
 }
 
 .legend-text strong {
@@ -636,12 +775,12 @@ button {
   background-color: var(--bg-card);
   border: 1.5px solid var(--border-card);
   border-radius: var(--radius-lg);
-  padding: 1.25rem 1.35rem;
+  padding: 1.2rem 1.3rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 1rem;
-  transition: all var(--transition-base);
+  gap: 0.95rem;
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
   box-shadow: var(--shadow-card);
   position: relative;
 }
@@ -649,7 +788,7 @@ button {
 .song-card:hover {
   background-color: var(--bg-card-hover);
   border-color: var(--border-hover);
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-pop);
 }
 
@@ -658,12 +797,12 @@ button {
   box-shadow: 0 0 0 4px var(--accent-primary-soft), var(--shadow-pop);
 }
 
-/* Top Area: Title, Pitch & Favorite Heart */
+/* Top Area: Title, Pitch, Per-Card Key Stepper & Favorite Heart */
 .card-top {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.7rem;
 }
 
 .card-title-group {
@@ -675,7 +814,7 @@ button {
   font-family: var(--font-display);
   font-size: 1.12rem;
   font-weight: 700;
-  line-height: 1.38;
+  line-height: 1.36;
   letter-spacing: -0.015em;
   color: var(--text-primary);
   word-break: keep-all;
@@ -685,17 +824,24 @@ button {
 .card-title .sub-title {
   font-family: var(--font-sans);
   display: block;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 500;
   color: var(--text-muted);
-  margin-top: 0.2rem;
+  margin-top: 0.18rem;
 }
 
 .card-top-right {
   display: flex;
   align-items: flex-start;
-  gap: 0.45rem;
+  gap: 0.42rem;
   flex-shrink: 0;
+}
+
+.card-pitch-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
 }
 
 .card-pitch {
@@ -705,47 +851,95 @@ button {
   background-color: var(--pitch-bg);
   border: 1px solid var(--pitch-border);
   border-radius: var(--radius-md);
-  padding: 0.38rem 0.7rem;
+  padding: 0.36rem 0.68rem;
   text-align: right;
+  transition: all var(--transition-fast);
+}
+
+.card-pitch.key-shifted {
+  border-color: var(--accent-mint);
+  background-color: var(--accent-mint-bg);
 }
 
 .card-pitch .pitch-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--text-Secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
 }
 
 .card-pitch strong {
-  font-size: 0.96rem;
+  font-size: 0.94rem;
   font-weight: 700;
   color: var(--pitch-text);
   font-family: var(--font-mono);
   white-space: nowrap;
 }
 
-.song-card.high-pitch .card-pitch {
+.song-card.high-pitch .card-pitch:not(.key-shifted) {
   background-color: var(--high-pitch-bg);
   border-color: var(--high-pitch-border);
 }
 
-.song-card.high-pitch .card-pitch strong {
+.song-card.high-pitch .card-pitch:not(.key-shifted) strong {
   color: var(--high-pitch-text);
 }
 
 .key-advice-pill {
   display: inline-block;
-  margin-top: 0.22rem;
-  font-size: 0.69rem;
+  margin-top: 0.2rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  padding: 0.1rem 0.45rem;
+  padding: 0.1rem 0.44rem;
   border-radius: var(--radius-pill);
   background-color: var(--accent-mint-bg);
   color: var(--accent-mint);
+  white-space: nowrap;
 }
 
 .key-advice-pill.key-down {
   background-color: var(--accent-amber-bg);
   color: var(--accent-amber);
+}
+
+/* Interactive Per-Card Key Stepper (♭ / 원키 / ♯) */
+.card-key-stepper {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 0.1rem;
+  gap: 0.1rem;
+}
+
+.key-step-btn {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  padding: 0.15rem 0.42rem;
+  border-radius: var(--radius-pill);
+  transition: all var(--transition-fast);
+  line-height: 1.1;
+}
+
+.key-step-btn:hover {
+  background-color: var(--bg-card);
+  color: var(--tj-text);
+}
+
+.key-step-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.12rem 0.35rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.key-step-label.shifted {
+  color: var(--accent-mint);
 }
 
 /* Favorite Button on Card */
@@ -774,21 +968,30 @@ button {
   color: var(--tj-red);
 }
 
-/* Bottom Area: Metadata & Karaoke Numbers */
+/* Bottom Area: Metadata, Karaoke Numbers & Quick YouTube Listen */
 .card-bottom {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.75rem;
   border-top: 1px dashed var(--border-subtle);
-  padding-top: 0.85rem;
+  padding-top: 0.8rem;
+}
+
+.card-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .card-info {
   display: grid;
   grid-template-columns: auto 1fr;
-  row-gap: 0.28rem;
-  column-gap: 0.6rem;
-  font-size: 0.83rem;
+  row-gap: 0.24rem;
+  column-gap: 0.55rem;
+  font-size: 0.82rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .info-label {
@@ -801,6 +1004,54 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.info-link-btn {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  display: inline-block;
+  border-bottom: 1px dotted var(--border-hover);
+  transition: color var(--transition-fast);
+}
+
+.info-link-btn:hover {
+  color: var(--tj-text);
+}
+
+/* Quick Listen Buttons (원곡 / TJ반주) */
+.card-listen-links {
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
+  flex-shrink: 0;
+}
+
+.btn-listen-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: var(--radius-pill);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: all var(--transition-fast);
+}
+
+.btn-listen-mini:hover {
+  background-color: var(--tj-red-bg);
+  color: var(--tj-text);
+  border-color: var(--tj-red-border);
+  transform: translateY(-1px);
 }
 
 /* Karaoke Numbers Group */
@@ -845,9 +1096,9 @@ button {
 }
 
 .num-badge .copy-icon {
-  font-size: 0.82rem;
-  opacity: 0.65;
-  transition: opacity var(--transition-fast);
+  font-size: 0.8rem;
+  opacity: 0.7;
+  transition: all var(--transition-fast);
 }
 
 .num-badge:hover .copy-icon {
@@ -888,17 +1139,75 @@ button {
   box-shadow: 0 4px 12px rgba(75, 123, 236, 0.16);
 }
 
+/* Copied Visual Feedback State */
+.num-badge.copied {
+  background-color: var(--accent-mint-bg) !important;
+  border-color: var(--accent-mint) !important;
+  color: var(--accent-mint) !important;
+}
+
+.num-badge.copied .brand-tag {
+  background-color: var(--accent-mint) !important;
+  color: #fff !important;
+}
+
 .num-badge.disabled {
   background-color: var(--bg-surface);
   color: var(--text-dim);
   border: 1px dashed var(--border-subtle);
   cursor: default;
-  opacity: 0.65;
+  opacity: 0.62;
 }
 
 .num-badge.disabled .brand-tag {
   background-color: var(--text-dim);
   color: var(--bg-card);
+}
+
+/* Machine Mode Highlight (TJ방 or 금영방) */
+body[data-machine-mode="tj"] .num-badge.ky-num {
+  flex: 0.55;
+  opacity: 0.55;
+}
+
+body[data-machine-mode="ky"] .num-badge.tj-num {
+  flex: 0.55;
+  opacity: 0.55;
+}
+
+/* ==========================================================================
+   Floating Scroll-to-Top Button
+   ========================================================================== */
+
+.scroll-top-btn {
+  position: fixed;
+  right: 1.35rem;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  z-index: 150;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.62rem 1rem;
+  border-radius: var(--radius-pill);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-hover);
+  box-shadow: var(--shadow-pop);
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all var(--transition-base);
+}
+
+.scroll-top-btn:hover {
+  background: linear-gradient(135deg, #ff758f 0%, #ff8fa3 100%);
+  color: #fff;
+  border-color: transparent;
+  transform: translateY(-2px);
+}
+
+.scroll-top-arrow {
+  font-weight: 800;
+  font-size: 0.95rem;
 }
 
 /* ==========================================================================
@@ -911,6 +1220,7 @@ button {
   z-index: 200;
   background-color: rgba(35, 25, 25, 0.38);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   opacity: 0;
   transition: opacity var(--transition-base);
 }
@@ -923,7 +1233,8 @@ button {
   position: fixed;
   top: 0;
   right: 0;
-  bottom: 0;
+  height: 100vh;
+  height: 100dvh;
   width: 100%;
   max-width: 410px;
   z-index: 210;
@@ -941,12 +1252,13 @@ button {
 }
 
 .sidebar-header {
-  padding: 1.15rem 1.35rem;
+  padding: 1.1rem 1.3rem;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: var(--bg-card);
+  flex-shrink: 0;
 }
 
 .sidebar-brand {
@@ -986,7 +1298,8 @@ button {
 .sidebar-content {
   flex: 1;
   overflow-y: auto;
-  padding: 1.2rem;
+  -webkit-overflow-scrolling: touch;
+  padding: 1.15rem 1.15rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -1224,7 +1537,7 @@ button {
   background-color: var(--bg-input);
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 0.86rem;
+  font-size: 0.92rem;
   outline: none;
 }
 
@@ -1336,10 +1649,10 @@ button {
   font-size: 2.4rem;
 }
 
-/* Toast Notification */
+/* Toast Notification (Respects iOS Safe Area) */
 .toast {
   position: fixed;
-  bottom: 1.8rem;
+  bottom: calc(1.6rem + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%) translateY(20px);
   z-index: 300;
@@ -1352,8 +1665,13 @@ button {
   gap: 0.5rem;
   font-size: 0.88rem;
   font-weight: 600;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
   opacity: 0;
+  pointer-events: none;
+  max-width: 92vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: all var(--transition-base);
 }
 
@@ -1365,20 +1683,116 @@ button {
 /* Footer */
 .site-footer {
   border-top: 1px solid var(--border-subtle);
-  padding: 1.5rem 1.25rem;
+  padding: 1.5rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
   text-align: center;
   font-size: 0.8rem;
   color: var(--text-muted);
 }
 
+/* ==========================================================================
+   Responsive & iOS / Android Mobile Optimizations
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Prevent iOS Safari involuntary zoom when focusing inputs/selects */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  .search-shortcut-hint,
+  .chip-scroll-btn {
+    display: none !important;
+  }
+}
+
 @media (max-width: 640px) {
-  .brand-badges {
+  .header-container {
+    padding: 0 0.85rem;
+    height: 62px;
+  }
+
+  .brand-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  .brand-title {
+    font-size: 1.05rem;
+  }
+
+  .brand-badges,
+  .pill-label,
+  .sort-label {
     display: none;
   }
-  .pill-label {
-    display: none;
+
+  .btn-header-pill {
+    padding: 0.42rem 0.65rem;
   }
-  .card-list {
+
+  .btn-menu {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.82rem;
+  }
+
+  .main-container {
+    padding: 1rem 0.85rem 3rem;
+    gap: 1rem;
+  }
+
+  .search-input-box {
+    padding: 0 0.9rem;
+  }
+
+  .search-input-box input {
+    height: 48px;
+  }
+
+  .card-list,
+  .loading-skeleton {
     grid-template-columns: 1fr;
+    gap: 0.95rem;
+  }
+
+  .song-card {
+    padding: 1.05rem 1.1rem;
+  }
+
+  .controls-bar {
+    gap: 0.5rem;
+  }
+
+  .controls-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .sort-select {
+    padding: 0.38rem 1.7rem 0.38rem 0.7rem;
+  }
+
+  .scroll-top-btn .scroll-top-text {
+    display: none;
+  }
+
+  .scroll-top-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+    right: 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .brand-subtitle {
+    display: none;
+  }
+
+  .menu-text {
+    content: '메뉴';
   }
 }

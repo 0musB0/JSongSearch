@@ -2,14 +2,17 @@
 <html lang="ko" data-theme="soft-light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>일본곡 노래방 검색기 · TJ/금영 번호 & 최고음 한눈에</title>
-  <meta name="description" content="J-POP · 애니송 · 밴드 · 보컬로이드 400+곡의 TJ/금영 노래방 번호, 정확한 최고음(옥타브), 내 음역대 맞춤 키(Key) 추천까지 한눈에 검색하세요.">
+  <meta name="description" content="J-POP · 애니송 · 밴드 · 보컬로이드 400+곡의 TJ/금영 노래방 번호, 정확한 최고음(옥타브), 실시간 키(Key) 조절 계산기까지 한눈에 검색하세요.">
 
-  <!-- Favicon & App Icons (사이트 옆 로고) -->
+  <!-- Favicon & iOS Home Screen App Icons (사이트 옆 로고) -->
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="apple-touch-icon" href="/logo.png">
-  <meta name="theme-color" content="#fff8f4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="일본곡 검색기">
+  <meta name="theme-color" content="#fdf9f5" id="metaThemeColor">
 
   <!-- Open Graph / 카카오톡 · 인스타그램 · 디스코드 공유 배너 -->
   <meta property="og:type" content="website">
@@ -78,67 +81,89 @@
     <!-- Search Section -->
     <section class="search-section">
       <div class="search-box-wrap">
-        <form id="searchForm" class="search-input-box" onsubmit="return false;">
-          <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <form id="searchForm" class="search-input-box" role="search">
+          <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <circle cx="8.5" cy="8.5" r="5.5" />
             <path d="M12.5 12.5L17.5 17.5" stroke-linecap="round" />
           </svg>
           <input
-            type="text"
+            type="search"
             id="searchInput"
             name="search"
+            enterkeyhint="search"
+            inputmode="search"
             autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
             spellcheck="false"
             placeholder="곡 제목(초성 가능: ㅂㅌㅇ, ㅊㅂㅇ), 가수, 번호, 최고음(예: 3옥 도#, C#5) 검색"
             aria-label="일본곡 노래방 검색"
           />
+          <kbd class="search-shortcut-hint" id="searchShortcutHint" title="단축키 / 또는 Ctrl+K">/</kbd>
           <button type="button" id="clearBtn" class="clear-btn hidden" aria-label="검색어 지우기">✕</button>
         </form>
       </div>
 
-      <!-- Quick Filter Chips -->
-      <div class="filter-chips-scroll" role="toolbar" aria-label="빠른 필터">
-        <div class="filter-chips" id="filterChips">
-          <button type="button" class="chip active" data-filter="all">✨ 전체 일본곡</button>
-          <button type="button" class="chip" data-filter="favorites">♥ 내 애창곡 찜</button>
-          <button type="button" class="chip" data-filter="my-range" id="chipMyRange">🎯 내 음역대 맞춤</button>
-          <button type="button" class="chip" data-filter="pitch-2down">🌿 2옥타브 이하 (편한 곡)</button>
-          <button type="button" class="chip" data-filter="pitch-3mid">🎵 3옥 도 ~ 3옥 미</button>
-          <button type="button" class="chip" data-filter="pitch-3high">🔥 3옥 파 이상 (고음)</button>
-          <button type="button" class="chip" data-filter="has-tj">🎤 TJ 수록</button>
-          <button type="button" class="chip" data-filter="has-ky">🎶 금영 수록</button>
-          <button type="button" class="chip" data-filter="artist:YOASOBI">YOASOBI</button>
-          <button type="button" class="chip" data-filter="artist:요네즈 켄시|하치">요네즈 켄시</button>
-          <button type="button" class="chip" data-filter="artist:Official髭男dism">Official髭男dism</button>
-          <button type="button" class="chip" data-filter="artist:Mrs. GREEN APPLE">Mrs. GREEN APPLE</button>
-          <button type="button" class="chip" data-filter="artist:아이묭">아이묭</button>
-          <button type="button" class="chip" data-filter="artist:유우리">유우리</button>
-          <button type="button" class="chip" data-filter="artist:Vaundy">Vaundy</button>
-          <button type="button" class="chip" data-filter="artist:Ado">Ado</button>
-          <button type="button" class="chip" data-filter="artist:요루시카|n-buna">요루시카</button>
+      <!-- Quick Filter Chips with Desktop Scroll Arrows -->
+      <div class="filter-chips-wrapper">
+        <button type="button" class="chip-scroll-btn chip-scroll-left hidden" id="chipScrollLeft" aria-label="필터 왼쪽으로 스크롤">‹</button>
+        <div class="filter-chips-scroll" id="filterChipsScroll" role="toolbar" aria-label="빠른 필터">
+          <div class="filter-chips" id="filterChips">
+            <button type="button" class="chip active" data-filter="all">✨ 전체 일본곡</button>
+            <button type="button" class="chip" data-filter="favorites">♥ 내 애창곡 찜</button>
+            <button type="button" class="chip" data-filter="my-range" id="chipMyRange">🎯 내 음역대 맞춤</button>
+            <button type="button" class="chip" data-filter="pitch-2down">🌿 2옥타브 이하 (편한 곡)</button>
+            <button type="button" class="chip" data-filter="pitch-3mid">🎵 3옥 도 ~ 3옥 미</button>
+            <button type="button" class="chip" data-filter="pitch-3high">🔥 3옥 파 이상 (고음)</button>
+            <button type="button" class="chip" data-filter="artist:YOASOBI">YOASOBI</button>
+            <button type="button" class="chip" data-filter="artist:요네즈 켄시|하치">요네즈 켄시</button>
+            <button type="button" class="chip" data-filter="artist:Official髭男dism">Official髭男dism</button>
+            <button type="button" class="chip" data-filter="artist:Mrs. GREEN APPLE">Mrs. GREEN APPLE</button>
+            <button type="button" class="chip" data-filter="artist:아이묭">아이묭</button>
+            <button type="button" class="chip" data-filter="artist:유우리">유우리</button>
+            <button type="button" class="chip" data-filter="artist:Vaundy">Vaundy</button>
+            <button type="button" class="chip" data-filter="artist:Ado">Ado</button>
+            <button type="button" class="chip" data-filter="artist:요루시카|n-buna">요루시카</button>
+            <button type="button" class="chip" data-filter="artist:King Gnu">King Gnu</button>
+            <button type="button" class="chip" data-filter="artist:RADWIMPS">RADWIMPS</button>
+            <button type="button" class="chip" data-filter="artist:DECO*27">DECO*27</button>
+          </div>
         </div>
+        <button type="button" class="chip-scroll-btn chip-scroll-right" id="chipScrollRight" aria-label="필터 오른쪽으로 스크롤">›</button>
       </div>
 
-      <!-- Control Toolbar: Result Counter, My Vocal Range Indicator & Sort -->
+      <!-- Control Toolbar: Result Counter, Machine Mode Toggle & Sort -->
       <div class="controls-bar">
         <div class="result-stats">
           <span class="count-number" id="resultCount">0</span>
           <span class="count-label">개의 곡</span>
           <span class="pitch-sort-badge hidden" id="pitchSortNotice">🎵 최고음 낮은순 자동 정렬됨</span>
-          <span class="my-range-badge hidden" id="myRangeActiveBadge">🎯 내 최고음 기준 키(Key) 표시 중</span>
+          <button type="button" class="my-range-badge hidden" id="myRangeActiveBadge" title="클릭하여 내 최고음 설정 변경">🎯 내 최고음 기준 키(Key) 표시 중</button>
         </div>
+
         <div class="controls-right">
+          <!-- Karaoke Machine Room Selector (전체 / TJ방 / 금영방) -->
+          <div class="machine-mode-group" id="machineModeGroup" role="group" aria-label="노래방 기기 선택">
+            <button type="button" class="machine-btn active" data-machine="all" title="TJ와 금영 모두 표시">전체</button>
+            <button type="button" class="machine-btn tj" data-machine="tj" title="TJ미디어 수록곡만 보기">TJ방</button>
+            <button type="button" class="machine-btn ky" data-machine="ky" title="금영(KY) 수록곡만 보기">금영방</button>
+          </div>
+
           <button type="button" class="btn-random-mini" id="quickRandomBtn" title="현재 목록에서 랜덤 1곡 추천">
             🎲 랜덤 1곡
           </button>
+
           <div class="sort-selector-wrap">
             <label for="sortSelect" class="sort-label">정렬</label>
-            <select id="sortSelect" class="sort-select">
-              <option value="korean-asc">가나다순 (제목)</option>
-              <option value="pitch-asc">최고음 낮은순</option>
-              <option value="pitch-desc">최고음 높은순</option>
-              <option value="tj-asc">TJ 번호순</option>
-            </select>
+            <div class="select-custom-wrap">
+              <select id="sortSelect" class="sort-select">
+                <option value="korean-asc">가나다순 (제목)</option>
+                <option value="pitch-asc">최고음 낮은순</option>
+                <option value="pitch-desc">최고음 높은순</option>
+                <option value="tj-asc">TJ 번호순</option>
+                <option value="ky-asc">금영 번호순</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -147,7 +172,7 @@
       <aside class="legend-banner">
         <span class="legend-icon">💡</span>
         <span class="legend-text">
-          <strong>TJ / KY 번호</strong>를 터치하면 바로 복사됩니다! 우측 상단 <strong>[메뉴 · 기능]</strong>에서 <strong>내 음역대 맞춤 키(Key) 계산기</strong>와 <strong>애창곡 찜 목록</strong>을 써보세요.
+          <strong>TJ / KY 번호</strong>를 터치하면 바로 복사됩니다! 각 카드의 <strong>♭/♯ 버튼</strong>으로 키 조절 시 바뀌는 최고음을 확인하고, <strong>가수·작곡가 이름</strong>을 누르면 모아보기가 됩니다.
         </span>
       </aside>
     </section>
@@ -176,6 +201,12 @@
     </section>
   </main>
 
+  <!-- Floating Scroll-to-Top & Quick Search Button -->
+  <button type="button" id="scrollTopBtn" class="scroll-top-btn hidden" aria-label="맨 위로 이동" title="맨 위로 이동">
+    <span class="scroll-top-arrow">↑</span>
+    <span class="scroll-top-text">맨 위로</span>
+  </button>
+
   <!-- Right Slide-out Sidebar & Backdrop Overlay -->
   <div id="overlay" class="overlay hidden" tabindex="-1"></div>
   <aside id="sidebar" class="sidebar" aria-hidden="true" role="dialog" aria-label="노래방 편의기능 메뉴">
@@ -197,24 +228,35 @@
         <p class="card-desc">내가 편하게 낼 수 있는 <strong>최고음</strong>을 선택하면, 모든 곡 카드에 <strong>몇 키(±Key)로 부르면 딱 맞는지</strong> 자동으로 표시해 드려요!</p>
         <div class="form-group">
           <label for="myPitchSelect">내 최고음 설정</label>
-          <select id="myPitchSelect" class="soft-select">
-            <option value="">선택 안 함 (기본 최고음만 표시)</option>
-            <option value="2옥 파">2옥타브 파 (F4 · 남성 저음/편한 음역)</option>
-            <option value="2옥 파#">2옥타브 파# (F#4)</option>
-            <option value="2옥 솔">2옥타브 솔 (G4 · 남성 평균)</option>
-            <option value="2옥 솔#">2옥타브 솔# (G#4)</option>
-            <option value="2옥 라">2옥타브 라 (A4 · 남성 중고음)</option>
-            <option value="2옥 라#">2옥타브 라# (A#4)</option>
-            <option value="2옥 시">2옥타브 시 (B4 · 남성 고음 / 여성 저음)</option>
-            <option value="3옥 도">3옥타브 도 (C5 · 여성 편한 음역)</option>
-            <option value="3옥 도#">3옥타브 도# (C#5)</option>
-            <option value="3옥 레">3옥타브 레 (D5 · 여성 평균)</option>
-            <option value="3옥 레#">3옥타브 레# (D#5)</option>
-            <option value="3옥 미">3옥타브 미 (E5 · 여성 중고음)</option>
-            <option value="3옥 파">3옥타브 파 (F5 · 여성 고음)</option>
-            <option value="3옥 파#">3옥타브 파# (F#5)</option>
-            <option value="3옥 솔">3옥타브 솔 (G5 · 초고음)</option>
-          </select>
+          <div class="select-custom-wrap full-width">
+            <select id="myPitchSelect" class="soft-select">
+              <option value="">선택 안 함 (기본 최고음만 표시)</option>
+              <option value="2옥 도">2옥타브 도 (C4 · 남성 중저음)</option>
+              <option value="2옥 도#">2옥타브 도# (C#4)</option>
+              <option value="2옥 레">2옥타브 레 (D4)</option>
+              <option value="2옥 레#">2옥타브 레# (D#4)</option>
+              <option value="2옥 미">2옥타브 미 (E4 · 남성 편한 음역)</option>
+              <option value="2옥 파">2옥타브 파 (F4 · 남성 저음/편한 음역)</option>
+              <option value="2옥 파#">2옥타브 파# (F#4)</option>
+              <option value="2옥 솔">2옥타브 솔 (G4 · 남성 평균)</option>
+              <option value="2옥 솔#">2옥타브 솔# (G#4)</option>
+              <option value="2옥 라">2옥타브 라 (A4 · 남성 중고음)</option>
+              <option value="2옥 라#">2옥타브 라# (A#4)</option>
+              <option value="2옥 시">2옥타브 시 (B4 · 남성 고음 / 여성 저음)</option>
+              <option value="3옥 도">3옥타브 도 (C5 · 여성 편한 음역)</option>
+              <option value="3옥 도#">3옥타브 도# (C#5)</option>
+              <option value="3옥 레">3옥타브 레 (D5 · 여성 평균)</option>
+              <option value="3옥 레#">3옥타브 레# (D#5)</option>
+              <option value="3옥 미">3옥타브 미 (E5 · 여성 중고음)</option>
+              <option value="3옥 파">3옥타브 파 (F5 · 여성 고음)</option>
+              <option value="3옥 파#">3옥타브 파# (F#5)</option>
+              <option value="3옥 솔">3옥타브 솔 (G5 · 초고음)</option>
+              <option value="3옥 솔#">3옥타브 솔# (G#5)</option>
+              <option value="3옥 라">3옥타브 라 (A5)</option>
+              <option value="3옥 라#">3옥타브 라# (A#5)</option>
+              <option value="3옥 시">3옥타브 시 (B5)</option>
+            </select>
+          </div>
         </div>
         <button type="button" id="filterMyRangeBtn" class="btn btn-soft-accent full-width">
           🎯 내 음역대로 원키 가능한 곡만 모아보기
