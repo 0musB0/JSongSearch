@@ -393,6 +393,28 @@ function buildPitchMarkup(song) {
   };
 }
 
+function formatArtistLine(song) {
+  const artist = (song.artist || '').trim();
+  const composer = (song.composer || '').trim();
+  const hasArtist = artist && artist !== '-';
+  const hasComposer = composer && composer !== '-' && composer !== artist;
+
+  if (hasArtist && hasComposer) {
+    return `
+      <button type="button" class="artist-chip-link" data-quick-search="${escapeHtml(artist)}" title="${escapeHtml(artist)} 곡 모아보기">${escapeHtml(artist)}</button>
+      <span class="artist-divider">·</span>
+      <button type="button" class="artist-chip-link composer" data-quick-search="${escapeHtml(composer)}" title="작곡가 ${escapeHtml(composer)} 곡 모아보기">${escapeHtml(composer)}</button>
+    `;
+  }
+  if (hasArtist) {
+    return `<button type="button" class="artist-chip-link" data-quick-search="${escapeHtml(artist)}" title="${escapeHtml(artist)} 곡 모아보기">${escapeHtml(artist)}</button>`;
+  }
+  if (hasComposer) {
+    return `<button type="button" class="artist-chip-link composer" data-quick-search="${escapeHtml(composer)}" title="작곡가 ${escapeHtml(composer)} 곡 모아보기">${escapeHtml(composer)}</button>`;
+  }
+  return `<span class="artist-plain">-</span>`;
+}
+
 function renderSongs() {
   const cardList = document.getElementById('cardList');
   const emptyState = document.getElementById('emptyState');
@@ -431,64 +453,57 @@ function renderSongs() {
       const tjDisabled = tjDisplay === '미수록' ? 'disabled' : '';
       const kyDisabled = kyDisplay === '미수록' ? 'disabled' : '';
 
-      const korTitleOnly = (song.title || '').split('(')[0].trim();
       const ytOriginalUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${song.title} ${song.artist || ''}`)}`;
-      const ytKaraokeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`TJ 노래방 ${korTitleOnly} ${song.tj_num !== 'XXX' ? song.tj_num : ''}`)}`;
 
       return `
         <article class="song-card ${isHighPitch ? 'high-pitch' : ''}" data-song-id="${song.id}">
+          <!-- 1. Card Header: Clean Title + Pitch Badge & Heart -->
           <div class="card-top">
             <div class="card-title-group">
-              <div class="card-title">${formatSongTitle(song.title)}</div>
+              <h3 class="card-title">${formatSongTitle(song.title)}</h3>
             </div>
             <div class="card-top-right">
-              <div class="card-pitch-stack">
-                <div class="card-pitch ${offset !== 0 ? 'key-shifted' : ''}" data-pitch-box="${song.id}" title="최고음: ${escapeHtml(effectivePitch)} (${escapeHtml(converted)})">
-                  <span class="pitch-label">${effectivePitch !== '-' ? escapeHtml(effectivePitch) : '최고음'}</span>
-                  <strong>${escapeHtml(converted)}</strong>
-                  ${keyAdvice ? `<span class="key-advice-pill ${keyAdvice.isDown ? 'key-down' : ''}">${escapeHtml(keyAdvice.text)}</span>` : ''}
+              <div class="card-pitch ${offset !== 0 ? 'key-shifted' : ''}" data-pitch-box="${song.id}" title="최고음: ${escapeHtml(effectivePitch)} (${escapeHtml(converted)})">
+                <div class="pitch-main-line">
+                  <strong class="pitch-kor">${effectivePitch !== '-' ? escapeHtml(effectivePitch) : '-'}</strong>
+                  ${converted !== '-' ? `<span class="pitch-eng">${escapeHtml(converted)}</span>` : ''}
                 </div>
-                ${effectivePitch !== '-' ? `
-                <div class="card-key-stepper" aria-label="이 곡 키 조절 시뮬레이터">
-                  <button type="button" class="key-step-btn" data-key-step="-1" data-song-id="${song.id}" title="반음 내리기 (♭)">♭</button>
-                  <span class="key-step-label ${offset !== 0 ? 'shifted' : ''}" data-key-reset="${song.id}" title="클릭시 원키로 초기화">${offsetLabel}</span>
-                  <button type="button" class="key-step-btn" data-key-step="1" data-song-id="${song.id}" title="반음 올리기 (♯)">♯</button>
-                </div>` : ''}
+                ${keyAdvice ? `<span class="key-advice-pill ${keyAdvice.isDown ? 'key-down' : ''}">${escapeHtml(keyAdvice.text)}</span>` : ''}
               </div>
-              <button type="button" class="btn-fav-card ${isFav ? 'active' : ''}" data-fav-id="${song.id}" aria-label="애창곡 찜하기" title="내 애창곡 찜 목록에 추가/제거">
+              <button type="button" class="btn-fav-card ${isFav ? 'active' : ''}" data-fav-id="${song.id}" aria-label="애창곡 찜하기" title="내 애창곡 찜하기">
                 ${isFav ? '♥' : '♡'}
               </button>
             </div>
           </div>
-          <div class="card-bottom">
-            <div class="card-info-row">
-              <div class="card-info">
-                <span class="info-label">부른이</span>
-                <span class="info-val">
-                  <button type="button" class="info-link-btn" data-quick-search="${escapeHtml(song.artist || '')}" title="이 가수의 곡 모아보기">${escapeHtml(song.artist || '-')}</button>
-                </span>
-                <span class="info-label">작곡가</span>
-                <span class="info-val">
-                  <button type="button" class="info-link-btn" data-quick-search="${escapeHtml(song.composer || '')}" title="이 작곡가의 곡 모아보기">${escapeHtml(song.composer || '-')}</button>
-                </span>
-              </div>
-              <div class="card-listen-links">
-                <a href="${ytOriginalUrl}" target="_blank" rel="noopener noreferrer" class="btn-listen-mini" title="유튜브에서 원곡 듣기">▶ 원곡</a>
-                <a href="${ytKaraokeUrl}" target="_blank" rel="noopener noreferrer" class="btn-listen-mini" title="유튜브에서 TJ 노래방 반주 듣기">🎤 반주</a>
-              </div>
+
+          <!-- 2. Artist & Subtle Key/Listen Row -->
+          <div class="card-meta-row">
+            <div class="card-artist-line">
+              ${formatArtistLine(song)}
             </div>
-            <div class="card-numbers">
-              <button type="button" class="num-badge tj-badge tj-num ${tjDisabled}" data-copy="${escapeHtml(song.tj_num)}" data-brand="TJ" data-title="${escapeHtml(song.title)}" ${tjDisabled}>
-                <span class="brand-tag">TJ</span>
-                <span class="num-val">${tjDisplay}</span>
-                <span class="copy-icon">📋</span>
-              </button>
-              <button type="button" class="num-badge ky-badge ky-num ${kyDisabled}" data-copy="${escapeHtml(song.ky_num)}" data-brand="KY" data-title="${escapeHtml(song.title)}" ${kyDisabled}>
-                <span class="brand-tag">KY</span>
-                <span class="num-val">${kyDisplay}</span>
-                <span class="copy-icon">📋</span>
-              </button>
+            <div class="card-mini-tools">
+              ${effectivePitch !== '-' ? `
+              <div class="card-key-stepper" aria-label="키 조절">
+                <button type="button" class="key-step-btn" data-key-step="-1" data-song-id="${song.id}" title="반음 내리기 (♭)">−</button>
+                <span class="key-step-label ${offset !== 0 ? 'shifted' : ''}" data-key-reset="${song.id}" title="클릭시 원키로 초기화">${offsetLabel}</span>
+                <button type="button" class="key-step-btn" data-key-step="1" data-song-id="${song.id}" title="반음 올리기 (♯)">+</button>
+              </div>` : ''}
+              <a href="${ytOriginalUrl}" target="_blank" rel="noopener noreferrer" class="btn-listen-mini" title="유튜브에서 노래 듣기">▶ 듣기</a>
             </div>
+          </div>
+
+          <!-- 3. Large Readable Karaoke Numbers -->
+          <div class="card-numbers">
+            <button type="button" class="num-badge tj-num ${tjDisabled}" data-copy="${escapeHtml(song.tj_num)}" data-brand="TJ" data-title="${escapeHtml(song.title)}" ${tjDisabled}>
+              <span class="brand-tag">TJ</span>
+              <span class="num-val">${tjDisplay}</span>
+              <span class="copy-icon">${tjDisabled ? '' : '복사'}</span>
+            </button>
+            <button type="button" class="num-badge ky-num ${kyDisabled}" data-copy="${escapeHtml(song.ky_num)}" data-brand="KY" data-title="${escapeHtml(song.title)}" ${kyDisabled}>
+              <span class="brand-tag">KY</span>
+              <span class="num-val">${kyDisplay}</span>
+              <span class="copy-icon">${kyDisabled ? '' : '복사'}</span>
+            </button>
           </div>
         </article>
       `;
@@ -525,8 +540,10 @@ function updateCardKeyShiftInPlace(songId, deltaOrReset) {
   if (pitchBox) {
     pitchBox.classList.toggle('key-shifted', offset !== 0);
     pitchBox.innerHTML = `
-      <span class="pitch-label">${effectivePitch !== '-' ? escapeHtml(effectivePitch) : '최고음'}</span>
-      <strong>${escapeHtml(converted)}</strong>
+      <div class="pitch-main-line">
+        <strong class="pitch-kor">${effectivePitch !== '-' ? escapeHtml(effectivePitch) : '-'}</strong>
+        ${converted !== '-' ? `<span class="pitch-eng">${escapeHtml(converted)}</span>` : ''}
+      </div>
       ${keyAdvice ? `<span class="key-advice-pill ${keyAdvice.isDown ? 'key-down' : ''}">${escapeHtml(keyAdvice.text)}</span>` : ''}
     `;
   }
@@ -1055,7 +1072,7 @@ function bindEvents() {
     if (iconEl) iconEl.textContent = '✓ 복사됨';
     setTimeout(() => {
       badge.classList.remove('copied');
-      if (iconEl) iconEl.textContent = '📋';
+      if (iconEl) iconEl.textContent = '복사';
     }, 1200);
 
     showToast(ok ? `${brand} 노래방 번호 [${cleanNum}] 복사 완료!` : `번호: ${cleanNum}`);
