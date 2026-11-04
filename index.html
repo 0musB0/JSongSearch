@@ -1,15 +1,41 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="soft-light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>일본곡 노래방 검색기</title>
-  <meta name="description" content="TJ/금영 모든 일본곡 노래방 번호, 최고음(옥타브/음계 자동 변환), 가수, 작곡가 실시간 검색기. 나무위키 매일 10:00 자동 동기화.">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <title>일본곡 노래방 검색기 · TJ/금영 번호 & 최고음 한눈에</title>
+  <meta name="description" content="J-POP · 애니송 · 밴드 · 보컬로이드 400+곡의 TJ/금영 노래방 번호, 정확한 최고음(옥타브), 내 음역대 맞춤 키(Key) 추천까지 한눈에 검색하세요.">
+
+  <!-- Favicon & App Icons (사이트 옆 로고) -->
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="apple-touch-icon" href="/logo.png">
+  <meta name="theme-color" content="#fff8f4">
+
+  <!-- Open Graph / 카카오톡 · 인스타그램 · 디스코드 공유 배너 -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="일본곡 노래방 검색기">
+  <meta property="og:title" content="🎤 일본곡 노래방 검색기 · TJ/금영 번호 & 최고음 검색">
+  <meta property="og:description" content="J-POP · 애니송 · 보컬로이드 400+곡의 TJ/금영 번호와 실제 최고음, 내 음역대 맞춤 키(Key) 계산기까지!">
+  <meta property="og:url" content="https://jsongsearch.vercel.app/">
+  <meta property="og:image" content="https://jsongsearch.vercel.app/og-banner.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="ko_KR">
+
+  <!-- Twitter / Instagram Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="🎤 일본곡 노래방 검색기 · TJ/금영 번호 & 최고음 검색">
+  <meta name="twitter:description" content="J-POP · 애니송 · 보컬로이드 400+곡의 TJ/금영 번호와 실제 최고음, 내 음역대 맞춤 키(Key) 계산기까지!">
+  <meta name="twitter:image" content="https://jsongsearch.vercel.app/og-banner.png">
+
+  <!-- Royalty-Free Open Source Fonts (SIL OFL 1.1): LINE Seed KR + Pretendard JP + Paperlogy + JetBrains Mono -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/wizfile/font/LINESeedKR.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-jp-dynamic-subset.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,18 +44,30 @@
     <div class="header-container">
       <div class="header-brand" id="brandBtn" role="button" tabindex="0" title="클릭시 검색 및 필터 초기화">
         <div class="brand-title-wrap">
-          <span class="brand-icon">🎤</span>
-          <h1 class="brand-title">일본곡 검색</h1>
+          <img src="/logo.png" alt="일본곡 노래방 검색기 로고" class="brand-logo" width="40" height="40" />
+          <div class="brand-text-group">
+            <h1 class="brand-title">일본곡 노래방 검색기</h1>
+            <span class="brand-subtitle">TJ · 금영 번호 &amp; 실측 최고음 가이드</span>
+          </div>
         </div>
         <div class="brand-badges">
           <span class="badge badge-count" id="badgeSongCount">총 --곡 수록</span>
           <span class="badge badge-sync" id="badgeLastSync" title="매일 10:00 KST 자동 동기화">매일 10:00 동기화</span>
         </div>
       </div>
+
       <div class="header-actions">
-        <button type="button" class="btn btn-menu" id="menuBtn" aria-label="메뉴 열기">
+        <button type="button" class="btn-header-pill" id="headerFavBtn" title="내가 찜한 애창곡 보기">
+          <span class="pill-icon">♥</span>
+          <span class="pill-label">찜한 곡</span>
+          <span class="fav-count-bubble" id="headerFavCount">0</span>
+        </button>
+        <button type="button" class="btn-icon-circle" id="themeToggleBtn" aria-label="화면 테마 전환" title="부드러운 라이트 / 코지 다크 모드 전환">
+          <span id="themeIcon">🌙</span>
+        </button>
+        <button type="button" class="btn btn-menu" id="menuBtn" aria-label="메뉴 및 편의기능 열기">
           <span class="menu-icon">☰</span>
-          <span class="menu-text">메뉴</span>
+          <span class="menu-text">메뉴 · 기능</span>
         </button>
       </div>
     </div>
@@ -51,7 +89,7 @@
             name="search"
             autocomplete="off"
             spellcheck="false"
-            placeholder="제목, 가수, 작곡가, 번호(TJ/KY), 최고음 검색 (예: 3옥 도#, C#5)"
+            placeholder="곡 제목(초성 가능: ㅂㅌㅇ, ㅊㅂㅇ), 가수, 번호, 최고음(예: 3옥 도#, C#5) 검색"
             aria-label="일본곡 노래방 검색"
           />
           <button type="button" id="clearBtn" class="clear-btn hidden" aria-label="검색어 지우기">✕</button>
@@ -61,11 +99,14 @@
       <!-- Quick Filter Chips -->
       <div class="filter-chips-scroll" role="toolbar" aria-label="빠른 필터">
         <div class="filter-chips" id="filterChips">
-          <button type="button" class="chip active" data-filter="all">전체 일본곡</button>
-          <button type="button" class="chip" data-filter="pitch-3up">3옥 이상</button>
-          <button type="button" class="chip" data-filter="pitch-2down">2옥 이하</button>
-          <button type="button" class="chip" data-filter="has-tj">TJ 수록</button>
-          <button type="button" class="chip" data-filter="has-ky">금영 수록</button>
+          <button type="button" class="chip active" data-filter="all">✨ 전체 일본곡</button>
+          <button type="button" class="chip" data-filter="favorites">♥ 내 애창곡 찜</button>
+          <button type="button" class="chip" data-filter="my-range" id="chipMyRange">🎯 내 음역대 맞춤</button>
+          <button type="button" class="chip" data-filter="pitch-2down">🌿 2옥타브 이하 (편한 곡)</button>
+          <button type="button" class="chip" data-filter="pitch-3mid">🎵 3옥 도 ~ 3옥 미</button>
+          <button type="button" class="chip" data-filter="pitch-3high">🔥 3옥 파 이상 (고음)</button>
+          <button type="button" class="chip" data-filter="has-tj">🎤 TJ 수록</button>
+          <button type="button" class="chip" data-filter="has-ky">🎶 금영 수록</button>
           <button type="button" class="chip" data-filter="artist:YOASOBI">YOASOBI</button>
           <button type="button" class="chip" data-filter="artist:요네즈 켄시|하치">요네즈 켄시</button>
           <button type="button" class="chip" data-filter="artist:Official髭男dism">Official髭男dism</button>
@@ -74,32 +115,39 @@
           <button type="button" class="chip" data-filter="artist:유우리">유우리</button>
           <button type="button" class="chip" data-filter="artist:Vaundy">Vaundy</button>
           <button type="button" class="chip" data-filter="artist:Ado">Ado</button>
+          <button type="button" class="chip" data-filter="artist:요루시카|n-buna">요루시카</button>
         </div>
       </div>
 
-      <!-- Control Toolbar: Result Counter & Sort -->
+      <!-- Control Toolbar: Result Counter, My Vocal Range Indicator & Sort -->
       <div class="controls-bar">
         <div class="result-stats">
           <span class="count-number" id="resultCount">0</span>
-          <span class="count-label">개의 일본곡 검색됨</span>
-          <span class="pitch-sort-badge hidden" id="pitchSortNotice">🎵 최고음 낮은순 자동 정렬 적용됨</span>
+          <span class="count-label">개의 곡</span>
+          <span class="pitch-sort-badge hidden" id="pitchSortNotice">🎵 최고음 낮은순 자동 정렬됨</span>
+          <span class="my-range-badge hidden" id="myRangeActiveBadge">🎯 내 최고음 기준 키(Key) 표시 중</span>
         </div>
-        <div class="sort-selector-wrap">
-          <label for="sortSelect" class="sort-label">정렬</label>
-          <select id="sortSelect" class="sort-select">
-            <option value="korean-asc">가나다순 (제목)</option>
-            <option value="pitch-asc">최고음 낮은순</option>
-            <option value="pitch-desc">최고음 높은순</option>
-            <option value="tj-asc">TJ 번호순</option>
-          </select>
+        <div class="controls-right">
+          <button type="button" class="btn-random-mini" id="quickRandomBtn" title="현재 목록에서 랜덤 1곡 추천">
+            🎲 랜덤 1곡
+          </button>
+          <div class="sort-selector-wrap">
+            <label for="sortSelect" class="sort-label">정렬</label>
+            <select id="sortSelect" class="sort-select">
+              <option value="korean-asc">가나다순 (제목)</option>
+              <option value="pitch-asc">최고음 낮은순</option>
+              <option value="pitch-desc">최고음 높은순</option>
+              <option value="tj-asc">TJ 번호순</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <!-- Note Notation Banner -->
+      <!-- Friendly Tip Banner -->
       <aside class="legend-banner">
         <span class="legend-icon">💡</span>
         <span class="legend-text">
-          반주곡 기호 안내: <strong>[ⓗ]</strong> 60시리즈/필통 등 특정 기기 전용 · <strong>[ⓢ]</strong> LiVEN/Q500R 전용 번호입니다. 번호를 클릭하면 복사됩니다.
+          <strong>TJ / KY 번호</strong>를 터치하면 바로 복사됩니다! 우측 상단 <strong>[메뉴 · 기능]</strong>에서 <strong>내 음역대 맞춤 키(Key) 계산기</strong>와 <strong>애창곡 찜 목록</strong>을 써보세요.
         </span>
       </aside>
     </section>
@@ -120,82 +168,110 @@
 
       <!-- Empty State -->
       <div id="emptyState" class="empty-state hidden">
-        <div class="empty-icon">🔍</div>
-        <h3 class="empty-title">일치하는 곡을 찾을 수 없습니다</h3>
-        <p class="empty-desc">검색어 철자, 최고음 표기(예: 3옥 도#, C#5), 또는 필터 설정을 확인해보세요.</p>
-        <button type="button" id="emptyResetBtn" class="btn btn-primary">검색 초기화</button>
+        <div class="empty-icon">🫧</div>
+        <h3 class="empty-title">조건에 맞는 곡을 찾지 못했어요</h3>
+        <p class="empty-desc">초성(예: ㅂㅌㅇ), 최고음(예: 3옥 도#, C#5), 또는 필터를 초기화해 보세요.</p>
+        <button type="button" id="emptyResetBtn" class="btn btn-primary">전체 곡 다시 보기</button>
       </div>
     </section>
   </main>
 
   <!-- Right Slide-out Sidebar & Backdrop Overlay -->
   <div id="overlay" class="overlay hidden" tabindex="-1"></div>
-  <aside id="sidebar" class="sidebar" aria-hidden="true" role="dialog" aria-label="메뉴 및 바로가기">
+  <aside id="sidebar" class="sidebar" aria-hidden="true" role="dialog" aria-label="노래방 편의기능 메뉴">
     <div class="sidebar-header">
-      <h2 class="sidebar-title">메뉴</h2>
+      <div class="sidebar-brand">
+        <img src="/logo.png" alt="" class="sidebar-logo" width="28" height="28" />
+        <h2 class="sidebar-title">노래방 도우미 메뉴</h2>
+      </div>
       <button type="button" id="sidebarCloseBtn" class="sidebar-close" aria-label="메뉴 닫기">✕</button>
     </div>
 
     <div class="sidebar-content">
-      <!-- TJ Song Application / Vote Section -->
-      <section class="sidebar-card">
-        <div class="sidebar-card-header" id="voteToggleBtn" style="cursor:pointer">
-          <span class="card-icon">🗳️</span>
-          <h3 class="card-title">TJ 신곡 투표/신청</h3>
+      <!-- 1. 내 음역대 맞춤 키(Key) 자동 계산기 -->
+      <section class="sidebar-card highlight-card">
+        <div class="sidebar-card-header">
+          <span class="card-icon">🎚️</span>
+          <h3 class="card-title">내 음역대 맞춤 키(Key) 계산기</h3>
         </div>
-        <p class="card-desc">노래방에 아직 없는 일본곡을 TJ미디어 반주곡 신청 페이지로 바로 전송합니다.</p>
-
-        <form id="voteForm" class="vote-form" onsubmit="return false;">
-          <div class="form-group">
-            <label for="v_title">노래 제목</label>
-            <input type="text" id="v_title" placeholder="노래 제목 입력" />
-          </div>
-          <div class="form-group">
-            <label for="v_singer">가수 / 작곡가</label>
-            <input type="text" id="v_singer" placeholder="가수 또는 작곡가 입력" />
-          </div>
-          <button type="button" id="tjGoBtn" class="btn btn-tj-apply tj-go-btn">
-            <span>TJ에 신청하기</span>
-            <span class="btn-arrow">↗</span>
-          </button>
-        </form>
+        <p class="card-desc">내가 편하게 낼 수 있는 <strong>최고음</strong>을 선택하면, 모든 곡 카드에 <strong>몇 키(±Key)로 부르면 딱 맞는지</strong> 자동으로 표시해 드려요!</p>
+        <div class="form-group">
+          <label for="myPitchSelect">내 최고음 설정</label>
+          <select id="myPitchSelect" class="soft-select">
+            <option value="">선택 안 함 (기본 최고음만 표시)</option>
+            <option value="2옥 파">2옥타브 파 (F4 · 남성 저음/편한 음역)</option>
+            <option value="2옥 파#">2옥타브 파# (F#4)</option>
+            <option value="2옥 솔">2옥타브 솔 (G4 · 남성 평균)</option>
+            <option value="2옥 솔#">2옥타브 솔# (G#4)</option>
+            <option value="2옥 라">2옥타브 라 (A4 · 남성 중고음)</option>
+            <option value="2옥 라#">2옥타브 라# (A#4)</option>
+            <option value="2옥 시">2옥타브 시 (B4 · 남성 고음 / 여성 저음)</option>
+            <option value="3옥 도">3옥타브 도 (C5 · 여성 편한 음역)</option>
+            <option value="3옥 도#">3옥타브 도# (C#5)</option>
+            <option value="3옥 레">3옥타브 레 (D5 · 여성 평균)</option>
+            <option value="3옥 레#">3옥타브 레# (D#5)</option>
+            <option value="3옥 미">3옥타브 미 (E5 · 여성 중고음)</option>
+            <option value="3옥 파">3옥타브 파 (F5 · 여성 고음)</option>
+            <option value="3옥 파#">3옥타브 파# (F#5)</option>
+            <option value="3옥 솔">3옥타브 솔 (G5 · 초고음)</option>
+          </select>
+        </div>
+        <button type="button" id="filterMyRangeBtn" class="btn btn-soft-accent full-width">
+          🎯 내 음역대로 원키 가능한 곡만 모아보기
+        </button>
       </section>
 
-      <!-- Sync Status & Manual Refresh -->
+      <!-- 2. 내 노래방 애창곡 / 예약 찜 목록 -->
+      <section class="sidebar-card">
+        <div class="sidebar-card-header-between">
+          <div class="sidebar-card-header">
+            <span class="card-icon">⭐</span>
+            <h3 class="card-title">내 애창곡 찜 목록</h3>
+          </div>
+          <span class="mini-pill" id="sidebarFavCount">0곡</span>
+        </div>
+        <p class="card-desc">곡 카드 우측의 <strong>♥ 버튼</strong>을 눌러 노래방에서 부를 곡들을 미리 담아두세요.</p>
+        <div id="favListContainer" class="fav-list-container">
+          <!-- Dynamically rendered favorite songs -->
+        </div>
+        <div class="fav-actions" id="favActionsBar">
+          <button type="button" id="copyAllFavsBtn" class="btn btn-secondary">📋 찜 목록 전체 복사 (카톡 메모용)</button>
+          <button type="button" id="clearAllFavsBtn" class="btn btn-ghost-danger">비우기</button>
+        </div>
+      </section>
+
+      <!-- 3. 오늘 뭐 부르지? 랜덤 선곡 룰렛 -->
       <section class="sidebar-card">
         <div class="sidebar-card-header">
-          <span class="card-icon">🔄</span>
-          <h3 class="card-title">나무위키 매일 10시 동기화</h3>
+          <span class="card-icon">🎲</span>
+          <h3 class="card-title">오늘 뭐 부르지? 랜덤 선곡</h3>
         </div>
-        <dl class="sync-info-list">
-          <div class="info-row">
-            <dt>동기화 주기</dt>
-            <dd>매일 오전 10:00 KST (자동 올추가)</dd>
-          </div>
-          <div class="info-row">
-            <dt>최종 동기화</dt>
-            <dd id="sidebarLastSync">확인 중...</dd>
-          </div>
-          <div class="info-row">
-            <dt>총 등록 곡수</dt>
-            <dd id="sidebarTotalSongs">--곡</dd>
-          </div>
-          <div class="info-row">
-            <dt>크롤링 모델</dt>
-            <dd>Gemini 3.8 Flash + FireCrawl</dd>
-          </div>
-        </dl>
-        <button type="button" id="triggerSyncBtn" class="btn btn-secondary sync-check-btn">
-          <span>🔄 지금 나무위키 신곡 확인</span>
-        </button>
-        <div id="syncFeedback" class="sync-feedback hidden"></div>
+        <p class="card-desc">노래방에서 선곡이 고민될 때 조건별로 한 곡을 추천해 드립니다.</p>
+        <div class="random-btn-grid">
+          <button type="button" class="tag-btn random-pick-trigger" data-mode="all">🎲 전체 랜덤</button>
+          <button type="button" class="tag-btn random-pick-trigger" data-mode="easy">🌿 2옥 이하 편한 곡</button>
+          <button type="button" class="tag-btn random-pick-trigger" data-mode="mid">🎵 3옥 초중반 인기곡</button>
+          <button type="button" class="tag-btn random-pick-trigger" data-mode="fav">⭐ 내 찜 목록 중 랜덤</button>
+        </div>
+        <div id="randomResultBox" class="random-result-box hidden"></div>
       </section>
 
-      <!-- Popular Artist / Composer Quick Search -->
+      <!-- 4. 최근 복사한 노래방 번호 기록 -->
+      <section class="sidebar-card">
+        <div class="sidebar-card-header">
+          <span class="card-icon">🕒</span>
+          <h3 class="card-title">최근 복사한 번호</h3>
+        </div>
+        <div id="recentCopiedList" class="recent-copied-list">
+          <p class="empty-mini-text">아직 복사한 노래방 번호가 없어요.</p>
+        </div>
+      </section>
+
+      <!-- 5. 인기 일본 아티스트 / 프로듀서 빠른 검색 -->
       <section class="sidebar-card">
         <div class="sidebar-card-header">
           <span class="card-icon">🎸</span>
-          <h3 class="card-title">인기 일본 아티스트 / 작곡가</h3>
+          <h3 class="card-title">인기 아티스트 · 작곡가 한 번에 보기</h3>
         </div>
         <div class="producer-tags" id="producerTags">
           <button type="button" class="tag-btn" data-producer="YOASOBI">YOASOBI</button>
@@ -210,18 +286,76 @@
           <button type="button" class="tag-btn" data-producer="Aimer">Aimer</button>
           <button type="button" class="tag-btn" data-producer="RADWIMPS">RADWIMPS</button>
           <button type="button" class="tag-btn" data-producer="Ado">Ado</button>
-          <button type="button" class="tag-btn" data-producer="후지이 카제">후지이 카제</button>
           <button type="button" class="tag-btn" data-producer="요루시카">요루시카</button>
-          <button type="button" class="tag-btn" data-producer="back number">back number</button>
           <button type="button" class="tag-btn" data-producer="DECO*27">DECO*27</button>
+          <button type="button" class="tag-btn" data-producer="하츠네 미쿠">하츠네 미쿠</button>
+          <button type="button" class="tag-btn" data-producer="계속 한밤중이면 좋을 텐데">즛토마요</button>
         </div>
+      </section>
+
+      <!-- 6. TJ 신곡 투표/신청 & 사이트 공유 -->
+      <section class="sidebar-card">
+        <div class="sidebar-card-header" id="voteToggleBtn" style="cursor:pointer">
+          <span class="card-icon">🗳️</span>
+          <h3 class="card-title">TJ 반주곡 신곡 신청 · 친구 공유</h3>
+        </div>
+        <p class="card-desc">아직 수록되지 않은 일본곡을 TJ미디어에 신청하거나 친구에게 검색기를 공유해 보세요.</p>
+
+        <form id="voteForm" class="vote-form" onsubmit="return false;">
+          <div class="form-group">
+            <label for="v_title">노래 제목</label>
+            <input type="text" id="v_title" placeholder="신청할 노래 제목 입력" />
+          </div>
+          <div class="form-group">
+            <label for="v_singer">가수 / 작곡가</label>
+            <input type="text" id="v_singer" placeholder="가수 또는 작곡가 입력" />
+          </div>
+          <button type="button" id="tjGoBtn" class="btn btn-tj-apply tj-go-btn">
+            <span>TJ 미디어에 반주 신청하기</span>
+            <span class="btn-arrow">↗</span>
+          </button>
+        </form>
+
+        <button type="button" id="shareSiteBtn" class="btn btn-secondary full-width" style="margin-top:0.65rem;">
+          🔗 카톡 · 인스타로 이 사이트 공유하기
+        </button>
+      </section>
+
+      <!-- 7. 나무위키 매일 10시 동기화 정보 -->
+      <section class="sidebar-card">
+        <div class="sidebar-card-header">
+          <span class="card-icon">🔄</span>
+          <h3 class="card-title">데이터베이스 자동 동기화</h3>
+        </div>
+        <dl class="sync-info-list">
+          <div class="info-row">
+            <dt>동기화 주기</dt>
+            <dd>매일 오전 10:00 (신곡 자동 올추가)</dd>
+          </div>
+          <div class="info-row">
+            <dt>최종 업데이트</dt>
+            <dd id="sidebarLastSync">확인 중...</dd>
+          </div>
+          <div class="info-row">
+            <dt>총 수록 곡수</dt>
+            <dd id="sidebarTotalSongs">--곡</dd>
+          </div>
+          <div class="info-row">
+            <dt>음역 출처</dt>
+            <dd>vocal-range.com · ボカロ音域wiki 실측</dd>
+          </div>
+        </dl>
+        <button type="button" id="triggerSyncBtn" class="btn btn-secondary sync-check-btn">
+          <span>🔄 지금 최신 수록곡 확인하기</span>
+        </button>
+        <div id="syncFeedback" class="sync-feedback hidden"></div>
       </section>
     </div>
   </aside>
 
   <!-- Toast Notification -->
   <div id="toast" class="toast hidden" role="status" aria-live="polite">
-    <span class="toast-icon">📋</span>
+    <span class="toast-icon">✨</span>
     <span class="toast-message" id="toastMessage">번호가 복사되었습니다!</span>
   </div>
 
@@ -229,7 +363,7 @@
   <footer class="site-footer">
     <div class="footer-container">
       <p class="footer-text">
-        출처 : <a href="https://namu.wiki/w/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D" target="_blank" rel="noopener noreferrer">나무위키</a> · 매일 10:00 자동 동기화
+        수록곡 출처 : <a href="https://namu.wiki/w/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D" target="_blank" rel="noopener noreferrer">나무위키</a> · 음역 데이터 : <a href="https://vocal-range.com/" target="_blank" rel="noopener noreferrer">J-POP 音域の沼</a> / ボカロ音域調査wiki · 매일 10:00 자동 동기화
       </p>
     </div>
   </footer>
