@@ -1,0 +1,22 @@
+{
+  "lastSyncedAt": "2026-11-04T02:20:19.136Z",
+  "lastSyncStatus": "success",
+  "totalSongs": 402,
+  "newlyAddedCount": 0,
+  "newlyAddedSongs": [],
+  "sources": [
+    "https://namu.wiki/w/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D",
+    "https://namu.wiki/w/YOASOBI/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D",
+    "https://namu.wiki/w/%EC%9A%94%EB%84%A4%EC%A6%88%20%EC%BC%84%EC%8B%9C/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D",
+    "https://namu.wiki/w/Official%E9%AB%AD%E7%94%B7dism/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D",
+    "https://namu.wiki/w/Mrs.%20GREEN%20APPLE/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D",
+    "https://namu.wiki/w/%EC%95%84%EC%9D%B4%EB%AC%AD/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D",
+    "https://namu.wiki/w/%EC%9C%A0%EC%9A%B0%EB%A6%AC(%EA%B0%80%EC%88%98)/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D",
+    "https://namu.wiki/w/Vaundy/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D",
+    "https://namu.wiki/w/%EC%95%A0%EB%8B%88%EB%A9%94%EC%9D%B4%EC%85%98%20%EC%9D%8C%EC%95%85/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D",
+    "https://namu.wiki/w/%EC%9A%B0%ED%83%80%EC%9D%B4%ED%85%8C%20%EC%98%A4%EB%A6%AC%EC%A7%80%EB%84%90%20%EA%B3%A1/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D",
+    "https://namu.wiki/w/%EC%9D%8C%EC%84%B1%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%20%EC%98%A4%EB%A6%AC%EC%A7%80%EB%84%90%20%EA%B3%A1/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D"
+  ],
+  "schedule": "매일 10:00 KST (CRON_TZ=Asia/Seoul 0 10 * * *)",
+  "engine": "gemini-3.8-flash + FireCrawl"
+}

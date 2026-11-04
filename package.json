@@ -1,0 +1,17 @@
+{
+  "name": "karaoke-search",
+  "version": "1.0.0",
+  "description": "Japanese / Vocaloid Karaoke Search Web Application with daily Namuwiki sync",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/dev-server.mjs",
+    "sync": "node scripts/sync-namuwiki.mjs",
+    "parse": "node scripts/parse-namuwiki.mjs"
+  },
+  "dependencies": {
+    "@google/genai": "^2.29.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

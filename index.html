@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>일본곡 노래방 검색기</title>
+  <meta name="description" content="TJ/금영 모든 일본곡 노래방 번호, 최고음(옥타브/음계 자동 변환), 가수, 작곡가 실시간 검색기. 나무위키 매일 10:00 자동 동기화.">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="header-brand" id="brandBtn" role="button" tabindex="0" title="클릭시 검색 및 필터 초기화">
+        <div class="brand-title-wrap">
+          <span class="brand-icon">🎤</span>
+          <h1 class="brand-title">일본곡 검색</h1>
+        </div>
+        <div class="brand-badges">
+          <span class="badge badge-count" id="badgeSongCount">총 --곡 수록</span>
+          <span class="badge badge-sync" id="badgeLastSync" title="매일 10:00 KST 자동 동기화">매일 10:00 동기화</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-menu" id="menuBtn" aria-label="메뉴 열기">
+          <span class="menu-icon">☰</span>
+          <span class="menu-text">메뉴</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+    <!-- Search Section -->
+    <section class="search-section">
+      <div class="search-box-wrap">
+        <form id="searchForm" class="search-input-box" onsubmit="return false;">
+          <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="8.5" cy="8.5" r="5.5" />
+            <path d="M12.5 12.5L17.5 17.5" stroke-linecap="round" />
+          </svg>
+          <input
+            type="text"
+            id="searchInput"
+            name="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="제목, 가수, 작곡가, 번호(TJ/KY), 최고음 검색 (예: 3옥 도#, C#5)"
+            aria-label="일본곡 노래방 검색"
+          />
+          <button type="button" id="clearBtn" class="clear-btn hidden" aria-label="검색어 지우기">✕</button>
+        </form>
+      </div>
+
+      <!-- Quick Filter Chips -->
+      <div class="filter-chips-scroll" role="toolbar" aria-label="빠른 필터">
+        <div class="filter-chips" id="filterChips">
+          <button type="button" class="chip active" data-filter="all">전체 일본곡</button>
+          <button type="button" class="chip" data-filter="pitch-3up">3옥 이상</button>
+          <button type="button" class="chip" data-filter="pitch-2down">2옥 이하</button>
+          <button type="button" class="chip" data-filter="has-tj">TJ 수록</button>
+          <button type="button" class="chip" data-filter="has-ky">금영 수록</button>
+          <button type="button" class="chip" data-filter="artist:YOASOBI">YOASOBI</button>
+          <button type="button" class="chip" data-filter="artist:요네즈 켄시|하치">요네즈 켄시</button>
+          <button type="button" class="chip" data-filter="artist:Official髭男dism">Official髭男dism</button>
+          <button type="button" class="chip" data-filter="artist:Mrs. GREEN APPLE">Mrs. GREEN APPLE</button>
+          <button type="button" class="chip" data-filter="artist:아이묭">아이묭</button>
+          <button type="button" class="chip" data-filter="artist:유우리">유우리</button>
+          <button type="button" class="chip" data-filter="artist:Vaundy">Vaundy</button>
+          <button type="button" class="chip" data-filter="artist:Ado">Ado</button>
+        </div>
+      </div>
+
+      <!-- Control Toolbar: Result Counter & Sort -->
+      <div class="controls-bar">
+        <div class="result-stats">
+          <span class="count-number" id="resultCount">0</span>
+          <span class="count-label">개의 일본곡 검색됨</span>
+          <span class="pitch-sort-badge hidden" id="pitchSortNotice">🎵 최고음 낮은순 자동 정렬 적용됨</span>
+        </div>
+        <div class="sort-selector-wrap">
+          <label for="sortSelect" class="sort-label">정렬</label>
+          <select id="sortSelect" class="sort-select">
+            <option value="korean-asc">가나다순 (제목)</option>
+            <option value="pitch-asc">최고음 낮은순</option>
+            <option value="pitch-desc">최고음 높은순</option>
+            <option value="tj-asc">TJ 번호순</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Note Notation Banner -->
+      <aside class="legend-banner">
+        <span class="legend-icon">💡</span>
+        <span class="legend-text">
+          반주곡 기호 안내: <strong>[ⓗ]</strong> 60시리즈/필통 등 특정 기기 전용 · <strong>[ⓢ]</strong> LiVEN/Q500R 전용 번호입니다. 번호를 클릭하면 복사됩니다.
+        </span>
+      </aside>
+    </section>
+
+    <!-- Card List Section -->
+    <section class="card-list-section">
+      <div id="cardList" class="card-list" aria-live="polite">
+        <!-- Song cards rendered dynamically -->
+      </div>
+
+      <!-- Loading skeleton -->
+      <div id="loadingSkeleton" class="loading-skeleton">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-icon">🔍</div>
+        <h3 class="empty-title">일치하는 곡을 찾을 수 없습니다</h3>
+        <p class="empty-desc">검색어 철자, 최고음 표기(예: 3옥 도#, C#5), 또는 필터 설정을 확인해보세요.</p>
+        <button type="button" id="emptyResetBtn" class="btn btn-primary">검색 초기화</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Right Slide-out Sidebar & Backdrop Overlay -->
+  <div id="overlay" class="overlay hidden" tabindex="-1"></div>
+  <aside id="sidebar" class="sidebar" aria-hidden="true" role="dialog" aria-label="메뉴 및 바로가기">
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">메뉴</h2>
+      <button type="button" id="sidebarCloseBtn" class="sidebar-close" aria-label="메뉴 닫기">✕</button>
+    </div>
+
+    <div class="sidebar-content">
+      <!-- TJ Song Application / Vote Section -->
+      <section class="sidebar-card">
+        <div class="sidebar-card-header" id="voteToggleBtn" style="cursor:pointer">
+          <span class="card-icon">🗳️</span>
+          <h3 class="card-title">TJ 신곡 투표/신청</h3>
+        </div>
+        <p class="card-desc">노래방에 아직 없는 일본곡을 TJ미디어 반주곡 신청 페이지로 바로 전송합니다.</p>
+
+        <form id="voteForm" class="vote-form" onsubmit="return false;">
+          <div class="form-group">
+            <label for="v_title">노래 제목</label>
+            <input type="text" id="v_title" placeholder="노래 제목 입력" />
+          </div>
+          <div class="form-group">
+            <label for="v_singer">가수 / 작곡가</label>
+            <input type="text" id="v_singer" placeholder="가수 또는 작곡가 입력" />
+          </div>
+          <button type="button" id="tjGoBtn" class="btn btn-tj-apply tj-go-btn">
+            <span>TJ에 신청하기</span>
+            <span class="btn-arrow">↗</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Sync Status & Manual Refresh -->
+      <section class="sidebar-card">
+        <div class="sidebar-card-header">
+          <span class="card-icon">🔄</span>
+          <h3 class="card-title">나무위키 매일 10시 동기화</h3>
+        </div>
+        <dl class="sync-info-list">
+          <div class="info-row">
+            <dt>동기화 주기</dt>
+            <dd>매일 오전 10:00 KST (자동 올추가)</dd>
+          </div>
+          <div class="info-row">
+            <dt>최종 동기화</dt>
+            <dd id="sidebarLastSync">확인 중...</dd>
+          </div>
+          <div class="info-row">
+            <dt>총 등록 곡수</dt>
+            <dd id="sidebarTotalSongs">--곡</dd>
+          </div>
+          <div class="info-row">
+            <dt>크롤링 모델</dt>
+            <dd>Gemini 3.8 Flash + FireCrawl</dd>
+          </div>
+        </dl>
+        <button type="button" id="triggerSyncBtn" class="btn btn-secondary sync-check-btn">
+          <span>🔄 지금 나무위키 신곡 확인</span>
+        </button>
+        <div id="syncFeedback" class="sync-feedback hidden"></div>
+      </section>
+
+      <!-- Popular Artist / Composer Quick Search -->
+      <section class="sidebar-card">
+        <div class="sidebar-card-header">
+          <span class="card-icon">🎸</span>
+          <h3 class="card-title">인기 일본 아티스트 / 작곡가</h3>
+        </div>
+        <div class="producer-tags" id="producerTags">
+          <button type="button" class="tag-btn" data-producer="YOASOBI">YOASOBI</button>
+          <button type="button" class="tag-btn" data-producer="요네즈 켄시">요네즈 켄시</button>
+          <button type="button" class="tag-btn" data-producer="Official髭男dism">Official髭男dism</button>
+          <button type="button" class="tag-btn" data-producer="Mrs. GREEN APPLE">Mrs. GREEN APPLE</button>
+          <button type="button" class="tag-btn" data-producer="아이묭">아이묭</button>
+          <button type="button" class="tag-btn" data-producer="유우리">유우리</button>
+          <button type="button" class="tag-btn" data-producer="Vaundy">Vaundy</button>
+          <button type="button" class="tag-btn" data-producer="King Gnu">King Gnu</button>
+          <button type="button" class="tag-btn" data-producer="LiSA">LiSA</button>
+          <button type="button" class="tag-btn" data-producer="Aimer">Aimer</button>
+          <button type="button" class="tag-btn" data-producer="RADWIMPS">RADWIMPS</button>
+          <button type="button" class="tag-btn" data-producer="Ado">Ado</button>
+          <button type="button" class="tag-btn" data-producer="후지이 카제">후지이 카제</button>
+          <button type="button" class="tag-btn" data-producer="요루시카">요루시카</button>
+          <button type="button" class="tag-btn" data-producer="back number">back number</button>
+          <button type="button" class="tag-btn" data-producer="DECO*27">DECO*27</button>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite">
+    <span class="toast-icon">📋</span>
+    <span class="toast-message" id="toastMessage">번호가 복사되었습니다!</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p class="footer-text">
+        출처 : <a href="https://namu.wiki/w/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D" target="_blank" rel="noopener noreferrer">나무위키</a> · 매일 10:00 자동 동기화
+      </p>
+    </div>
+  </footer>
+
+  <script src="script.js" type="module"></script>
+</body>
+</html>
