@@ -929,7 +929,7 @@ input[type="search"]::-webkit-search-results-decoration {
   box-shadow: 0 0 0 3px var(--accent-primary-soft), var(--shadow-pop);
 }
 
-/* Row 1: Clean Title + Subtitle & Lightweight Heart Action */
+/* Row 1: 2-Line Reserved Title Group (Left) + Unified Pitch Capsule & Heart (Right) */
 .card-top {
   display: flex;
   align-items: flex-start;
@@ -942,37 +942,52 @@ input[type="search"]::-webkit-search-results-decoration {
 .card-title-group {
   flex: 1;
   min-width: 0;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   overflow: hidden;
 }
 
 .card-title {
   font-family: var(--font-display);
-  font-size: 1.06rem; /* ~17px */
+  font-size: 1.05rem; /* ~16.8px */
   font-weight: 700;
-  line-height: 1.34;
+  line-height: 1.32;
   letter-spacing: -0.02em;
   color: var(--text-primary);
-  word-break: keep-all;
-  overflow-wrap: break-word;
+}
+
+.card-title .main-title {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-title .sub-title {
   font-family: var(--font-sans);
   display: block;
-  font-size: 0.8125rem; /* 13px */
+  font-size: 0.8rem; /* 12.8px */
   font-weight: 500;
   color: var(--text-muted);
-  margin-top: 0.14rem;
+  margin-top: 0.12rem;
   line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.card-title .sub-title.empty-sub {
+  opacity: 0;
+  user-select: none;
+  pointer-events: none;
+}
+
 .card-top-right {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.32rem;
   flex-shrink: 0;
 }
 
@@ -980,9 +995,9 @@ input[type="search"]::-webkit-search-results-decoration {
   display: inline-flex;
   align-items: center;
   height: 24px;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  padding: 0 0.52rem;
+  padding: 0 0.48rem;
   border-radius: var(--radius-pill);
   background-color: var(--accent-mint-bg);
   color: var(--accent-mint);
@@ -998,7 +1013,6 @@ input[type="search"]::-webkit-search-results-decoration {
 .btn-fav-card {
   width: 32px;
   height: 32px;
-  margin-top: -2px;
   margin-right: -4px;
   border-radius: 50%;
   background-color: transparent;
@@ -1022,7 +1036,7 @@ input[type="search"]::-webkit-search-results-decoration {
   background-color: var(--tj-red-bg);
 }
 
-/* Row 2: Single-Line Artist + Listen Icon & Unified Pitch Stepper Capsule */
+/* Row 2: Full-Width Asymmetric Artist · Composer + YouTube Listen Pill */
 .card-meta-row {
   display: flex;
   align-items: center;
@@ -1031,29 +1045,22 @@ input[type="search"]::-webkit-search-results-decoration {
   gap: 0.5rem;
   min-width: 0;
   width: 100%;
-}
-
-.card-artist-wrap {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  min-width: 0;
-  flex: 1 1 auto;
-  overflow: hidden;
+  padding-bottom: 0.08rem;
 }
 
 .card-artist-line {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.28rem;
+  gap: 0.32rem;
   min-width: 0;
+  flex: 1 1 auto;
   overflow: hidden;
   white-space: nowrap;
 }
 
 .artist-chip-link {
   color: var(--text-secondary);
-  font-size: 0.84rem; /* 13.5px */
+  font-size: 0.85rem; /* 13.6px */
   font-weight: 600;
   text-align: left;
   min-width: 0;
@@ -1063,9 +1070,21 @@ input[type="search"]::-webkit-search-results-decoration {
   transition: color var(--transition-fast);
 }
 
+/* Asymmetric Flex Priority: Primary Artist NEVER gets cut off prematurely */
+.artist-chip-link.artist-main {
+  flex-shrink: 0;
+  max-width: 64%;
+}
+
+.artist-chip-link.artist-main.is-solo {
+  max-width: 100%;
+}
+
+/* Secondary Composer truncates first when space is tight */
 .artist-chip-link.composer {
   color: var(--text-muted);
   font-weight: 500;
+  flex: 1 1 auto;
 }
 
 .artist-chip-link:hover {
@@ -1081,42 +1100,50 @@ input[type="search"]::-webkit-search-results-decoration {
 
 .artist-plain {
   color: var(--text-muted);
-  font-size: 0.84rem;
+  font-size: 0.85rem;
 }
 
-.btn-listen-icon {
-  width: 26px;
+.btn-listen-pill {
   height: 26px;
-  border-radius: 50%;
+  padding: 0 0.58rem;
+  border-radius: var(--radius-pill);
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.22rem;
   flex-shrink: 0;
   text-decoration: none !important;
   transition: all var(--transition-fast);
+  white-space: nowrap;
 }
 
-.btn-listen-icon:hover {
+.btn-listen-pill .listen-play-icon {
+  font-size: 0.62rem;
+  color: var(--tj-red);
+}
+
+.btn-listen-pill:hover {
   background-color: var(--tj-red-bg);
   color: var(--tj-text);
   border-color: var(--tj-red-border);
-  transform: scale(1.06);
+  transform: translateY(-1px);
 }
 
 /* Unified Pitch & Key Stepper Capsule ([ −  3옥 도#  + ]) */
 .pitch-stepper-capsule {
   display: inline-flex;
   align-items: center;
-  height: 30px;
+  height: 32px;
   background-color: var(--pitch-bg);
   border: 1px solid var(--pitch-border);
   border-radius: var(--radius-pill);
   padding: 2px;
-  gap: 2px;
+  gap: 1px;
   flex-shrink: 0;
   transition: all var(--transition-fast);
 }
@@ -1132,14 +1159,14 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 .key-step-btn {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--text-secondary);
-  background-color: rgba(255, 255, 255, 0.55);
+  background-color: rgba(255, 255, 255, 0.62);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1148,7 +1175,7 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 [data-theme="soft-dark"] .key-step-btn {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.09);
 }
 
 .key-step-btn:hover {
@@ -1163,25 +1190,25 @@ input[type="search"]::-webkit-search-results-decoration {
 .pitch-readout-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0 0.45rem;
-  height: 24px;
+  gap: 0.22rem;
+  padding: 0 0.42rem;
+  height: 26px;
   border-radius: var(--radius-pill);
   white-space: nowrap;
 }
 
 .pitch-shift-tag {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
   color: var(--accent-mint);
   background-color: var(--bg-card);
-  padding: 0.04rem 0.32rem;
+  padding: 0.04rem 0.3rem;
   border-radius: var(--radius-pill);
 }
 
 .pitch-kor {
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: var(--pitch-text);
   letter-spacing: -0.01em;
@@ -1196,9 +1223,9 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 .pitch-empty-pill {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--text-dim);
-  padding: 0.2rem 0.55rem;
+  padding: 0.2rem 0.52rem;
   background-color: var(--bg-surface);
   border-radius: var(--radius-pill);
 }
@@ -1208,7 +1235,7 @@ input[type="search"]::-webkit-search-results-decoration {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
-  padding-top: 0.1rem;
+  padding-top: 0.05rem;
   width: 100%;
   min-width: 0;
 }
@@ -1248,11 +1275,32 @@ input[type="search"]::-webkit-search-results-decoration {
 
 .num-badge .num-val {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
   letter-spacing: 0.01em;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.num-suffix-pill {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 0.12rem 0.32rem;
+  border-radius: 5px;
+  line-height: 1;
+  background-color: rgba(239, 87, 119, 0.16);
+  color: var(--tj-text);
+  flex-shrink: 0;
+}
+
+.num-badge.ky-num .num-suffix-pill {
+  background-color: rgba(75, 123, 236, 0.16);
+  color: var(--ky-text);
 }
 
 .num-badge .copy-icon {
@@ -2029,12 +2077,16 @@ body[data-machine-mode="ky"] .num-badge.tj-num {
 
   .song-card {
     padding: 0.92rem 1rem;
-    gap: 0.6rem;
+    gap: 0.55rem;
     border-radius: 18px;
   }
 
+  .card-title-group {
+    min-height: 40px;
+  }
+
   .card-title {
-    font-size: 1.02rem; /* ~16.3px */
+    font-size: 1.01rem; /* ~16.2px */
   }
 
   .card-title .sub-title {
@@ -2042,17 +2094,21 @@ body[data-machine-mode="ky"] .num-badge.tj-num {
   }
 
   .pitch-stepper-capsule {
-    height: 28px;
+    height: 30px;
   }
 
   .key-step-btn {
-    width: 24px;
-    height: 24px;
-    font-size: 0.82rem;
+    width: 26px;
+    height: 26px;
+    font-size: 0.85rem;
   }
 
   .pitch-kor {
     font-size: 0.8rem;
+  }
+
+  .artist-chip-link.artist-main {
+    max-width: 60%;
   }
 
   .num-badge {

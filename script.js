@@ -196,16 +196,49 @@ function getKeyRecommendation(songPitch) {
 
 /**
  * Format song title into clean Korean title + parenthesized-free Japanese subtitle
+ * Reserves 2-line cadence with .empty-sub so all cards in a row share an identical baseline
  */
 function formatSongTitle(title) {
-  const raw = String(title || '');
+  const raw = String(title || '').replace(/\\\*/g, '*');
   const idx = raw.indexOf('(');
   if (idx > 0 && raw.endsWith(')')) {
     const main = escapeHtml(raw.slice(0, idx).trim());
     const subInner = escapeHtml(raw.slice(idx + 1, -1).trim());
     return `<span class="main-title">${main}</span><span class="sub-title">${subInner}</span>`;
   }
-  return `<span class="main-title">${escapeHtml(raw)}</span>`;
+  return `<span class="main-title">${escapeHtml(raw)}</span><span class="sub-title empty-sub" aria-hidden="true">&nbsp;</span>`;
+}
+
+function cleanArtistText(str) {
+  return String(str || '').replace(/\\\*/g, '*').trim();
+}
+
+function formatArtistDisplay(str) {
+  const cleaned = cleanArtistText(str);
+  // Strip verbose parenthesized kanji/romanization on card face if primary name precedes it
+  const stripped = cleaned.replace(/\s*\([^)]*\)/g, '').trim();
+  return stripped || cleaned;
+}
+
+function normalizeArtistName(name) {
+  return cleanArtistText(name)
+    .replace(/\(.*?\)/g, '')
+    .replace(/\[.*?\]/g, '')
+    .replace(/\s+/g, '')
+    .toLowerCase();
+}
+
+function parseKaraokeNumber(rawNum) {
+  if (!rawNum || rawNum === 'XXX' || rawNum === '-') {
+    return { cleanNum: '', displayNum: '미수록', suffixTag: null, disabled: 'disabled' };
+  }
+  const str = String(rawNum).trim();
+  const clean = str.replace(/[ⓗⓢ]/g, '').trim();
+  let suffixTag = null;
+  if (str.includes('ⓗ')) suffixTag = 'HD';
+  else if (str.includes('ⓢ')) suffixTag = 'MR';
+
+  return { cleanNum: clean, displayNum: clean, suffixTag, disabled: '' };
 }
 
 function escapeHtml(str) {
@@ -421,23 +454,29 @@ function buildPitchMarkup(song) {
 }
 
 function formatArtistLine(song) {
-  const artist = (song.artist || '').trim();
-  const composer = (song.composer || '').trim();
-  const hasArtist = artist && artist !== '-';
-  const hasComposer = composer && composer !== '-' && composer !== artist;
+  const rawArtist = cleanArtistText(song.artist);
+  const rawComposer = cleanArtistText(song.composer);
+  const dispArtist = formatArtistDisplay(rawArtist);
+  const dispComposer = formatArtistDisplay(rawComposer);
+
+  const hasArtist = dispArtist && dispArtist !== '-';
+  const normA = normalizeArtistName(rawArtist);
+  const normC = normalizeArtistName(rawComposer);
+  const isDuplicate = !dispComposer || dispComposer === '-' || normA === normC || (normA && normC && (normA.includes(normC) || normC.includes(normA)));
+  const hasComposer = !isDuplicate;
 
   if (hasArtist && hasComposer) {
     return `
-      <button type="button" class="artist-chip-link" data-quick-search="${escapeHtml(artist)}" title="${escapeHtml(artist)} 곡 모아보기">${escapeHtml(artist)}</button>
+      <button type="button" class="artist-chip-link artist-main" data-quick-search="${escapeHtml(dispArtist)}" title="가수: ${escapeHtml(rawArtist)} (클릭시 모아보기)">${escapeHtml(dispArtist)}</button>
       <span class="artist-divider">·</span>
-      <button type="button" class="artist-chip-link composer" data-quick-search="${escapeHtml(composer)}" title="작곡가 ${escapeHtml(composer)} 곡 모아보기">${escapeHtml(composer)}</button>
+      <button type="button" class="artist-chip-link composer" data-quick-search="${escapeHtml(dispComposer)}" title="작곡: ${escapeHtml(rawComposer)} (클릭시 모아보기)">${escapeHtml(dispComposer)}</button>
     `;
   }
   if (hasArtist) {
-    return `<button type="button" class="artist-chip-link" data-quick-search="${escapeHtml(artist)}" title="${escapeHtml(artist)} 곡 모아보기">${escapeHtml(artist)}</button>`;
+    return `<button type="button" class="artist-chip-link artist-main is-solo" data-quick-search="${escapeHtml(dispArtist)}" title="가수: ${escapeHtml(rawArtist)} (클릭시 모아보기)">${escapeHtml(dispArtist)}</button>`;
   }
   if (hasComposer) {
-    return `<button type="button" class="artist-chip-link composer" data-quick-search="${escapeHtml(composer)}" title="작곡가 ${escapeHtml(composer)} 곡 모아보기">${escapeHtml(composer)}</button>`;
+    return `<button type="button" class="artist-chip-link composer is-solo" data-quick-search="${escapeHtml(dispComposer)}" title="작곡: ${escapeHtml(rawComposer)} (클릭시 모아보기)">${escapeHtml(dispComposer)}</button>`;
   }
   return `<span class="artist-plain">-</span>`;
 }
@@ -484,16 +523,14 @@ function renderSongs() {
       const isHighPitch = pitchRank.valid && pitchRank.score >= 330; // >= 3옥 파
       const isFav = favoriteIds.has(Number(song.id));
 
-      const tjDisplay = song.tj_num && song.tj_num !== 'XXX' ? escapeHtml(song.tj_num) : '미수록';
-      const kyDisplay = song.ky_num && song.ky_num !== 'XXX' ? escapeHtml(song.ky_num) : '미수록';
-      const tjDisabled = tjDisplay === '미수록' ? 'disabled' : '';
-      const kyDisabled = kyDisplay === '미수록' ? 'disabled' : '';
+      const tjInfo = parseKaraokeNumber(song.tj_num);
+      const kyInfo = parseKaraokeNumber(song.ky_num);
 
-      const ytOriginalUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${song.title} ${song.artist || ''}`)}`;
+      const ytOriginalUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${song.title} ${cleanArtistText(song.artist)}`)}`;
 
       return `
         <article class="song-card ${isHighPitch ? 'high-pitch' : ''}" data-song-id="${song.id}">
-          <!-- Row 1: Clean Title + Subtitle & Lightweight Heart -->
+          <!-- Row 1: 2-Line Reserved Title Group (Left) + Unified Pitch Stepper & Heart (Right) -->
           <div class="card-top">
             <div class="card-title-group">
               <h3 class="card-title">${formatSongTitle(song.title)}</h3>
@@ -502,44 +539,50 @@ function renderSongs() {
               <span data-advice-box="${song.id}">
                 ${keyAdvice ? `<span class="key-advice-pill ${keyAdvice.isDown ? 'key-down' : ''}">${escapeHtml(keyAdvice.text)}</span>` : ''}
               </span>
+              ${effectivePitch !== '-' ? `
+              <div class="pitch-stepper-capsule ${offset !== 0 ? 'key-shifted' : ''}" data-pitch-capsule="${song.id}" title="최고음: ${escapeHtml(effectivePitch)} (${escapeHtml(converted)}) · 중앙 클릭시 원키 초기화">
+                <button type="button" class="key-step-btn" data-key-step="-1" data-song-id="${song.id}" title="반음 내리기 (♭)" aria-label="반음 내리기">−</button>
+                <button type="button" class="pitch-readout-btn" data-key-reset="${song.id}" title="클릭시 원키로 초기화 (${escapeHtml(converted)})">
+                  ${offsetLabel ? `<span class="pitch-shift-tag">${escapeHtml(offsetLabel)}</span>` : ''}
+                  <strong class="pitch-kor">${escapeHtml(effectivePitch)}</strong>
+                </button>
+                <button type="button" class="key-step-btn" data-key-step="1" data-song-id="${song.id}" title="반음 올리기 (♯)" aria-label="반음 올리기">+</button>
+              </div>
+              ` : `<span class="pitch-empty-pill">음역 미상</span>`}
               <button type="button" class="btn-fav-card ${isFav ? 'active' : ''}" data-fav-id="${song.id}" aria-label="애창곡 찜하기" title="내 애창곡 찜하기">
                 ${isFav ? '♥' : '♡'}
               </button>
             </div>
           </div>
 
-          <!-- Row 2: Single-Line Artist + YouTube Icon & Unified Pitch Stepper Capsule -->
+          <!-- Row 2: Full-Width Artist · Composer (Priority Preserved) + YouTube Listen Pill -->
           <div class="card-meta-row">
-            <div class="card-artist-wrap">
-              <div class="card-artist-line">
-                ${formatArtistLine(song)}
-              </div>
-              <a href="${ytOriginalUrl}" target="_blank" rel="noopener noreferrer" class="btn-listen-icon" title="유튜브에서 노래 듣기" aria-label="유튜브에서 노래 듣기">▶</a>
+            <div class="card-artist-line">
+              ${formatArtistLine(song)}
             </div>
-
-            ${effectivePitch !== '-' ? `
-            <div class="pitch-stepper-capsule ${offset !== 0 ? 'key-shifted' : ''}" data-pitch-capsule="${song.id}" title="최고음: ${escapeHtml(effectivePitch)} (${escapeHtml(converted)}) · 중앙 클릭시 원키 초기화">
-              <button type="button" class="key-step-btn" data-key-step="-1" data-song-id="${song.id}" title="반음 내리기 (♭)" aria-label="반음 내리기">−</button>
-              <button type="button" class="pitch-readout-btn" data-key-reset="${song.id}" title="클릭시 원키로 초기화 (${escapeHtml(converted)})">
-                ${offsetLabel ? `<span class="pitch-shift-tag">${escapeHtml(offsetLabel)}</span>` : ''}
-                <strong class="pitch-kor">${escapeHtml(effectivePitch)}</strong>
-              </button>
-              <button type="button" class="key-step-btn" data-key-step="1" data-song-id="${song.id}" title="반음 올리기 (♯)" aria-label="반음 올리기">+</button>
-            </div>
-            ` : `<span class="pitch-empty-pill">음역 미상</span>`}
+            <a href="${ytOriginalUrl}" target="_blank" rel="noopener noreferrer" class="btn-listen-pill" title="유튜브에서 노래 듣기" aria-label="유튜브에서 노래 듣기">
+              <span class="listen-play-icon">▶</span>
+              <span class="listen-text">듣기</span>
+            </a>
           </div>
 
-          <!-- Row 3: 2-Column Tactile Karaoke Number Buttons -->
+          <!-- Row 3: 2-Column Tactile Karaoke Number Buttons with Crisp HD/MR Micro-Pills -->
           <div class="card-numbers">
-            <button type="button" class="num-badge tj-num ${tjDisabled}" data-copy="${escapeHtml(song.tj_num)}" data-brand="TJ" data-title="${escapeHtml(song.title)}" ${tjDisabled}>
+            <button type="button" class="num-badge tj-num ${tjInfo.disabled}" data-copy="${escapeHtml(tjInfo.cleanNum)}" data-brand="TJ" data-title="${escapeHtml(song.title)}" ${tjInfo.disabled}>
               <span class="brand-tag">TJ</span>
-              <span class="num-val">${tjDisplay}</span>
-              <span class="copy-icon" aria-hidden="true">${tjDisabled ? '' : '⧉'}</span>
+              <span class="num-val">
+                <span>${escapeHtml(tjInfo.displayNum)}</span>
+                ${tjInfo.suffixTag ? `<span class="num-suffix-pill" title="TJ ${tjInfo.suffixTag} 음원">${tjInfo.suffixTag}</span>` : ''}
+              </span>
+              <span class="copy-icon" aria-hidden="true">${tjInfo.disabled ? '' : '⧉'}</span>
             </button>
-            <button type="button" class="num-badge ky-num ${kyDisabled}" data-copy="${escapeHtml(song.ky_num)}" data-brand="KY" data-title="${escapeHtml(song.title)}" ${kyDisabled}>
+            <button type="button" class="num-badge ky-num ${kyInfo.disabled}" data-copy="${escapeHtml(kyInfo.cleanNum)}" data-brand="KY" data-title="${escapeHtml(song.title)}" ${kyInfo.disabled}>
               <span class="brand-tag">KY</span>
-              <span class="num-val">${kyDisplay}</span>
-              <span class="copy-icon" aria-hidden="true">${kyDisabled ? '' : '⧉'}</span>
+              <span class="num-val">
+                <span>${escapeHtml(kyInfo.displayNum)}</span>
+                ${kyInfo.suffixTag ? `<span class="num-suffix-pill" title="KY ${kyInfo.suffixTag} 음원">${kyInfo.suffixTag}</span>` : ''}
+              </span>
+              <span class="copy-icon" aria-hidden="true">${kyInfo.disabled ? '' : '⧉'}</span>
             </button>
           </div>
         </article>

@@ -93,7 +93,7 @@
     "id": 11,
     "title": "겁쟁이 몽블랑 (弱虫モンブラン)",
     "artist": "GUMI",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 도",
     "tj_num": "28370ⓗ",
     "ky_num": "43348"
@@ -138,7 +138,7 @@
     "id": 16,
     "title": "고스트 룰 (ゴーストルール)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 파#",
     "tj_num": "27958",
     "ky_num": "44063"
@@ -624,7 +624,7 @@
     "id": 70,
     "title": "독점욕 (毒占欲)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 레#",
     "tj_num": "68108",
     "ky_num": "44449"
@@ -678,7 +678,7 @@
     "id": 76,
     "title": "라이어 댄스 (ライアーダンス)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 미",
     "tj_num": "68039",
     "ky_num": "44400"
@@ -687,7 +687,7 @@
     "id": 77,
     "title": "래빗 홀 (ラビットホール)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 파#",
     "tj_num": "52520",
     "ky_num": "57757"
@@ -777,7 +777,7 @@
     "id": 87,
     "title": "리그렛 메시지 (リグレットメッセージ)",
     "artist": "카가미네 린",
-    "composer": "mothy\\_악의P",
+    "composer": "mothy*_악의P",
     "pitch": "3옥 솔",
     "tj_num": "26939",
     "ky_num": "43116"
@@ -786,7 +786,7 @@
     "id": 88,
     "title": "리버서블 캠페인 (リバーシブル・キャンペーン)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 파",
     "tj_num": "68052",
     "ky_num": "44397"
@@ -813,7 +813,7 @@
     "id": 91,
     "title": "마시멜로 (マシュマロ)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 레",
     "tj_num": "52564",
     "ky_num": "XXX"
@@ -867,7 +867,7 @@
     "id": 97,
     "title": "만나고 싶어 Seeker (アイタイナシーカー)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 레#",
     "tj_num": "52845",
     "ky_num": "XXX"
@@ -885,7 +885,7 @@
     "id": 99,
     "title": "망상감상대상연맹 (妄想感傷代償連盟)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 레#",
     "tj_num": "28676",
     "ky_num": "44132"
@@ -894,7 +894,7 @@
     "id": 100,
     "title": "망상세 (妄想税)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 레#",
     "tj_num": "28322ⓗ",
     "ky_num": "43875"
@@ -984,7 +984,7 @@
     "id": 110,
     "title": "모니터링 (モ二タリング)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 라",
     "tj_num": "52468",
     "ky_num": "57766"
@@ -1011,7 +1011,7 @@
     "id": 113,
     "title": "모자이크 롤 (モザイクロール)",
     "artist": "GUMI",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 레#",
     "tj_num": "27227",
     "ky_num": "43320"
@@ -1092,7 +1092,7 @@
     "id": 122,
     "title": "방해쟁이 (おじゃま虫)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 도#",
     "tj_num": "68016",
     "ky_num": "44395"
@@ -1119,7 +1119,7 @@
     "id": 125,
     "title": "뱀파이어 (ヴァンパイア)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 솔#",
     "tj_num": "52515",
     "ky_num": "57748"
@@ -1227,7 +1227,7 @@
     "id": 137,
     "title": "불꽃 (ヒバナ)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 레",
     "tj_num": "28747",
     "ky_num": "44200"
@@ -1371,7 +1371,7 @@
     "id": 153,
     "title": "사랑의 말 (愛言葉)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 레",
     "tj_num": "28756",
     "ky_num": "44191"
@@ -1524,7 +1524,7 @@
     "id": 170,
     "title": "소녀해부 (乙女解剖)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "4옥 도#",
     "tj_num": "68034",
     "ky_num": "XXX"
@@ -1605,7 +1605,7 @@
     "id": 179,
     "title": "스트리밍 하트 (ストリーミングハート)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 레#",
     "tj_num": "28753",
     "ky_num": "44198"
@@ -1812,7 +1812,7 @@
     "id": 202,
     "title": "악의 딸 (悪ノ娘)",
     "artist": "카가미네 린",
-    "composer": "mothy\\_악의P",
+    "composer": "mothy*_악의P",
     "pitch": "4옥 도",
     "tj_num": "26906",
     "ky_num": "43058"
@@ -1821,7 +1821,7 @@
     "id": 203,
     "title": "악의 하인 (悪ノ召使)",
     "artist": "카가미네 렌",
-    "composer": "mothy\\_악의P",
+    "composer": "mothy*_악의P",
     "pitch": "3옥 솔#",
     "tj_num": "26944",
     "ky_num": "42950"
@@ -2199,7 +2199,7 @@
     "id": 245,
     "title": "이식보행 (二息歩行)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 도#",
     "tj_num": "27267",
     "ky_num": "43267"
@@ -2507,8 +2507,8 @@
     "artist": "하츠네 미쿠",
     "composer": "흑토끼P",
     "pitch": "3옥 미",
-    "tj_num": "28588ⓗ<br>[\\[삭제됨\\]](https://namu.wiki/w/%EC%9D%8C%EC%84%B1%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%20%EC%98%A4%EB%A6%AC%EC%A7%80%EB%84%90%20%EA%B3%A1/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D#fn-%ec%82%ad%ec%a0%9c%eb%90%a8)",
-    "ky_num": "43437<br>[\\[삭제됨\\]](https://namu.wiki/w/%EC%9D%8C%EC%84%B1%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%20%EC%98%A4%EB%A6%AC%EC%A7%80%EB%84%90%20%EA%B3%A1/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D#fn-%ec%82%ad%ec%a0%9c%eb%90%a8)"
+    "tj_num": "28588ⓗ<br>[*[삭제됨*]](https://namu.wiki/w/%EC%9D%8C%EC%84%B1%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%20%EC%98%A4%EB%A6%AC%EC%A7%80%EB%84%90%20%EA%B3%A1/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D#fn-%ec%82%ad%ec%a0%9c%eb%90%a8)",
+    "ky_num": "43437<br>[*[삭제됨*]](https://namu.wiki/w/%EC%9D%8C%EC%84%B1%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%20%EC%98%A4%EB%A6%AC%EC%A7%80%EB%84%90%20%EA%B3%A1/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D#fn-%ec%82%ad%ec%a0%9c%eb%90%a8)"
   },
   {
     "id": 280,
@@ -2766,7 +2766,7 @@
     "id": 308,
     "title": "텔레파시 (テレパシ)",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 레",
     "tj_num": "52505",
     "ky_num": "57760"
@@ -3288,7 +3288,7 @@
     "id": 366,
     "title": "Heart a la mode",
     "artist": "하츠네 미쿠",
-    "composer": "DECO\\*27",
+    "composer": "DECO**27",
     "pitch": "3옥 레#",
     "tj_num": "28730",
     "ky_num": "XXX"
