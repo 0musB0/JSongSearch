@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GoogleGenAI } from '@google/genai';
@@ -28,10 +29,104 @@ const NAMUWIKI_JAPANESE_URLS = [
 
 const LOCAL_FALLBACK_MD = 'C:\\Users\\LG\\.gemini\\antigravity\\brain\\7db566f1-df77-497b-8fee-239f8203917b\\scratch\\namuwiki_vocaloid_karaoke.md';
 
+// Curated Korean title, artist, composer, pitch metadata for newly released TJ/KY Japanese songs
+const KNOWN_JP_SONG_METADATA = {
+  '90201': { title: '사랑받지 못하더라도 네가 있어 (愛されなくても君がいる)', artist: '하츠네 미쿠', composer: '피노키오피', pitch: '3옥 레#', ky_num: 'XXX' },
+  '90198': { title: '파라볼라 (パラボラ)', artist: 'Official髭男dism', composer: '후지와라 사토시', pitch: '3옥 레#', ky_num: 'XXX' },
+  '90179': { title: '영 -zero- (零-zero-)', artist: 'tuki.', composer: 'tuki.', pitch: '3옥 미', ky_num: 'XXX' },
+  '90195': { title: '전생사과 (転生林檎)', artist: '하츠네 미쿠', composer: '피노키오피', pitch: '3옥 도#', ky_num: 'XXX' },
+  '90194': { title: '이데아가 넘쳐서 잠들 수 없어 (イデアが溢れて 眠れない)', artist: 'Vaundy', composer: 'Vaundy', pitch: '3옥 도#', ky_num: 'XXX' },
+  '90176': { title: '융해 sink (融解sink)', artist: 'Vaundy', composer: 'Vaundy', pitch: '3옥 레', ky_num: 'XXX' },
+  '90209': { title: '좋아 (好き)', artist: '호시노 겐', composer: '호시노 겐', pitch: '2옥 라#', ky_num: 'XXX' },
+  '90208': { title: 'Surges', artist: 'Orangestar feat. 나츠세, 루완', composer: 'Orangestar', pitch: '3옥 파#', ky_num: 'XXX' },
+  '90207': { title: 'Tokimeki', artist: 'Vaundy', composer: 'Vaundy', pitch: '3옥 레', ky_num: 'XXX' },
+  '90205': { title: '도깨비 꽃 (化けの花)', artist: '하츠네 미쿠', composer: '나키소', pitch: '3옥 레#', ky_num: 'XXX' },
+  '90203': { title: 'Brand New', artist: 'Mrs. GREEN APPLE', composer: '오모리 모토키', pitch: '3옥 미', ky_num: 'XXX' },
+  '90171': { title: '100엔 키스 (100円キッス)', artist: 'LET ME KNOW', composer: 'Matty', pitch: '3옥 도', ky_num: 'XXX' },
+  '90187': { title: 'Puppet', artist: '나토리', composer: '나토리', pitch: '3옥 도#', ky_num: 'XXX' },
+  '90186': { title: 'Future Place', artist: "Poppin'Party", composer: '카사이 유타(Elements Garden)', pitch: '3옥 레', ky_num: 'XXX' },
+  '90185': { title: '래그 트레인 (ラグトレイン)', artist: '카아이 유키', composer: '이나바 쿠모리', pitch: '2옥 시', ky_num: '44681' },
+  '90184': { title: 'Bedroom Talk', artist: 'Official髭男dism', composer: '오자사 다이스케', pitch: '3옥 도#', ky_num: 'XXX' },
+  '90182': { title: '계속 러브송 (ずっとラブソング)', artist: 'Vaundy', composer: 'Vaundy', pitch: '3옥 레', ky_num: 'XXX' },
+  '90181': { title: '열이상 (熱異常)', artist: '아다치 레이', composer: '이요와', pitch: '3옥 파#', ky_num: 'XXX' },
+  '90191': { title: '아무것도 없어 (なんもねえ)', artist: '와스레란네에요', composer: '시바타 타카히로', pitch: '3옥 도', ky_num: 'XXX' },
+  '90177': { title: '새벽녘에 올라타서 (夜明け前に飛び乗って)', artist: '하츠네 미쿠', composer: 'MIMI', pitch: '3옥 도#', ky_num: 'XXX' },
+  '90199': { title: '올 나이트 라디오 (オールナイトレディオ)', artist: 'Ado', composer: 'Mitchie M', pitch: '3옥 레', ky_num: 'XXX' },
+  '90175': { title: 'LEMON MELON COOKIE', artist: '하츠네 미쿠', composer: 'TAK', pitch: '3옥 미', ky_num: 'XXX' },
+  '90174': { title: '모에찻카 파이어 (モエチャッカファイア)', artist: '잇세이 (弌誠)', composer: '잇세이 (弌誠)', pitch: '2옥 시', ky_num: 'XXX' },
+  '90202': { title: '아보카도 (アボカド)', artist: 'yonige', composer: '우시마루 아리사', pitch: '3옥 도', ky_num: 'XXX' },
+  '90169': { title: '아이 아이 아 (アイ・アイ・ア)', artist: 'Ado', composer: '키쿠오', pitch: '3옥 파', ky_num: 'XXX' },
+  '90168': { title: '리빙 데드 (リビングデッド)', artist: '나토리', composer: '나토리', pitch: '3옥 도', ky_num: 'XXX' },
+  '90167': { title: '일난 (一難)', artist: 'Penthouse', composer: '나미오카 신타로', pitch: '3옥 미', ky_num: 'XXX' },
+  '90164': { title: '앨리스 (愛麗絲)', artist: '요네즈 켄시', composer: '요네즈 켄시', pitch: '3옥 도#', ky_num: 'XXX' }
+};
+
 const args = process.argv.slice(2);
 const isDryRun = args.includes('--dry-run');
 const isForce = args.includes('--force');
 const isCommit = args.includes('--commit');
+
+/**
+ * 1-A. Fetch live newly added Japanese songs directly from TJ Media official API
+ * Ensures new releases (e.g. added 4 days ago on TJ) are always captured even without FireCrawl API key
+ */
+async function fetchLiveTJJapaneseRows() {
+  const now = new Date();
+  const currentYm = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const prevYm = `${prevDate.getFullYear()}${String(prevDate.getMonth() + 1).padStart(2, '0')}`;
+  const targetMonths = [...new Set([currentYm, prevYm, '202611', '202610'])];
+
+  const rowsByTj = new Map();
+
+  for (const ym of targetMonths) {
+    try {
+      const response = await fetch('https://www.tjmedia.com/legacy/api/newSongOfMonth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+        body: `searchYm=${ym}`
+      });
+      if (!response.ok) continue;
+      const json = await response.json();
+      const items = json?.resultData?.items || [];
+
+      for (const item of items) {
+        const pro = String(item.pro || '').trim();
+        const proNum = Number(pro);
+        // TJ Japanese songs are strictly assigned 90100~90999, 68000~68999, 25000~28999, or 52000~52999
+        // (90000~90099 are Chinese songs, 70000~89999 are Korean/Pop, 91000+ are Korean medley)
+        const isJpNumberRange =
+          (proNum >= 90100 && proNum <= 90999) ||
+          (proNum >= 68000 && proNum <= 68999) ||
+          (proNum >= 25000 && proNum <= 28999) ||
+          (proNum >= 52000 && proNum <= 52999);
+        if (!isJpNumberRange) {
+          continue;
+        }
+
+        const cleanRawTitle = String(item.indexTitle || '')
+          .replace(/\((?:TVアニメ|アニメ|ドラマ|映画|ゲーム|アサヒ飲料|大塚製薬|トヨタ自動車|舞台演劇)[^)]*\)/g, '')
+          .trim();
+
+        const known = KNOWN_JP_SONG_METADATA[pro];
+        rowsByTj.set(pro, {
+          tj_num: pro,
+          ky_num: known?.ky_num || 'XXX',
+          raw_title: known?.title || cleanRawTitle,
+          artist: known?.artist || String(item.indexSong || '-').trim(),
+          composer: known?.composer || String(item.com || '-').trim(),
+          pitch: known?.pitch || 'X',
+          publishdate: item.publishdate || ''
+        });
+      }
+    } catch (err) {
+      console.warn(`[TJ Live API] Failed to fetch ${ym}:`, err.message);
+    }
+  }
+
+  console.log(`[TJ Live API] Fetched ${rowsByTj.size} recent Japanese songs from TJ Media.`);
+  return Array.from(rowsByTj.values());
+}
 
 /**
  * 1. Fetch Namuwiki Japanese Karaoke markdown via FireCrawl or Fallbacks
@@ -216,7 +311,7 @@ function fallbackNormalize(rows, startingId) {
       title: fullTitle,
       artist: r.artist || '-',
       composer: r.composer || '-',
-      pitch: 'X',
+      pitch: r.pitch || 'X',
       tj_num: r.tj_num || 'XXX',
       ky_num: r.ky_num || 'XXX'
     };
@@ -241,24 +336,39 @@ export async function runSync() {
   }
 
   const existingSet = new Set();
+  const existingByTitle = new Map();
   for (const s of existingSongs) {
     if (s.tj_num && s.tj_num !== 'XXX') existingSet.add(`tj:${s.tj_num.replace(/[ⓗⓢ]/g, '').trim()}`);
     if (s.ky_num && s.ky_num !== 'XXX') existingSet.add(`ky:${s.ky_num.trim()}`);
     if (s.title) {
       const mainTitle = s.title.split('(')[0].replace(/\s+/g, '').toLowerCase();
       existingSet.add(`title:${mainTitle}`);
+      existingByTitle.set(mainTitle, s);
     }
   }
 
   const markdown = await fetchNamuwikiMarkdown();
-  const rawRows = extractRawRows(markdown);
-  console.log(`[Crawl] Parsed ${rawRows.length} candidate song rows from Namuwiki.`);
+  const namuRows = extractRawRows(markdown);
+  const liveTjRows = await fetchLiveTJJapaneseRows();
+  const rawRows = [...namuRows, ...liveTjRows];
+  console.log(`[Crawl] Parsed ${namuRows.length} Namuwiki rows + ${liveTjRows.length} live TJ rows (${rawRows.length} total candidates).`);
 
   const newRows = [];
+  let updatedExistingCount = 0;
   for (const row of rawRows) {
     const cleanTj = row.tj_num.replace(/[ⓗⓢ]/g, '').trim();
     const cleanKy = row.ky_num.trim();
-    const cleanTitle = cleanCell(row.raw_title.split('<br>')[0]).replace(/\s+/g, '').toLowerCase();
+    const cleanTitle = cleanCell(row.raw_title.split('<br>')[0].split('(')[0]).replace(/\s+/g, '').toLowerCase();
+
+    // If song exists by title but had missing TJ number (XXX), backfill its new TJ number
+    const matchedSong = existingByTitle.get(cleanTitle);
+    if (matchedSong && (!matchedSong.tj_num || matchedSong.tj_num === 'XXX') && cleanTj !== 'XXX') {
+      matchedSong.tj_num = row.tj_num;
+      existingSet.add(`tj:${cleanTj}`);
+      updatedExistingCount++;
+      console.log(`[Backfill] Updated TJ number for existing song "${matchedSong.title}" -> ${row.tj_num}`);
+      continue;
+    }
 
     const isExisting =
       (cleanTj !== 'XXX' && existingSet.has(`tj:${cleanTj}`)) ||
@@ -267,20 +377,25 @@ export async function runSync() {
 
     if (!isExisting || isForce) {
       newRows.push(row);
+      if (cleanTj !== 'XXX') existingSet.add(`tj:${cleanTj}`);
+      if (cleanKy !== 'XXX') existingSet.add(`ky:${cleanKy}`);
+      existingSet.add(`title:${cleanTitle}`);
     }
   }
 
-  console.log(`[Headroom Diff] Detected ${newRows.length} newly added song(s).`);
+  console.log(`[Headroom Diff] Detected ${newRows.length} newly added song(s) and ${updatedExistingCount} updated TJ number(s).`);
 
   let newlyAddedSongs = [];
-  if (newRows.length > 0) {
-    const nextId = existingSongs.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
-    newlyAddedSongs = await normalizeWithGeminiFlash(newRows, nextId);
-
-    if (!isDryRun && newlyAddedSongs.length > 0) {
+  if (newRows.length > 0 || updatedExistingCount > 0) {
+    if (newRows.length > 0) {
+      const nextId = existingSongs.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
+      newlyAddedSongs = await normalizeWithGeminiFlash(newRows, nextId);
       existingSongs.push(...newlyAddedSongs);
+    }
+
+    if (!isDryRun) {
       await fs.writeFile(SONGS_FILE, JSON.stringify(existingSongs, null, 2), 'utf8');
-      console.log(`[DB Update] Appended ${newlyAddedSongs.length} new songs. Total now: ${existingSongs.length}`);
+      console.log(`[DB Update] Appended ${newlyAddedSongs.length} new songs (${updatedExistingCount} backfilled). Total now: ${existingSongs.length}`);
     }
   } else {
     console.log('[Headroom Diff] All songs are up to date! Zero LLM tokens wasted.');
@@ -299,6 +414,17 @@ export async function runSync() {
 
   if (!isDryRun) {
     await fs.writeFile(META_FILE, JSON.stringify(meta, null, 2), 'utf8');
+  }
+
+  if (isCommit && !isDryRun && (newlyAddedSongs.length > 0 || updatedExistingCount > 0)) {
+    try {
+      console.log('[Git] Committing and pushing updated song database...');
+      execSync('git add data/songs.json data/sync-meta.json scripts/sync-namuwiki.mjs', { cwd: rootDir, stdio: 'inherit' });
+      execSync(`git commit -m "chore(sync): add ${newlyAddedSongs.length} new Japanese karaoke songs (total ${existingSongs.length})"`, { cwd: rootDir, stdio: 'inherit' });
+      execSync('git push origin main', { cwd: rootDir, stdio: 'inherit' });
+    } catch (gitErr) {
+      console.warn('[Git] Auto-commit/push warning:', gitErr.message);
+    }
   }
 
   return meta;
