@@ -1,5 +1,5 @@
 {
-  "lastSyncedAt": "2026-11-09T07:41:26.731Z",
+  "lastSyncedAt": "2026-11-09T07:50:20.376Z",
   "lastSyncStatus": "success",
   "totalSongs": 430,
   "newlyAddedCount": 28,
@@ -9,7 +9,7 @@
       "title": "사랑받지 못하더라도 네가 있어 (愛されなくても君がいる)",
       "artist": "하츠네 미쿠",
       "composer": "피노키오피",
-      "pitch": "3옥 레#",
+      "pitch": "4옥 도",
       "tj_num": "90201",
       "ky_num": "XXX"
     },
@@ -18,7 +18,7 @@
       "title": "파라볼라 (パラボラ)",
       "artist": "Official髭男dism",
       "composer": "후지와라 사토시",
-      "pitch": "3옥 레#",
+      "pitch": "3옥 레",
       "tj_num": "90198",
       "ky_num": "XXX"
     },
@@ -27,7 +27,7 @@
       "title": "영 -zero- (零-zero-)",
       "artist": "tuki.",
       "composer": "tuki.",
-      "pitch": "3옥 미",
+      "pitch": "3옥 솔",
       "tj_num": "90179",
       "ky_num": "XXX"
     },
@@ -36,7 +36,7 @@
       "title": "전생사과 (転生林檎)",
       "artist": "하츠네 미쿠",
       "composer": "피노키오피",
-      "pitch": "3옥 도#",
+      "pitch": "3옥 파",
       "tj_num": "90195",
       "ky_num": "XXX"
     },
@@ -45,7 +45,7 @@
       "title": "이데아가 넘쳐서 잠들 수 없어 (イデアが溢れて 眠れない)",
       "artist": "Vaundy",
       "composer": "Vaundy",
-      "pitch": "3옥 도#",
+      "pitch": "2옥 라",
       "tj_num": "90194",
       "ky_num": "XXX"
     },
@@ -54,7 +54,7 @@
       "title": "융해 sink (融解sink)",
       "artist": "Vaundy",
       "composer": "Vaundy",
-      "pitch": "3옥 레",
+      "pitch": "3옥 도#",
       "tj_num": "90176",
       "ky_num": "XXX"
     },
@@ -63,7 +63,7 @@
       "title": "좋아 (好き)",
       "artist": "호시노 겐",
       "composer": "호시노 겐",
-      "pitch": "2옥 라#",
+      "pitch": "2옥 라",
       "tj_num": "90209",
       "ky_num": "XXX"
     },
@@ -72,7 +72,7 @@
       "title": "Surges",
       "artist": "Orangestar feat. 나츠세, 루완",
       "composer": "Orangestar",
-      "pitch": "3옥 파#",
+      "pitch": "3옥 라",
       "tj_num": "90208",
       "ky_num": "XXX"
     },
@@ -81,7 +81,7 @@
       "title": "Tokimeki",
       "artist": "Vaundy",
       "composer": "Vaundy",
-      "pitch": "3옥 레",
+      "pitch": "3옥 도",
       "tj_num": "90207",
       "ky_num": "XXX"
     },
@@ -90,7 +90,7 @@
       "title": "도깨비 꽃 (化けの花)",
       "artist": "하츠네 미쿠",
       "composer": "나키소",
-      "pitch": "3옥 레#",
+      "pitch": "3옥 파",
       "tj_num": "90205",
       "ky_num": "XXX"
     }
