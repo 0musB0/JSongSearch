@@ -89,12 +89,34 @@ function addBatchim(hangulChar, batchimIndex) {
   return String.fromCharCode(0xac00 + code + batchimIndex);
 }
 
-/**
- * Convert Hepburn Romaji line into natural Korean Hangul Karaoke Pronunciation
- */
-export function romajiToHangul(romaji) {
-  if (!romaji) return '';
-  const s = String(romaji)
+// Particles that attach to the preceding noun/phrase in natural Japanese singing (Bunsetsu)
+const BUNSETSU_PARTICLES = new Set([
+  'wa', 'ga', 'o', 'wo', 'ni', 'no', 'to', 'de', 'mo', 'e', 'ya',
+  'ka', 'ne', 'yo', 'na', 'ze', 'zo', 'sa',
+  'kara', 'made', 'dake', 'shika', 'nara', 'hodo', 'nado', 'kurai', 'gurai',
+  'kedo', 'keredo', 'node', 'noni', 'demo', 'toka', 'tari', 'dari',
+  'niwa', 'dewa', 'towa', 'nowa', 'kana', 'kamo', 'dayo', 'dane', 'nano'
+]);
+
+// Particles that can chain onto another particle (e.g. ni + wa -> niwa, no + ka -> noka, ka + o -> kao)
+const CHAINABLE_PARTICLES = new Set([
+  'wa', 'ga', 'o', 'wo', 'mo', 'ka', 'ne', 'yo', 'na', 'ze', 'zo', 'sa', 'no', 'ni', 'to', 'te', 'de'
+]);
+
+// Verbal/adjectival suffixes & auxiliary verbs that attach to a preceding verb/adj stem when singing
+const BUNSETSU_VERB_SUFFIXES = new Set([
+  'te', 'de', 'ta', 'da', 'tara', 'dara', 'teru', 'deru', 'teiru', 'deiru',
+  'teita', 'deita', 'tetara', 'detara', 'teku', 'deku', 'teiku', 'deiku',
+  'tekita', 'dekita', 'chau', 'chatta', 'jau', 'jatta', 'shimau', 'shimatta',
+  'tai', 'takatta', 'takunai', 'nai', 'nakatta', 'naide', 'nakute', 'naku',
+  'masu', 'mashita', 'masen', 'mashou', 'mashō', 'desu', 'deshita', 'deshou', 'deshō',
+  'reru', 'rareru', 'seru', 'saseru', 'konda', 'komu', 'dasu', 'dashita',
+  'sugiru', 'sugita', 'hoshii', 'mitai', 'rashii', 'kureta', 'kureru', 'ageta', 'ageru'
+]);
+
+function wordRomajiToHangul(wordRomaji) {
+  if (!wordRomaji) return '';
+  const s = String(wordRomaji)
     .toLowerCase()
     .replace(/ā/g, 'aa')
     .replace(/ī/g, 'ii')
@@ -161,7 +183,56 @@ export function romajiToHangul(romaji) {
     out.push(ch);
     i++;
   }
-  return out.join('').replace(/\s+/g, ' ').trim();
+  return out.join('');
+}
+
+/**
+ * Convert Hepburn Romaji line into natural Korean Hangul Karaoke Pronunciation
+ * grouped by natural singing phrasing (Bunsetsu: e.g. "소라니 아루 나니카오 미츠메테타라")
+ */
+export function romajiToHangul(romaji) {
+  if (!romaji) return '';
+  const rawTokens = String(romaji).trim().split(/\s+/).filter(Boolean);
+  if (rawTokens.length === 0) return '';
+
+  const groupedHangul = [];
+  let prevEndedWithParticle = false;
+  let prevCleanTok = '';
+
+  for (let i = 0; i < rawTokens.length; i++) {
+    const rawTok = rawTokens[i];
+    const cleanTok = rawTok.toLowerCase().replace(/[^a-zōūēāī']/g, '');
+    const hangulTok = wordRomajiToHangul(rawTok);
+
+    if (groupedHangul.length === 0) {
+      groupedHangul.push(hangulTok);
+      prevEndedWithParticle = BUNSETSU_PARTICLES.has(cleanTok);
+      prevCleanTok = cleanTok;
+      continue;
+    }
+
+    const isParticle = BUNSETSU_PARTICLES.has(cleanTok);
+    const isChainable = CHAINABLE_PARTICLES.has(cleanTok);
+    const isVerbSuffix = BUNSETSU_VERB_SUFFIXES.has(cleanTok);
+    // Pronouns like nani + ka -> nanika (나니카)
+    const isIndefinitePronoun = (prevCleanTok === 'nani' || prevCleanTok === 'dare' || prevCleanTok === 'doko' || prevCleanTok === 'itsu') &&
+                                (cleanTok === 'ka' || cleanTok === 'mo' || cleanTok === 'demo');
+
+    if (
+      isIndefinitePronoun ||
+      (isParticle && (!prevEndedWithParticle || isChainable)) ||
+      (isVerbSuffix && !prevEndedWithParticle)
+    ) {
+      groupedHangul[groupedHangul.length - 1] += hangulTok;
+      prevEndedWithParticle = isIndefinitePronoun ? false : isParticle;
+    } else {
+      groupedHangul.push(hangulTok);
+      prevEndedWithParticle = isParticle;
+    }
+    prevCleanTok = cleanTok;
+  }
+
+  return groupedHangul.join(' ').replace(/\s+/g, ' ').trim();
 }
 
 function parseSearchQueries(rawTitle = '', rawArtist = '', rawComposer = '') {

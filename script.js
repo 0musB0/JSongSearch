@@ -32,6 +32,7 @@ let recentCopied = [];
 let myComfortPitch = '';
 const cardKeyOffsets = new Map(); // songId -> semitone shift (-7 .. +7)
 const lyricsCache = new Map(); // songId -> enriched lyrics payload
+const lyricsMemoryCache = new Map(); // v2 cache
 let currentLyricsSong = null;
 let currentLyricsPayload = null;
 const LYRICS_FONT_SIZES = ['md', 'lg', 'xl'];
@@ -906,8 +907,9 @@ export async function openLyricsModal(songId) {
     modal.setAttribute('aria-hidden', 'false');
   }, 10);
 
-  if (lyricsCache.has(id)) {
-    currentLyricsPayload = lyricsCache.get(id);
+  const cacheKey = `v2::${song.title || ''}::${song.artist || ''}`;
+  if (lyricsMemoryCache.has(cacheKey)) {
+    currentLyricsPayload = lyricsMemoryCache.get(cacheKey);
     renderLyricsModalBody(song, currentLyricsPayload);
     return;
   }
@@ -921,6 +923,7 @@ export async function openLyricsModal(songId) {
 
   try {
     const qs = new URLSearchParams({
+      v: '2',
       title: song.title || '',
       artist: song.artist || '',
       composer: song.composer || ''
@@ -928,7 +931,7 @@ export async function openLyricsModal(songId) {
     const res = await fetch(`/api/lyrics?${qs.toString()}`);
     if (!res.ok) throw new Error('API error');
     const payload = await res.json();
-    lyricsCache.set(id, payload);
+    lyricsMemoryCache.set(cacheKey, payload);
     if (currentLyricsSong?.id === song.id) {
       currentLyricsPayload = payload;
       renderLyricsModalBody(song, payload);
