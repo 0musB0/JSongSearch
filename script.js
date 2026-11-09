@@ -1,13 +1,12 @@
 /**
- * 일본곡 노래방 검색기 - Soft & Cozy Frontend Application
+ * 일본곡 노래방 검색기 - Editorial & Tactile Frontend Application (v2.0)
+ * Designed by Principal UI/UX Designer & UX Scenario Writer
  * Features:
- * - convertPitch("3옥 도#" -> "C#5") & real-time semitone key shifter (♭ / 원키 / ♯)
+ * - convertPitch("3옥 도#" -> "C#5") & Unified Pitch + Key Stepper Capsule ([ − 3옥 도# + ])
  * - Korean Initial Consonant (초성: ㅂㅌㅇ -> 베텔기우스, ㅊㅂㅇ -> 천본앵) search
- * - My Vocal Range Key Calculator (원키 가능 / -2키 추천 등 자동 계산)
- * - Karaoke Room Machine Mode (전체 / TJ방 / 금영방)
- * - 1-Click Artist/Composer Filter & YouTube Original / TJ MR Listen Links
- * - Favorites / Karaoke Bookmark List (찜 목록 + 카톡 일괄 복사)
- * - Random Song Roulette & Recently Copied Numbers History
+ * - 1-Step Inline Vocal Range Key Calculator & Inline Favorites Share Bar
+ * - Karaoke Room Machine Mode (전체 / TJ / 금영)
+ * - 1-Click Artist/Composer Filter & YouTube Listen Button
  * - Cross-platform iOS/Android/PC clipboard fallback & tactile visual feedback
  */
 
@@ -31,7 +30,7 @@ let toastTimer = null;
 let favoriteIds = new Set();
 let recentCopied = [];
 let myComfortPitch = '';
-const cardKeyOffsets = new Map(); // songId -> semitone shift (-6 .. +6)
+const cardKeyOffsets = new Map(); // songId -> semitone shift (-7 .. +7)
 
 /**
  * Cross-platform clipboard copy with iOS WebView / KakaoTalk fallback
@@ -102,7 +101,7 @@ function applyTheme(theme) {
   }
   const metaTheme = document.getElementById('metaThemeColor');
   if (metaTheme) {
-    metaTheme.setAttribute('content', theme === 'soft-dark' ? '#191820' : '#fdf9f5');
+    metaTheme.setAttribute('content', theme === 'soft-dark' ? '#17161e' : '#fdf9f5');
   }
   try {
     localStorage.setItem('jsong_theme', theme);
@@ -163,7 +162,7 @@ function parsePitchRank(koreanPitch) {
 }
 
 /**
- * Shift a Korean pitch by N semitones (-6 to +6) and return new Korean pitch
+ * Shift a Korean pitch by N semitones (-7 to +7) and return new Korean pitch
  */
 function shiftKoreanPitch(koreanPitch, semitoneDelta = 0) {
   if (!semitoneDelta) return koreanPitch;
@@ -177,7 +176,7 @@ function shiftKoreanPitch(koreanPitch, semitoneDelta = 0) {
 }
 
 /**
- * Compute recommended karaoke key adjustment relative to user's comfort pitch
+ * Compute concise recommended karaoke key adjustment relative to user's comfort pitch
  */
 function getKeyRecommendation(songPitch) {
   if (!myComfortPitch) return null;
@@ -187,26 +186,26 @@ function getKeyRecommendation(songPitch) {
 
   const diff = userRank.semitones - songRank.semitones;
   if (diff >= 0 && diff <= 2) {
-    return { text: '원키 딱 맞음 ✨', isDown: false };
+    return { text: '원키 적당', isDown: false };
   }
   if (diff > 2) {
-    return { text: `원키 여유 (+${Math.min(diff, 6)}키 가능)`, isDown: false };
+    return { text: '원키 편함', isDown: false };
   }
-  if (diff >= -6) {
-    return { text: `${diff}키 추천`, isDown: true };
-  }
-  return { text: `${diff}키 (고음 주의)`, isDown: true };
+  return { text: `${diff}키 추천`, isDown: true };
 }
 
+/**
+ * Format song title into clean Korean title + parenthesized-free Japanese subtitle
+ */
 function formatSongTitle(title) {
-  const safe = escapeHtml(title);
-  const idx = safe.indexOf('(');
-  if (idx > 0 && safe.endsWith(')')) {
-    const main = safe.slice(0, idx).trim();
-    const sub = safe.slice(idx);
-    return `${main}<span class="sub-title">${sub}</span>`;
+  const raw = String(title || '');
+  const idx = raw.indexOf('(');
+  if (idx > 0 && raw.endsWith(')')) {
+    const main = escapeHtml(raw.slice(0, idx).trim());
+    const subInner = escapeHtml(raw.slice(idx + 1, -1).trim());
+    return `<span class="main-title">${main}</span><span class="sub-title">${subInner}</span>`;
   }
-  return safe;
+  return `<span class="main-title">${escapeHtml(raw)}</span>`;
 }
 
 function escapeHtml(str) {
@@ -238,6 +237,38 @@ function normalizeSearchQuery(rawSearch) {
   return { trimmed, dbSearch, isPitchSearch, searchNoSpace };
 }
 
+function syncPitchSelects() {
+  const myPitchSelect = document.getElementById('myPitchSelect');
+  const inlinePitchSelect = document.getElementById('inlinePitchSelect');
+  if (myPitchSelect && myPitchSelect.value !== myComfortPitch) {
+    myPitchSelect.value = myComfortPitch;
+  }
+  if (inlinePitchSelect && inlinePitchSelect.value !== myComfortPitch) {
+    inlinePitchSelect.value = myComfortPitch;
+  }
+}
+
+function updateContextualInlineBars() {
+  const inlineRangeBar = document.getElementById('inlineRangeBar');
+  const inlineFavBar = document.getElementById('inlineFavBar');
+  const inlineFavLabel = document.getElementById('inlineFavLabel');
+
+  syncPitchSelects();
+
+  if (inlineRangeBar) {
+    const showRangeBar = activeFilter === 'my-range';
+    inlineRangeBar.classList.toggle('hidden', !showRangeBar);
+  }
+
+  if (inlineFavBar) {
+    const showFavBar = activeFilter === 'favorites' && favoriteIds.size > 0;
+    inlineFavBar.classList.toggle('hidden', !showFavBar);
+    if (inlineFavLabel) {
+      inlineFavLabel.textContent = `내가 찜한 애창곡 ${favoriteIds.size}곡`;
+    }
+  }
+}
+
 function getFilteredAndSortedSongs() {
   const searchInput = document.getElementById('searchInput');
   const sortSelect = document.getElementById('sortSelect');
@@ -249,9 +280,11 @@ function getFilteredAndSortedSongs() {
   if (myRangeBadge) {
     myRangeBadge.classList.toggle('hidden', !myComfortPitch);
     if (myComfortPitch) {
-      myRangeBadge.textContent = `🎯 내 최고음(${myComfortPitch}) 맞춤 키 표시 중`;
+      myRangeBadge.textContent = `🎯 내 최고음: ${myComfortPitch}`;
     }
   }
+
+  updateContextualInlineBars();
 
   // 1. Apply machine mode + quick filter chip
   let list = allSongs.filter(song => {
@@ -282,12 +315,6 @@ function getFilteredAndSortedSongs() {
     if (activeFilter === 'pitch-3high') {
       const r = parsePitchRank(song.pitch);
       return r.valid && r.score >= 330; // 3옥 파 이상
-    }
-    if (activeFilter === 'has-tj') {
-      return song.tj_num && song.tj_num !== 'XXX' && song.tj_num !== '-';
-    }
-    if (activeFilter === 'has-ky') {
-      return song.ky_num && song.ky_num !== 'XXX' && song.ky_num !== '-';
     }
     if (activeFilter.startsWith('artist:')) {
       const pattern = activeFilter.slice('artist:'.length);
@@ -382,7 +409,7 @@ function buildPitchMarkup(song) {
   const effectivePitch = offset !== 0 && basePitch !== '-' ? shiftKoreanPitch(basePitch, offset) : basePitch;
   const converted = convertPitch(effectivePitch);
   const keyAdvice = getKeyRecommendation(effectivePitch);
-  const offsetLabel = offset === 0 ? '원키' : (offset > 0 ? `+${offset}키` : `${offset}키`);
+  const offsetLabel = offset === 0 ? '' : (offset > 0 ? `+${offset}키` : `${offset}키`);
 
   return {
     effectivePitch,
@@ -418,6 +445,8 @@ function formatArtistLine(song) {
 function renderSongs() {
   const cardList = document.getElementById('cardList');
   const emptyState = document.getElementById('emptyState');
+  const emptyTitle = document.getElementById('emptyTitle');
+  const emptyDesc = document.getElementById('emptyDesc');
   const resultCount = document.getElementById('resultCount');
   const clearBtn = document.getElementById('clearBtn');
   const searchInput = document.getElementById('searchInput');
@@ -436,6 +465,13 @@ function renderSongs() {
   if (filtered.length === 0) {
     cardList.innerHTML = '';
     emptyState?.classList.remove('hidden');
+    if (activeFilter === 'favorites' && favoriteIds.size === 0) {
+      if (emptyTitle) emptyTitle.textContent = '아직 찜한 애창곡이 없어요';
+      if (emptyDesc) emptyDesc.textContent = '노래 카드 우측 상단의 ♡ 하트를 눌러 나만의 애창곡 리스트를 만들어 보세요!';
+    } else {
+      if (emptyTitle) emptyTitle.textContent = '조건에 맞는 곡을 찾지 못했어요';
+      if (emptyDesc) emptyDesc.textContent = '초성(예: ㅂㅌㅇ), 최고음(예: 3옥 도#, C#5), 또는 필터를 초기화해 보세요.';
+    }
     return;
   }
 
@@ -457,52 +493,53 @@ function renderSongs() {
 
       return `
         <article class="song-card ${isHighPitch ? 'high-pitch' : ''}" data-song-id="${song.id}">
-          <!-- 1. Card Header: Clean Title + Pitch Badge & Heart -->
+          <!-- Row 1: Clean Title + Subtitle & Lightweight Heart -->
           <div class="card-top">
             <div class="card-title-group">
               <h3 class="card-title">${formatSongTitle(song.title)}</h3>
             </div>
             <div class="card-top-right">
-              <div class="card-pitch ${offset !== 0 ? 'key-shifted' : ''}" data-pitch-box="${song.id}" title="최고음: ${escapeHtml(effectivePitch)} (${escapeHtml(converted)})">
-                <div class="pitch-main-line">
-                  <strong class="pitch-kor">${effectivePitch !== '-' ? escapeHtml(effectivePitch) : '-'}</strong>
-                  ${converted !== '-' ? `<span class="pitch-eng">${escapeHtml(converted)}</span>` : ''}
-                </div>
+              <span data-advice-box="${song.id}">
                 ${keyAdvice ? `<span class="key-advice-pill ${keyAdvice.isDown ? 'key-down' : ''}">${escapeHtml(keyAdvice.text)}</span>` : ''}
-              </div>
+              </span>
               <button type="button" class="btn-fav-card ${isFav ? 'active' : ''}" data-fav-id="${song.id}" aria-label="애창곡 찜하기" title="내 애창곡 찜하기">
                 ${isFav ? '♥' : '♡'}
               </button>
             </div>
           </div>
 
-          <!-- 2. Artist & Subtle Key/Listen Row -->
+          <!-- Row 2: Single-Line Artist + YouTube Icon & Unified Pitch Stepper Capsule -->
           <div class="card-meta-row">
-            <div class="card-artist-line">
-              ${formatArtistLine(song)}
+            <div class="card-artist-wrap">
+              <div class="card-artist-line">
+                ${formatArtistLine(song)}
+              </div>
+              <a href="${ytOriginalUrl}" target="_blank" rel="noopener noreferrer" class="btn-listen-icon" title="유튜브에서 노래 듣기" aria-label="유튜브에서 노래 듣기">▶</a>
             </div>
-            <div class="card-mini-tools">
-              ${effectivePitch !== '-' ? `
-              <div class="card-key-stepper" aria-label="키 조절">
-                <button type="button" class="key-step-btn" data-key-step="-1" data-song-id="${song.id}" title="반음 내리기 (♭)">−</button>
-                <span class="key-step-label ${offset !== 0 ? 'shifted' : ''}" data-key-reset="${song.id}" title="클릭시 원키로 초기화">${offsetLabel}</span>
-                <button type="button" class="key-step-btn" data-key-step="1" data-song-id="${song.id}" title="반음 올리기 (♯)">+</button>
-              </div>` : ''}
-              <a href="${ytOriginalUrl}" target="_blank" rel="noopener noreferrer" class="btn-listen-mini" title="유튜브에서 노래 듣기">▶ 듣기</a>
+
+            ${effectivePitch !== '-' ? `
+            <div class="pitch-stepper-capsule ${offset !== 0 ? 'key-shifted' : ''}" data-pitch-capsule="${song.id}" title="최고음: ${escapeHtml(effectivePitch)} (${escapeHtml(converted)}) · 중앙 클릭시 원키 초기화">
+              <button type="button" class="key-step-btn" data-key-step="-1" data-song-id="${song.id}" title="반음 내리기 (♭)" aria-label="반음 내리기">−</button>
+              <button type="button" class="pitch-readout-btn" data-key-reset="${song.id}" title="클릭시 원키로 초기화 (${escapeHtml(converted)})">
+                ${offsetLabel ? `<span class="pitch-shift-tag">${escapeHtml(offsetLabel)}</span>` : ''}
+                <strong class="pitch-kor">${escapeHtml(effectivePitch)}</strong>
+              </button>
+              <button type="button" class="key-step-btn" data-key-step="1" data-song-id="${song.id}" title="반음 올리기 (♯)" aria-label="반음 올리기">+</button>
             </div>
+            ` : `<span class="pitch-empty-pill">음역 미상</span>`}
           </div>
 
-          <!-- 3. Large Readable Karaoke Numbers -->
+          <!-- Row 3: 2-Column Tactile Karaoke Number Buttons -->
           <div class="card-numbers">
             <button type="button" class="num-badge tj-num ${tjDisabled}" data-copy="${escapeHtml(song.tj_num)}" data-brand="TJ" data-title="${escapeHtml(song.title)}" ${tjDisabled}>
               <span class="brand-tag">TJ</span>
               <span class="num-val">${tjDisplay}</span>
-              <span class="copy-icon">${tjDisabled ? '' : '복사'}</span>
+              <span class="copy-icon" aria-hidden="true">${tjDisabled ? '' : '⧉'}</span>
             </button>
             <button type="button" class="num-badge ky-num ${kyDisabled}" data-copy="${escapeHtml(song.ky_num)}" data-brand="KY" data-title="${escapeHtml(song.title)}" ${kyDisabled}>
               <span class="brand-tag">KY</span>
               <span class="num-val">${kyDisplay}</span>
-              <span class="copy-icon">${kyDisabled ? '' : '복사'}</span>
+              <span class="copy-icon" aria-hidden="true">${kyDisabled ? '' : '⧉'}</span>
             </button>
           </div>
         </article>
@@ -514,7 +551,7 @@ function renderSongs() {
 }
 
 /**
- * Update a single song card's key stepper in-place (60fps, no scroll jump)
+ * Update a single song card's unified pitch stepper capsule in-place (60fps, no scroll jump)
  */
 function updateCardKeyShiftInPlace(songId, deltaOrReset) {
   const id = Number(songId);
@@ -536,27 +573,30 @@ function updateCardKeyShiftInPlace(songId, deltaOrReset) {
   const pitchRank = parsePitchRank(effectivePitch);
   cardEl.classList.toggle('high-pitch', pitchRank.valid && pitchRank.score >= 330);
 
-  const pitchBox = cardEl.querySelector(`[data-pitch-box="${id}"]`);
-  if (pitchBox) {
-    pitchBox.classList.toggle('key-shifted', offset !== 0);
-    pitchBox.innerHTML = `
-      <div class="pitch-main-line">
-        <strong class="pitch-kor">${effectivePitch !== '-' ? escapeHtml(effectivePitch) : '-'}</strong>
-        ${converted !== '-' ? `<span class="pitch-eng">${escapeHtml(converted)}</span>` : ''}
-      </div>
-      ${keyAdvice ? `<span class="key-advice-pill ${keyAdvice.isDown ? 'key-down' : ''}">${escapeHtml(keyAdvice.text)}</span>` : ''}
-    `;
+  const capsule = cardEl.querySelector(`[data-pitch-capsule="${id}"]`);
+  if (capsule) {
+    capsule.classList.toggle('key-shifted', offset !== 0);
+    capsule.setAttribute('title', `최고음: ${effectivePitch} (${converted}) · 중앙 클릭시 원키 초기화`);
+    const readoutBtn = capsule.querySelector(`[data-key-reset="${id}"]`);
+    if (readoutBtn) {
+      readoutBtn.setAttribute('title', `클릭시 원키로 초기화 (${converted})`);
+      readoutBtn.innerHTML = `
+        ${offsetLabel ? `<span class="pitch-shift-tag">${escapeHtml(offsetLabel)}</span>` : ''}
+        <strong class="pitch-kor">${escapeHtml(effectivePitch)}</strong>
+      `;
+    }
   }
 
-  const resetLabel = cardEl.querySelector(`[data-key-reset="${id}"]`);
-  if (resetLabel) {
-    resetLabel.textContent = offsetLabel;
-    resetLabel.classList.toggle('shifted', offset !== 0);
+  const adviceBox = cardEl.querySelector(`[data-advice-box="${id}"]`);
+  if (adviceBox) {
+    adviceBox.innerHTML = keyAdvice
+      ? `<span class="key-advice-pill ${keyAdvice.isDown ? 'key-down' : ''}">${escapeHtml(keyAdvice.text)}</span>`
+      : '';
   }
 }
 
 /**
- * Render Favorites List & Counters in Header and Sidebar
+ * Render Favorites List & Counters in Header, Inline Bar, and Sidebar
  */
 function renderFavoritesUI() {
   const headerFavCount = document.getElementById('headerFavCount');
@@ -567,6 +607,8 @@ function renderFavoritesUI() {
   const count = favoriteIds.size;
   if (headerFavCount) headerFavCount.textContent = String(count);
   if (sidebarFavCount) sidebarFavCount.textContent = `${count}곡`;
+
+  updateContextualInlineBars();
 
   if (!favListContainer) return;
 
@@ -611,6 +653,36 @@ function toggleFavorite(songId) {
   } catch {}
   renderFavoritesUI();
   renderSongs();
+}
+
+async function copyAllFavoritesToClipboard() {
+  const favSongs = allSongs.filter(s => favoriteIds.has(Number(s.id)));
+  if (favSongs.length === 0) {
+    showToast('아직 찜한 곡이 없어요!');
+    return;
+  }
+  const textLines = [
+    '🎤 [내 일본곡 노래방 애창곡 리스트]',
+    ...favSongs.map(s => {
+      const tj = s.tj_num && s.tj_num !== 'XXX' ? `TJ ${s.tj_num}` : '';
+      const ky = s.ky_num && s.ky_num !== 'XXX' ? `KY ${s.ky_num}` : '';
+      const nums = [tj, ky].filter(Boolean).join(' / ');
+      return `• ${s.title.split('(')[0].trim()} (${s.pitch}) - ${nums}`;
+    }),
+    '👉 검색기: https://jsongsearch.vercel.app'
+  ];
+  await copyTextSafe(textLines.join('\n'));
+  showToast('📋 찜한 애창곡 리스트가 복사되었어요! 카톡에 붙여넣기 해보세요.');
+}
+
+function clearAllFavorites() {
+  favoriteIds.clear();
+  try {
+    localStorage.setItem('jsong_favorites', '[]');
+  } catch {}
+  renderFavoritesUI();
+  renderSongs();
+  showToast('찜 목록을 모두 비웠어요.');
 }
 
 /**
@@ -764,6 +836,18 @@ function showToast(message) {
   }, 2200);
 }
 
+function handleComfortPitchChange(newPitch) {
+  myComfortPitch = newPitch || '';
+  try {
+    localStorage.setItem('jsong_my_pitch', myComfortPitch);
+  } catch {}
+  syncPitchSelects();
+  renderSongs();
+  if (myComfortPitch) {
+    showToast(`🎯 내 최고음(${myComfortPitch}) 기준으로 맞춤 키가 표시됩니다!`);
+  }
+}
+
 async function initApp() {
   loadUserPreferences();
 
@@ -772,11 +856,8 @@ async function initApp() {
   const badgeLastSync = document.getElementById('badgeLastSync');
   const sidebarLastSync = document.getElementById('sidebarLastSync');
   const sidebarTotalSongs = document.getElementById('sidebarTotalSongs');
-  const myPitchSelect = document.getElementById('myPitchSelect');
 
-  if (myPitchSelect && myComfortPitch) {
-    myPitchSelect.value = myComfortPitch;
-  }
+  syncPitchSelects();
 
   try {
     let res = await fetch('./data/songs.json');
@@ -791,7 +872,7 @@ async function initApp() {
     skeleton?.classList.add('hidden');
   }
 
-  if (badgeSongCount) badgeSongCount.textContent = `총 ${allSongs.length.toLocaleString()}곡 수록`;
+  if (badgeSongCount) badgeSongCount.textContent = `총 ${allSongs.length.toLocaleString()}곡`;
   if (sidebarTotalSongs) sidebarTotalSongs.textContent = `${allSongs.length.toLocaleString()}곡`;
 
   try {
@@ -850,10 +931,13 @@ function bindEvents() {
   const themeToggleBtn = document.getElementById('themeToggleBtn');
   const headerFavBtn = document.getElementById('headerFavBtn');
   const myPitchSelect = document.getElementById('myPitchSelect');
+  const inlinePitchSelect = document.getElementById('inlinePitchSelect');
   const myRangeActiveBadge = document.getElementById('myRangeActiveBadge');
   const filterMyRangeBtn = document.getElementById('filterMyRangeBtn');
   const copyAllFavsBtn = document.getElementById('copyAllFavsBtn');
   const clearAllFavsBtn = document.getElementById('clearAllFavsBtn');
+  const inlineCopyFavsBtn = document.getElementById('inlineCopyFavsBtn');
+  const inlineClearFavsBtn = document.getElementById('inlineClearFavsBtn');
   const favListContainer = document.getElementById('favListContainer');
   const recentCopiedList = document.getElementById('recentCopiedList');
   const quickRandomBtn = document.getElementById('quickRandomBtn');
@@ -909,18 +993,17 @@ function bindEvents() {
   filterChips?.addEventListener('click', e => {
     const chip = e.target.closest('.chip');
     if (!chip) return;
-    if (chip.dataset.filter === 'my-range' && !myComfortPitch) {
-      toggleSidebar(true);
-      showToast('먼저 메뉴에서 내 최고음을 선택해주세요!');
-      return;
-    }
     filterChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
     activeFilter = chip.dataset.filter || 'all';
     renderSongs();
+    if (activeFilter === 'my-range' && !myComfortPitch) {
+      document.getElementById('inlinePitchSelect')?.focus();
+      showToast('👇 바로 아래에서 내 편한 최고음을 선택해 보세요!');
+    }
   });
 
-  // Karaoke Machine Mode Toggle (전체 / TJ방 / 금영방)
+  // Karaoke Machine Mode Toggle (전체 / TJ / 금영)
   machineModeGroup?.addEventListener('click', e => {
     const btn = e.target.closest('.machine-btn');
     if (!btn) return;
@@ -945,17 +1028,20 @@ function bindEvents() {
     applyTheme(current === 'soft-dark' ? 'soft-light' : 'soft-dark');
   });
 
-  myRangeActiveBadge?.addEventListener('click', () => toggleSidebar(true));
+  myRangeActiveBadge?.addEventListener('click', () => {
+    activeFilter = 'my-range';
+    filterChips?.querySelectorAll('.chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.filter === 'my-range');
+    });
+    renderSongs();
+  });
 
   myPitchSelect?.addEventListener('change', () => {
-    myComfortPitch = myPitchSelect.value || '';
-    try {
-      localStorage.setItem('jsong_my_pitch', myComfortPitch);
-    } catch {}
-    renderSongs();
-    if (myComfortPitch) {
-      showToast(`내 최고음(${myComfortPitch}) 기준으로 추천 키(Key)가 표시됩니다!`);
-    }
+    handleComfortPitchChange(myPitchSelect.value);
+  });
+
+  inlinePitchSelect?.addEventListener('change', () => {
+    handleComfortPitchChange(inlinePitchSelect.value);
   });
 
   filterMyRangeBtn?.addEventListener('click', () => {
@@ -1019,7 +1105,7 @@ function bindEvents() {
     }
   });
 
-  // Card Interactions: Favorites, Key Stepper, Quick Artist Filter, and Number Copy
+  // Card Interactions: Favorites, Unified Key Stepper, Quick Artist Filter, and Number Copy
   cardList?.addEventListener('click', async e => {
     const favBtn = e.target.closest('.btn-fav-card');
     if (favBtn) {
@@ -1072,7 +1158,7 @@ function bindEvents() {
     if (iconEl) iconEl.textContent = '✓ 복사됨';
     setTimeout(() => {
       badge.classList.remove('copied');
-      if (iconEl) iconEl.textContent = '복사';
+      if (iconEl) iconEl.textContent = '⧉';
     }, 1200);
 
     showToast(ok ? `${brand} 노래방 번호 [${cleanNum}] 복사 완료!` : `번호: ${cleanNum}`);
@@ -1100,32 +1186,11 @@ function bindEvents() {
     showToast(`${chip.dataset.brand || ''} [${cleanNum}] 다시 복사 완료!`);
   });
 
-  copyAllFavsBtn?.addEventListener('click', async () => {
-    const favSongs = allSongs.filter(s => favoriteIds.has(Number(s.id)));
-    if (favSongs.length === 0) return;
-    const textLines = [
-      '🎤 [내 일본곡 노래방 애창곡 리스트]',
-      ...favSongs.map(s => {
-        const tj = s.tj_num && s.tj_num !== 'XXX' ? `TJ ${s.tj_num}` : '';
-        const ky = s.ky_num && s.ky_num !== 'XXX' ? `KY ${s.ky_num}` : '';
-        const nums = [tj, ky].filter(Boolean).join(' / ');
-        return `• ${s.title.split('(')[0].trim()} (${s.pitch}) - ${nums}`;
-      }),
-      '👉 검색기: https://jsongsearch.vercel.app'
-    ];
-    await copyTextSafe(textLines.join('\n'));
-    showToast('📋 찜한 애창곡 리스트가 복사되었어요! 카톡에 붙여넣기 해보세요.');
-  });
+  copyAllFavsBtn?.addEventListener('click', copyAllFavoritesToClipboard);
+  inlineCopyFavsBtn?.addEventListener('click', copyAllFavoritesToClipboard);
 
-  clearAllFavsBtn?.addEventListener('click', () => {
-    favoriteIds.clear();
-    try {
-      localStorage.setItem('jsong_favorites', '[]');
-    } catch {}
-    renderFavoritesUI();
-    renderSongs();
-    showToast('찜 목록을 모두 비웠어요.');
-  });
+  clearAllFavsBtn?.addEventListener('click', clearAllFavorites);
+  inlineClearFavsBtn?.addEventListener('click', clearAllFavorites);
 
   shareSiteBtn?.addEventListener('click', async () => {
     const shareData = {
