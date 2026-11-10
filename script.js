@@ -571,7 +571,7 @@ function renderSongs() {
                 <span class="lyrics-doc-icon">📄</span>
                 <span class="lyrics-btn-text">가사</span>
               </button>
-              <a href="${ytOriginalUrl}" target="_blank" rel="noopener noreferrer" class="btn-listen-pill" title="유튜브에서 노래 듣기" aria-label="유튜브에서 노래 듣기">
+              <a href="${ytOriginalUrl}" target="_blank" rel="noopener noreferrer" class="btn-listen-pill" data-listen-id="${song.id}" title="사이트에서 미리듣기 (30초)" aria-label="유튜브에서 노래 듣기">
                 <span class="listen-play-icon">▶</span>
                 <span class="listen-text">듣기</span>
               </a>
@@ -852,6 +852,39 @@ export function toggleSidebar(open) {
 /**
  * Open Lyrics Viewer Modal / Bottom Sheet for a given songId
  */
+// In-site 30s preview (iTunes). Falls back to the YouTube search link if no preview exists.
+const previewAudio = new Audio();
+let previewBtn = null;
+function resetPreviewBtn() {
+  if (!previewBtn) return;
+  previewBtn.classList.remove('playing');
+  previewBtn.querySelector('.listen-play-icon').textContent = '▶';
+  previewBtn = null;
+}
+previewAudio.addEventListener('ended', resetPreviewBtn);
+async function togglePreview(btn) {
+  if (previewBtn === btn) { previewAudio.pause(); resetPreviewBtn(); return; }
+  previewAudio.pause();
+  resetPreviewBtn();
+  const song = allSongs.find(s => Number(s.id) === Number(btn.dataset.listenId));
+  if (!song) return;
+  previewBtn = btn;
+  btn.querySelector('.listen-play-icon').textContent = '…';
+  try {
+    const qs = new URLSearchParams({ title: song.title || '', artist: song.artist || '', composer: song.composer || '' });
+    const data = await (await fetch(`/api/preview?${qs}`)).json();
+    if (previewBtn !== btn) return; // user switched meanwhile
+    if (!data.found) throw new Error('no preview');
+    previewAudio.src = data.previewUrl;
+    await previewAudio.play();
+    btn.classList.add('playing');
+    btn.querySelector('.listen-play-icon').textContent = '⏸';
+  } catch {
+    if (previewBtn === btn) resetPreviewBtn();
+    window.open(btn.href, '_blank', 'noopener');
+  }
+}
+
 export async function openLyricsModal(songId) {
   const id = Number(songId);
   const song = allSongs.find(s => Number(s.id) === id);
@@ -1329,6 +1362,13 @@ function bindEvents() {
     const favBtn = e.target.closest('.btn-fav-card');
     if (favBtn) {
       toggleFavorite(favBtn.dataset.favId);
+      return;
+    }
+
+    const listenBtn = e.target.closest('[data-listen-id]');
+    if (listenBtn) {
+      e.preventDefault();
+      togglePreview(listenBtn);
       return;
     }
 

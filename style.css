@@ -2555,3 +2555,4 @@ body[data-machine-mode="ky"] .num-badge.tj-num {
     font-size: 0.7rem;
   }
 }
+.btn-listen-pill.playing { background: var(--accent, #111); color: #fff; }

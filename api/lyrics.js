@@ -249,7 +249,7 @@ function parseMatchers(rawTitle = '', rawArtist = '') {
   return { titles: [main, sub, t].filter(Boolean), artists };
 }
 
-function parseSearchQueries(rawTitle = '', rawArtist = '', rawComposer = '') {
+export function parseSearchQueries(rawTitle = '', rawArtist = '', rawComposer = '') {
   const titleStr = String(rawTitle || '').replace(/\\\*/g, '*').trim();
   const artistStr = String(rawArtist || '').replace(/\\\*/g, '*').trim();
   const composerStr = String(rawComposer || '').replace(/\\\*/g, '*').trim();
