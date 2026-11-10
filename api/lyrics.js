@@ -350,6 +350,10 @@ export async function getEnrichedLyrics({ title, artist, composer }) {
   let hit = null;
 
   const wanted = parseMatchers(title, artist);
+  // LRCLIB often credits the producer (composer) rather than the vocal, so accept either. Title + artist must still match.
+  const composerNames = String(composer || '').split(',').map(s => s.replace(/\s*\([^)]*\)/g, '').trim())
+    .map(s => KO_TO_JP_ARTIST_MAP[s] || s).filter(s => s && s !== '-' && !/[가-힣]/.test(s));
+  wanted.artists = [...new Set([...wanted.artists, ...composerNames])];
   for (const q of queries) {
     hit = await fetchLrcLib(q, wanted);
     if (hit) break;
