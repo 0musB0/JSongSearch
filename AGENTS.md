@@ -46,3 +46,4 @@ logo.png, og-banner.png, .agents/skills/  생성물·자산
 건드리지 말 것:
 - 큰 파일/데이터: logo.png(414KB), og-banner.png(504KB), data/songs.json(94KB) - head로 일부만 볼 것(통째로 읽지 말 것), data/sync-meta.json
 - 환경변수 위치: GEMINI_API_KEY, FIRECRAWL_API_KEY, CRON_SECRET (Vercel 환경변수 또는 실행 환경에만 설정)
+<!-- 자동 배포 점검: 2026-11-11 -->
