@@ -235,6 +235,20 @@ export function romajiToHangul(romaji) {
   return groupedHangul.join(' ').replace(/\s+/g, ' ').trim();
 }
 
+// Titles/artists a lrclib hit must match. Hangul-only names can't be compared with lrclib metadata, so they are dropped.
+function parseMatchers(rawTitle = '', rawArtist = '') {
+  const t = String(rawTitle || '').replace(/\\\*/g, '*').trim();
+  const i = t.indexOf('(');
+  const hasSub = i > 0 && t.endsWith(')');
+  const main = hasSub ? t.slice(0, i).trim() : t;
+  const sub = hasSub ? t.slice(i + 1, -1).trim() : (KO_TO_JP_TITLE_MAP[main] || '');
+  const a = String(rawArtist || '').replace(/\\\*/g, '*');
+  const ko = a.replace(/\s*\([^)]*\)/g, '').split(',')[0].trim();
+  const artists = [a.match(/\(([^)]+)\)/)?.[1], KO_TO_JP_ARTIST_MAP[ko], ko]
+    .filter(x => x && !/[가-힣]/.test(x));
+  return { titles: [main, sub, t].filter(Boolean), artists };
+}
+
 function parseSearchQueries(rawTitle = '', rawArtist = '', rawComposer = '') {
   const titleStr = String(rawTitle || '').replace(/\\\*/g, '*').trim();
   const artistStr = String(rawArtist || '').replace(/\\\*/g, '*').trim();
@@ -276,7 +290,10 @@ function parseSearchQueries(rawTitle = '', rawArtist = '', rawComposer = '') {
   return [...new Set(queries.filter(Boolean))];
 }
 
-async function fetchLrcLib(query) {
+// Title key for exact comparison: drop "(...)" / " - ..." suffixes and non-letters.
+const titleKey = t => String(t || '').replace(/\s*[(（].*$/, '').replace(/\s+-\s.*$/, '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+
+async function fetchLrcLib(query, { titles = [], artists = [] } = {}) {
   try {
     const url = `https://lrclib.net/api/search?q=${encodeURIComponent(query)}`;
     const res = await fetch(url, {
@@ -286,7 +303,15 @@ async function fetchLrcLib(query) {
     const list = await res.json();
     if (!Array.isArray(list) || list.length === 0) return null;
     // Prefer item that has plainLyrics
-    const match = list.find(item => item.plainLyrics && item.plainLyrics.trim().length > 20);
+    // Require exact title match: lrclib search is fuzzy and returns other songs by the same artist.
+    const tk = titles.map(titleKey).filter(Boolean);
+    const ak = artists.map(titleKey).filter(Boolean);
+    const match = list.find(item => {
+      if (!item.plainLyrics || item.plainLyrics.trim().length <= 20) return false;
+      const a = titleKey(item.artistName);
+      return (!tk.length || tk.includes(titleKey(item.trackName))) &&
+        (!ak.length || ak.some(k => a.includes(k) || k.includes(a)));
+    });
     return match || null;
   } catch {
     return null;
@@ -324,8 +349,9 @@ export async function getEnrichedLyrics({ title, artist, composer }) {
   const queries = parseSearchQueries(title, artist, composer);
   let hit = null;
 
+  const wanted = parseMatchers(title, artist);
   for (const q of queries) {
-    hit = await fetchLrcLib(q);
+    hit = await fetchLrcLib(q, wanted);
     if (hit) break;
   }
 
@@ -339,7 +365,7 @@ export async function getEnrichedLyrics({ title, artist, composer }) {
         const itunesData = await itunesRes.json();
         const track = itunesData?.results?.[0];
         if (track?.trackName) {
-          hit = await fetchLrcLib(`${track.trackName} ${track.artistName || ''}`) || await fetchLrcLib(track.trackName);
+          hit = await fetchLrcLib(`${track.trackName} ${track.artistName || ''}`, { titles: [track.trackName], artists: wanted.artists }) || await fetchLrcLib(track.trackName, { titles: [track.trackName], artists: wanted.artists });
         }
       }
     } catch {}
