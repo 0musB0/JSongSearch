@@ -293,7 +293,7 @@ export function parseSearchQueries(rawTitle = '', rawArtist = '', rawComposer = 
 // Title key for exact comparison: drop "(...)" / " - ..." suffixes and non-letters.
 const titleKey = t => String(t || '').replace(/\s*[(（].*$/, '').replace(/\s+-\s.*$/, '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
 
-async function fetchLrcLib(query, { titles = [], artists = [], relaxArtist = false } = {}) {
+async function fetchLrcLib(query, { titles = [], artists = [] } = {}) {
   try {
     const url = `https://lrclib.net/api/search?q=${encodeURIComponent(query)}`;
     const res = await fetch(url, {
@@ -310,7 +310,7 @@ async function fetchLrcLib(query, { titles = [], artists = [], relaxArtist = fal
       if (!item.plainLyrics || item.plainLyrics.trim().length <= 20) return false;
       const a = titleKey(item.artistName);
       return (!tk.length || tk.includes(titleKey(item.trackName))) &&
-        (relaxArtist || !ak.length || ak.some(k => a.includes(k) || k.includes(a)));
+        (!ak.length || ak.some(k => a.includes(k) || k.includes(a)));
     });
     return match || null;
   } catch {
@@ -350,12 +350,12 @@ export async function getEnrichedLyrics({ title, artist, composer }) {
   let hit = null;
 
   const wanted = parseMatchers(title, artist);
-  // ponytail: second pass accepts an exact title match when LRCLIB credits the producer instead of the vocal (artist filter misses). Ceiling: a same-titled song by another artist can slip in; add a stricter gate if that shows up.
-  for (const relaxArtist of [false, true]) {
-    for (const q of queries) {
-      hit = await fetchLrcLib(q, { ...wanted, relaxArtist });
-      if (hit) break;
-    }
+  // LRCLIB often credits the producer (composer) rather than the vocal, so accept either. Title + artist must still match.
+  const composerNames = String(composer || '').split(',').map(s => s.replace(/\s*\([^)]*\)/g, '').trim())
+    .map(s => KO_TO_JP_ARTIST_MAP[s] || s).filter(s => s && s !== '-' && !/[가-힣]/.test(s));
+  wanted.artists = [...new Set([...wanted.artists, ...composerNames])];
+  for (const q of queries) {
+    hit = await fetchLrcLib(q, wanted);
     if (hit) break;
   }
 
