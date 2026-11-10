@@ -293,7 +293,7 @@ export function parseSearchQueries(rawTitle = '', rawArtist = '', rawComposer = 
 // Title key for exact comparison: drop "(...)" / " - ..." suffixes and non-letters.
 const titleKey = t => String(t || '').replace(/\s*[(（].*$/, '').replace(/\s+-\s.*$/, '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
 
-async function fetchLrcLib(query, { titles = [], artists = [] } = {}) {
+async function fetchLrcLib(query, { titles = [], artists = [], relaxArtist = false } = {}) {
   try {
     const url = `https://lrclib.net/api/search?q=${encodeURIComponent(query)}`;
     const res = await fetch(url, {
@@ -310,7 +310,7 @@ async function fetchLrcLib(query, { titles = [], artists = [] } = {}) {
       if (!item.plainLyrics || item.plainLyrics.trim().length <= 20) return false;
       const a = titleKey(item.artistName);
       return (!tk.length || tk.includes(titleKey(item.trackName))) &&
-        (!ak.length || ak.some(k => a.includes(k) || k.includes(a)));
+        (relaxArtist || !ak.length || ak.some(k => a.includes(k) || k.includes(a)));
     });
     return match || null;
   } catch {
@@ -350,8 +350,12 @@ export async function getEnrichedLyrics({ title, artist, composer }) {
   let hit = null;
 
   const wanted = parseMatchers(title, artist);
-  for (const q of queries) {
-    hit = await fetchLrcLib(q, wanted);
+  // ponytail: second pass accepts an exact title match when LRCLIB credits the producer instead of the vocal (artist filter misses). Ceiling: a same-titled song by another artist can slip in; add a stricter gate if that shows up.
+  for (const relaxArtist of [false, true]) {
+    for (const q of queries) {
+      hit = await fetchLrcLib(q, { ...wanted, relaxArtist });
+      if (hit) break;
+    }
     if (hit) break;
   }
 
