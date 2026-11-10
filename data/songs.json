@@ -3868,5 +3868,32 @@
     "pitch": "2옥 솔#",
     "tj_num": "90164",
     "ky_num": "XXX"
+  },
+  {
+    "id": 431,
+    "title": "쿠츠즈레 (くつずれ)",
+    "artist": "하치와레 (CV: 타나카 마코토)",
+    "composer": "토쿠마루 슈고",
+    "pitch": "2옥 파#",
+    "tj_num": "90215",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 432,
+    "title": "Loneliness",
+    "artist": "Mrs. GREEN APPLE",
+    "composer": "오모리 모토키",
+    "pitch": "3옥 레",
+    "tj_num": "90214",
+    "ky_num": "57727"
+  },
+  {
+    "id": 433,
+    "title": "요다카 (夜鷹)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "3옥 도#",
+    "tj_num": "90210",
+    "ky_num": "XXX"
   }
 ]

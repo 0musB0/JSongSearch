@@ -32,6 +32,9 @@ const LOCAL_FALLBACK_MD = 'C:\\Users\\LG\\.gemini\\antigravity\\brain\\7db566f1-
 // Curated Korean title, artist, composer, pitch metadata for newly released TJ/KY Japanese songs
 // Verified against Japanese vocal range databases (vocal-range.com, atwiki.jp/saikouon_dokoda, keytube.net, voice-key.news)
 const KNOWN_JP_SONG_METADATA = {
+  '90215': { title: '쿠츠즈레 (くつずれ)', artist: '하치와레 (CV: 타나카 마코토)', composer: '토쿠마루 슈고', pitch: '2옥 파#', ky_num: 'XXX' },
+  '90214': { title: 'Loneliness', artist: 'Mrs. GREEN APPLE', composer: '오모리 모토키', pitch: '3옥 레', ky_num: '57727' },
+  '90210': { title: '요다카 (夜鷹)', artist: '요네즈 켄시', composer: '요네즈 켄시', pitch: '3옥 도#', ky_num: 'XXX' },
   '90201': { title: '사랑받지 못하더라도 네가 있어 (愛されなくても君がいる)', artist: '하츠네 미쿠', composer: '피노키오피', pitch: '4옥 도', ky_num: 'XXX' },
   '90198': { title: '파라볼라 (パラボラ)', artist: 'Official髭男dism', composer: '후지와라 사토시', pitch: '3옥 레', ky_num: 'XXX' },
   '90179': { title: '영 -zero- (零-zero-)', artist: 'tuki.', composer: 'tuki.', pitch: '3옥 솔', ky_num: 'XXX' },
