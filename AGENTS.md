@@ -26,6 +26,7 @@ script.js                  초성 검색, 음역 키 계산, 가사 모달 등 �
 style.css                  반응형 레이아웃, 테마, 카드 및 모달 스타일
 api/songs.js               곡 목록 및 동기화 메타 반환 서버리스 함수
 api/lyrics.js              LRCLIB 가사 조회 및 한국어 독음·해석 변환 API
+api/preview.js              iTunes 30초 미리듣기 URL 조회 API (/api/preview)
 api/cron-sync.js           일일 신곡 동기화 트리거 서버리스 함수
 scripts/dev-server.mjs     로컬 개발용 HTTP 서버 (정적 파일 + API 모킹)
 scripts/sync-namuwiki.mjs  TJ Media 및 나무위키 신곡 동기화 스크립트

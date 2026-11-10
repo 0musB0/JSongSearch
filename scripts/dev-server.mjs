@@ -5,6 +5,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import songsHandler from '../api/songs.js';
 import cronSyncHandler from '../api/cron-sync.js';
+import lyricsHandler from '../api/lyrics.js';
+import previewHandler from '../api/preview.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -61,6 +63,12 @@ const server = http.createServer(async (req, res) => {
     const mockRes = createMockRes(res);
     req.query = Object.fromEntries(parsedUrl.searchParams.entries());
     return songsHandler(req, mockRes);
+  }
+
+  if (pathname === '/api/lyrics' || pathname === '/api/preview') {
+    const mockRes = createMockRes(res);
+    req.query = Object.fromEntries(parsedUrl.searchParams.entries());
+    return (pathname === '/api/lyrics' ? lyricsHandler : previewHandler)(req, mockRes);
   }
 
   if (pathname === '/api/cron-sync') {
