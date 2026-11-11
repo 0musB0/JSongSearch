@@ -6,7 +6,7 @@
  * - Korean Initial Consonant (초성: ㅂㅌㅇ -> 베텔기우스, ㅊㅂㅇ -> 천본앵) search
  * - 1-Step Inline Vocal Range Key Calculator & Inline Favorites Share Bar
  * - Karaoke Room Machine Mode (전체 / TJ / 금영)
- * - 1-Click Artist/Composer Filter & YouTube Listen Button
+ * - 1-Click Artist/Composer Filter
  * - Cross-platform iOS/Android/PC clipboard fallback & tactile visual feedback
  */
 
@@ -31,12 +31,6 @@ let favoriteIds = new Set();
 let recentCopied = [];
 let myComfortPitch = '';
 const cardKeyOffsets = new Map(); // songId -> semitone shift (-7 .. +7)
-const lyricsCache = new Map(); // songId -> enriched lyrics payload
-const lyricsMemoryCache = new Map(); // v2 cache
-let currentLyricsSong = null;
-let currentLyricsPayload = null;
-const LYRICS_FONT_SIZES = ['md', 'lg', 'xl'];
-let lyricsFontSizeIdx = 0;
 
 /**
  * Cross-platform clipboard copy with iOS WebView / KakaoTalk fallback
@@ -532,8 +526,6 @@ function renderSongs() {
       const tjInfo = parseKaraokeNumber(song.tj_num);
       const kyInfo = parseKaraokeNumber(song.ky_num);
 
-      const ytOriginalUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${song.title} ${cleanArtistText(song.artist)}`)}`;
-
       return `
         <article class="song-card ${isHighPitch ? 'high-pitch' : ''}" data-song-id="${song.id}">
           <!-- Row 1: 2-Line Reserved Title Group (Left) + Unified Pitch Stepper & Heart (Right) -->
@@ -561,20 +553,10 @@ function renderSongs() {
             </div>
           </div>
 
-          <!-- Row 2: Full-Width Artist · Composer (Priority Preserved) + Lyrics & YouTube Pills -->
+          <!-- Row 2: Full-Width Artist · Composer (Priority Preserved) -->
           <div class="card-meta-row">
             <div class="card-artist-line">
               ${formatArtistLine(song)}
-            </div>
-            <div class="card-row2-actions">
-              <button type="button" class="btn-lyrics-pill" data-lyrics-id="${song.id}" title="원문 가사 · 한글 발음 · 해석 보기" aria-label="가사 및 발음 보기">
-                <span class="lyrics-doc-icon">📄</span>
-                <span class="lyrics-btn-text">가사</span>
-              </button>
-              <a href="${ytOriginalUrl}" target="_blank" rel="noopener noreferrer" class="btn-listen-pill" data-listen-id="${song.id}" title="사이트에서 미리듣기 (30초)" aria-label="유튜브에서 노래 듣기">
-                <span class="listen-play-icon">▶</span>
-                <span class="listen-text">듣기</span>
-              </a>
             </div>
           </div>
 
@@ -847,203 +829,6 @@ export function toggleSidebar(open) {
       overlay.style.display = 'none';
     }, 260);
   }
-}
-
-/**
- * Open Lyrics Viewer Modal / Bottom Sheet for a given songId
- */
-// In-site 30s preview (iTunes). Falls back to the YouTube search link if no preview exists.
-const previewAudio = new Audio();
-let previewBtn = null;
-function resetPreviewBtn() {
-  if (!previewBtn) return;
-  previewBtn.classList.remove('playing');
-  previewBtn.querySelector('.listen-play-icon').textContent = '▶';
-  previewBtn = null;
-}
-previewAudio.addEventListener('ended', resetPreviewBtn);
-async function togglePreview(btn) {
-  if (previewBtn === btn) { previewAudio.pause(); resetPreviewBtn(); return; }
-  previewAudio.pause();
-  resetPreviewBtn();
-  const song = allSongs.find(s => Number(s.id) === Number(btn.dataset.listenId));
-  if (!song) return;
-  previewBtn = btn;
-  btn.querySelector('.listen-play-icon').textContent = '…';
-  try {
-    const qs = new URLSearchParams({ title: song.title || '', artist: song.artist || '', composer: song.composer || '' });
-    const data = await (await fetch(`/api/preview?${qs}`)).json();
-    if (previewBtn !== btn) return; // user switched meanwhile
-    if (!data.found) throw new Error('no preview');
-    previewAudio.src = data.previewUrl;
-    await previewAudio.play();
-    btn.classList.add('playing');
-    btn.querySelector('.listen-play-icon').textContent = '⏸';
-  } catch {
-    if (previewBtn === btn) resetPreviewBtn();
-    window.open(btn.href, '_blank', 'noopener');
-  }
-}
-
-export async function openLyricsModal(songId) {
-  const id = Number(songId);
-  const song = allSongs.find(s => Number(s.id) === id);
-  if (!song) return;
-
-  currentLyricsSong = song;
-  const modal = document.getElementById('lyricsModal');
-  const overlay = document.getElementById('lyricsOverlay');
-  const titleEl = document.getElementById('lyricsSongTitle');
-  const metaEl = document.getElementById('lyricsSongMeta');
-  const karaokeBar = document.getElementById('lyricsKaraokeBar');
-  const bodyEl = document.getElementById('lyricsBody');
-  if (!modal || !overlay || !bodyEl) return;
-
-  const { effectivePitch, converted } = buildPitchMarkup(song);
-  const tjInfo = parseKaraokeNumber(song.tj_num);
-  const kyInfo = parseKaraokeNumber(song.ky_num);
-  const ytLyricsUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${song.title} ${cleanArtistText(song.artist)} 가사 발음`)}`;
-
-  if (titleEl) titleEl.textContent = cleanArtistText(song.title);
-  if (metaEl) {
-    const artistDisp = formatArtistDisplay(song.artist);
-    const compDisp = formatArtistDisplay(song.composer);
-    const metaParts = [artistDisp];
-    if (compDisp && compDisp !== '-' && compDisp !== artistDisp) metaParts.push(`작곡 ${compDisp}`);
-    if (effectivePitch !== '-') metaParts.push(`최고음 ${effectivePitch} (${converted})`);
-    metaEl.textContent = metaParts.filter(Boolean).join(' · ');
-  }
-
-  if (karaokeBar) {
-    karaokeBar.innerHTML = `
-      <div class="lyrics-kbar-nums">
-        <button type="button" class="lyrics-kbar-badge tj ${tjInfo.disabled}" data-copy="${escapeHtml(tjInfo.cleanNum)}" data-brand="TJ" data-title="${escapeHtml(song.title)}" ${tjInfo.disabled}>
-          <span class="kbar-tag">TJ</span>
-          <strong>${escapeHtml(tjInfo.displayNum)}</strong>
-        </button>
-        <button type="button" class="lyrics-kbar-badge ky ${kyInfo.disabled}" data-copy="${escapeHtml(kyInfo.cleanNum)}" data-brand="KY" data-title="${escapeHtml(song.title)}" ${kyInfo.disabled}>
-          <span class="kbar-tag">KY</span>
-          <strong>${escapeHtml(kyInfo.displayNum)}</strong>
-        </button>
-      </div>
-      <a href="${ytLyricsUrl}" target="_blank" rel="noopener noreferrer" class="lyrics-yt-link">▶ 유튜브 가사 영상</a>
-    `;
-  }
-
-  // Open modal immediately with skeleton state
-  document.body.classList.add('sidebar-open');
-  overlay.classList.remove('hidden');
-  overlay.style.display = 'block';
-  setTimeout(() => {
-    overlay.classList.add('active');
-    modal.classList.add('active');
-    modal.setAttribute('aria-hidden', 'false');
-  }, 10);
-
-  const cacheKey = `v2::${song.title || ''}::${song.artist || ''}`;
-  if (lyricsMemoryCache.has(cacheKey)) {
-    currentLyricsPayload = lyricsMemoryCache.get(cacheKey);
-    renderLyricsModalBody(song, currentLyricsPayload);
-    return;
-  }
-
-  bodyEl.innerHTML = `
-    <div class="lyrics-loading">
-      <div class="lyrics-spinner"></div>
-      <p class="lyrics-loading-text">원문 가사와 노래방 한글 발음·해석을 불러오고 있어요...</p>
-    </div>
-  `;
-
-  try {
-    const qs = new URLSearchParams({
-      v: '2',
-      title: song.title || '',
-      artist: song.artist || '',
-      composer: song.composer || ''
-    });
-    const res = await fetch(`/api/lyrics?${qs.toString()}`);
-    if (!res.ok) throw new Error('API error');
-    const payload = await res.json();
-    lyricsMemoryCache.set(cacheKey, payload);
-    if (currentLyricsSong?.id === song.id) {
-      currentLyricsPayload = payload;
-      renderLyricsModalBody(song, payload);
-    }
-  } catch {
-    const fallbackPayload = { found: false, title: song.title, artist: song.artist, lines: [] };
-    currentLyricsPayload = fallbackPayload;
-    renderLyricsModalBody(song, fallbackPayload);
-  }
-}
-
-export function closeLyricsModal() {
-  const modal = document.getElementById('lyricsModal');
-  const overlay = document.getElementById('lyricsOverlay');
-  if (!modal || !overlay) return;
-
-  document.body.classList.remove('sidebar-open');
-  modal.classList.remove('active');
-  overlay.classList.remove('active');
-  modal.setAttribute('aria-hidden', 'true');
-  setTimeout(() => {
-    overlay.classList.add('hidden');
-    overlay.style.display = 'none';
-  }, 250);
-}
-
-function renderLyricsModalBody(song, payload) {
-  const bodyEl = document.getElementById('lyricsBody');
-  if (!bodyEl) return;
-
-  const cleanTitle = cleanArtistText(song.title).split('(')[0].trim();
-  const rawSub = song.title.includes('(') ? song.title.slice(song.title.indexOf('(') + 1, -1).trim() : cleanTitle;
-  const artistDisp = formatArtistDisplay(song.artist);
-  const bugsUrl = `https://music.bugs.co.kr/search/integrated?q=${encodeURIComponent(`${cleanTitle} ${artistDisp}`)}`;
-  const utaNetUrl = `https://www.google.com/search?q=${encodeURIComponent(`${rawSub} ${artistDisp} 歌詞`)}`;
-  const koPronSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(`${cleanTitle} ${artistDisp} 가사 발음`)}`;
-
-  if (!payload || !payload.found || !Array.isArray(payload.lines) || payload.lines.length === 0) {
-    bodyEl.innerHTML = `
-      <div class="lyrics-empty-box">
-        <div class="lyrics-empty-icon">🎶</div>
-        <h3 class="lyrics-empty-title">자동 가사 DB에 아직 등록되지 않은 곡이에요</h3>
-        <p class="lyrics-empty-desc">아래 버튼으로 원문 가사와 한국어 발음을 바로 확인하실 수 있습니다.</p>
-        <div class="lyrics-ext-links">
-          <a href="${koPronSearchUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">🔎 한글 발음 · 가사 바로 검색</a>
-          <a href="${bugsUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">🎵 벅스(Bugs) 가사 보기</a>
-          <a href="${utaNetUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">🇯🇵 일본 원문 가사(歌詞) 검색</a>
-        </div>
-      </div>
-    `;
-    return;
-  }
-
-  const linesHtml = payload.lines
-    .map(item => {
-      if (item.empty) {
-        return `<div class="lyric-stanza-break" aria-hidden="true"></div>`;
-      }
-      return `
-        <div class="lyric-line-group">
-          <p class="lyric-orig">${escapeHtml(item.orig)}</p>
-          ${item.pron ? `<p class="lyric-pron">${escapeHtml(item.pron)}</p>` : ''}
-          ${item.ko ? `<p class="lyric-ko">${escapeHtml(item.ko)}</p>` : ''}
-        </div>
-      `;
-    })
-    .join('');
-
-  bodyEl.innerHTML = `
-    <div class="lyrics-lines-container">
-      ${linesHtml}
-    </div>
-    <div class="lyrics-footer-links">
-      <a href="${koPronSearchUrl}" target="_blank" rel="noopener noreferrer">한글 발음 더 찾아보기 ↗</a>
-      <span>·</span>
-      <a href="${utaNetUrl}" target="_blank" rel="noopener noreferrer">일본 원문 가사 검색 ↗</a>
-    </div>
-  `;
-  bodyEl.scrollTop = 0;
 }
 
 export function toggleVoteForm() {
@@ -1365,19 +1150,6 @@ function bindEvents() {
       return;
     }
 
-    const listenBtn = e.target.closest('[data-listen-id]');
-    if (listenBtn) {
-      e.preventDefault();
-      togglePreview(listenBtn);
-      return;
-    }
-
-    const lyricsBtn = e.target.closest('[data-lyrics-id]');
-    if (lyricsBtn) {
-      openLyricsModal(lyricsBtn.dataset.lyricsId);
-      return;
-    }
-
     const keyStepBtn = e.target.closest('[data-key-step]');
     if (keyStepBtn) {
       updateCardKeyShiftInPlace(keyStepBtn.dataset.songId, Number(keyStepBtn.dataset.keyStep));
@@ -1494,91 +1266,6 @@ function bindEvents() {
     }
   });
 
-  // Lyrics Modal Controls (Close, Mode Toggle, Font Size, Copy Lyrics & Karaoke Numbers)
-  const lyricsModal = document.getElementById('lyricsModal');
-  const lyricsOverlay = document.getElementById('lyricsOverlay');
-  const lyricsCloseBtn = document.getElementById('lyricsCloseBtn');
-  const lyricsModeGroup = document.getElementById('lyricsModeGroup');
-  const lyricsFontBtn = document.getElementById('lyricsFontBtn');
-  const lyricsCopyBtn = document.getElementById('lyricsCopyBtn');
-  const lyricsKaraokeBar = document.getElementById('lyricsKaraokeBar');
-
-  lyricsCloseBtn?.addEventListener('click', closeLyricsModal);
-  lyricsOverlay?.addEventListener('click', closeLyricsModal);
-
-  // Mobile Bottom Sheet Swipe-Down-to-Close on Header
-  const lyricsHeader = lyricsModal?.querySelector('.lyrics-modal-header');
-  let touchStartY = 0;
-  lyricsHeader?.addEventListener('touchstart', e => {
-    touchStartY = e.touches[0]?.clientY || 0;
-  }, { passive: true });
-  lyricsHeader?.addEventListener('touchend', e => {
-    const touchEndY = e.changedTouches[0]?.clientY || 0;
-    if (touchStartY > 0 && touchEndY - touchStartY > 55) {
-      closeLyricsModal();
-    }
-    touchStartY = 0;
-  }, { passive: true });
-
-  lyricsModeGroup?.addEventListener('click', e => {
-    const btn = e.target.closest('.lyrics-mode-btn');
-    if (!btn || !lyricsModal) return;
-    const mode = btn.dataset.lmode || 'all';
-    lyricsModal.setAttribute('data-view-mode', mode);
-    lyricsModeGroup.querySelectorAll('.lyrics-mode-btn').forEach(b => b.classList.toggle('active', b === btn));
-  });
-
-  lyricsFontBtn?.addEventListener('click', () => {
-    if (!lyricsModal) return;
-    lyricsFontSizeIdx = (lyricsFontSizeIdx + 1) % LYRICS_FONT_SIZES.length;
-    const sz = LYRICS_FONT_SIZES[lyricsFontSizeIdx];
-    lyricsModal.setAttribute('data-font-size', sz);
-    const labelMap = { md: '가+', lg: '가++', xl: '가-' };
-    lyricsFontBtn.textContent = labelMap[sz] || '가+';
-  });
-
-  lyricsCopyBtn?.addEventListener('click', async () => {
-    if (!currentLyricsSong || !currentLyricsPayload?.found) {
-      showToast('복사할 가사가 없어요.');
-      return;
-    }
-    const mode = lyricsModal?.getAttribute('data-view-mode') || 'all';
-    const textLines = [
-      `🎤 ${cleanArtistText(currentLyricsSong.title)} - ${formatArtistDisplay(currentLyricsSong.artist)}`,
-      ''
-    ];
-    for (const item of currentLyricsPayload.lines || []) {
-      if (item.empty) {
-        textLines.push('');
-        continue;
-      }
-      if (mode === 'orig') {
-        textLines.push(item.orig);
-      } else if (mode === 'karaoke') {
-        if (item.pron) textLines.push(item.pron);
-        textLines.push(`(${item.orig})`);
-      } else {
-        textLines.push(item.orig);
-        if (item.pron) textLines.push(`[발음] ${item.pron}`);
-        if (item.ko) textLines.push(`[해석] ${item.ko}`);
-      }
-    }
-    await copyTextSafe(textLines.join('\n'));
-    showToast('📋 가사 및 발음이 클립보드에 복사되었어요!');
-  });
-
-  lyricsKaraokeBar?.addEventListener('click', async e => {
-    const badge = e.target.closest('[data-copy]');
-    if (!badge || badge.classList.contains('disabled')) return;
-    const cleanNum = (badge.dataset.copy || '').trim();
-    if (!cleanNum) return;
-    const brand = badge.dataset.brand || 'TJ';
-    const title = badge.dataset.title || '';
-    await copyTextSafe(cleanNum);
-    recordCopiedNumber(brand, cleanNum, title);
-    showToast(`${brand} 노래방 번호 [${cleanNum}] 복사 완료!`);
-  });
-
   // Floating Scroll-to-Top Button
   window.addEventListener('scroll', () => {
     if (!scrollTopBtn) return;
@@ -1589,14 +1276,10 @@ function bindEvents() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // Global Keyboard Shortcuts (PC UX: '/' or Ctrl+K to search, Escape to close menu/lyrics)
+  // Global Keyboard Shortcuts (PC UX: '/' or Ctrl+K to search, Escape to close menu)
   window.addEventListener('keydown', e => {
     const sidebar = document.getElementById('sidebar');
     if (e.key === 'Escape') {
-      if (lyricsModal?.classList.contains('active')) {
-        closeLyricsModal();
-        return;
-      }
       if (sidebar?.classList.contains('active')) {
         toggleSidebar(false);
         return;
