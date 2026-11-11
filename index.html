@@ -439,40 +439,6 @@
     </div>
   </aside>
 
-  <!-- Lyrics Viewer Modal / Mobile Bottom Sheet -->
-  <div id="lyricsOverlay" class="lyrics-overlay hidden" tabindex="-1"></div>
-  <aside id="lyricsModal" class="lyrics-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="노래 가사 및 한글 발음 보기" data-view-mode="all" data-font-size="md">
-    <div class="lyrics-modal-header">
-      <div class="lyrics-title-wrap">
-        <h2 class="lyrics-song-title" id="lyricsSongTitle">곡 제목</h2>
-        <p class="lyrics-song-meta" id="lyricsSongMeta">아티스트 · 최고음</p>
-      </div>
-      <button type="button" id="lyricsCloseBtn" class="sidebar-close" aria-label="가사 창 닫기">✕</button>
-    </div>
-
-    <!-- Sticky Karaoke Bar inside Lyrics Modal -->
-    <div class="lyrics-karaoke-bar" id="lyricsKaraokeBar">
-      <!-- Dynamically populated with TJ/KY copy buttons, pitch pill, and YouTube listen link -->
-    </div>
-
-    <!-- Lyrics View Mode & Font Size Toolbar -->
-    <div class="lyrics-toolbar">
-      <div class="lyrics-mode-group" id="lyricsModeGroup" role="group" aria-label="가사 표시 모드">
-        <button type="button" class="lyrics-mode-btn active" data-lmode="all">원문+발음+해석</button>
-        <button type="button" class="lyrics-mode-btn" data-lmode="karaoke">🎤 노래방 발음</button>
-        <button type="button" class="lyrics-mode-btn" data-lmode="orig">원문만</button>
-      </div>
-      <div class="lyrics-tools-right">
-        <button type="button" class="btn-lyrics-tool" id="lyricsFontBtn" title="글자 크기 변경">가+</button>
-        <button type="button" class="btn-lyrics-tool" id="lyricsCopyBtn" title="가사 및 발음 전체 복사">📋 복사</button>
-      </div>
-    </div>
-
-    <!-- Scrollable Lyrics Body -->
-    <div class="lyrics-body" id="lyricsBody">
-      <!-- Populated dynamically -->
-    </div>
-  </aside>
 
   <!-- Toast Notification -->
   <div id="toast" class="toast hidden" role="status" aria-live="polite">
