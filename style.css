@@ -1036,7 +1036,7 @@ input[type="search"]::-webkit-search-results-decoration {
   background-color: var(--tj-red-bg);
 }
 
-/* Row 2: Full-Width Asymmetric Artist · Composer + YouTube Listen Pill */
+/* Row 2: Full-Width Asymmetric Artist · Composer */
 .card-meta-row {
   display: flex;
   align-items: center;
