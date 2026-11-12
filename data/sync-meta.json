@@ -1,34 +1,25 @@
 {
-  "lastSyncedAt": "2026-11-10T10:51:37.149Z",
+  "lastSyncedAt": "2026-11-12T01:02:07.659Z",
   "lastSyncStatus": "success",
-  "totalSongs": 433,
-  "newlyAddedCount": 3,
+  "totalSongs": 435,
+  "newlyAddedCount": 2,
   "newlyAddedSongs": [
     {
-      "id": 431,
-      "title": "쿠츠즈레 (くつずれ)",
-      "artist": "하치와레 (CV: 타나카 마코토)",
-      "composer": "토쿠마루 슈고",
-      "pitch": "2옥 파#",
-      "tj_num": "90215",
+      "id": 434,
+      "title": "ムーンライト",
+      "artist": "星街すいせい",
+      "composer": "なとり",
+      "pitch": "X",
+      "tj_num": "90217",
       "ky_num": "XXX"
     },
     {
-      "id": 432,
-      "title": "Loneliness",
-      "artist": "Mrs. GREEN APPLE",
-      "composer": "오모리 모토키",
-      "pitch": "3옥 레",
-      "tj_num": "90214",
-      "ky_num": "57727"
-    },
-    {
-      "id": 433,
-      "title": "요다카 (夜鷹)",
-      "artist": "요네즈 켄시",
-      "composer": "요네즈 켄시",
-      "pitch": "3옥 도#",
-      "tj_num": "90210",
+      "id": 435,
+      "title": "アリカ",
+      "artist": "マルシィ",
+      "composer": "吉田右京",
+      "pitch": "X",
+      "tj_num": "90216",
       "ky_num": "XXX"
     }
   ],

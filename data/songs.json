@@ -3895,5 +3895,23 @@
     "pitch": "3옥 도#",
     "tj_num": "90210",
     "ky_num": "XXX"
+  },
+  {
+    "id": 434,
+    "title": "ムーンライト",
+    "artist": "星街すいせい",
+    "composer": "なとり",
+    "pitch": "X",
+    "tj_num": "90217",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 435,
+    "title": "アリカ",
+    "artist": "マルシィ",
+    "composer": "吉田右京",
+    "pitch": "X",
+    "tj_num": "90216",
+    "ky_num": "XXX"
   }
 ]
