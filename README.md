@@ -21,13 +21,16 @@
 karaoke-search/
 ├── api/                   # songs.js, cron-sync.js (서버리스 함수)
 ├── data/
-│   └── songs.json         # 430+ 곡의 TJ/KY 번호, 일본어/한국어 제목, 최고음, 가수/작곡가 메타데이터
+│   └── songs.json         # 430+ 곡의 TJ/KY 번호(`tj_num`/`ky_num`), 제목, 최고음(`pitch`), 가수/작곡가 메타데이터
 ├── scripts/               # 곡 데이터 동기화, 음역대 검증 및 정제용 배치 스크립트 모음
 ├── index.html             # 메인 SPA 뷰, 검색바, 필터 태그, 곡 카드 그리드
 ├── script.js              # 클라이언트 상태관리, 초성/한영일 검색 엔진
 ├── style.css              # 전체 UI 디자인 시스템, 반응형 레이아웃, 다크모드, 애니메이션
 ├── vercel.json            # Vercel Serverless 라우팅 및 캐싱 헤더 설정
-└── AGENTS.md              # 코드 작성 원칙(Taste-skill, Ponytail, Karpathy 원칙)
+├── AGENTS.md              # 구조 지도·코드 작성 원칙(Taste-skill, Ponytail, Karpathy 원칙)
+├── CLAUDE.md              # AGENTS.md 참조 + 개인 지침 연결
+├── docs/PERSONAL_GUIDELINES.md  # 소유자 개인 지침 사본
+└── .claude/skills/        # 디자인 스킬, model-router, gemini-delegate
 ```
 
 ---
@@ -41,7 +44,7 @@ karaoke-search/
 - **최고음 검색**: `3옥 도#`, `2옥 시` 등 음역대 키워드 검색.
 
 ### 2. 최고음 & 조옮김(Key Transpose) 가이드
-- 각 곡마다 훈련된 최고음(`highest_pitch`, 예: `3옥 레#`, `2옥 라`) 태그 제공.
+- 각 곡마다 훈련된 최고음(`pitch`, 예: `3옥 레#`, `2옥 라`) 태그 제공.
 - 각 곡 카드 우측 상단의 `[ - ] [ 3옥 도# ] [ + ]` 버튼을 누르면 실시간으로 키를 올리거나 낮춰 노래방 리모컨 조작 가이드 제공.
 
 ---
@@ -49,7 +52,7 @@ karaoke-search/
 ## 🛠️ Local Development & Deployment
 
 ### 1. Requirements
-- Node.js 18+ (ES Modules 지원 필수)
+- Node.js 20+ (ES Modules 지원 필수)
 - Vercel CLI (`npm i -g vercel`)
 
 ### 2. Local Run
@@ -58,7 +61,8 @@ karaoke-search/
 npm install
 
 # 로컬 개발 서버 실행 (API 라우트 포함)
-npx vercel dev
+npm start        # scripts/dev-server.mjs (정적 파일 + API 모킹)
+# 또는 npx vercel dev
 ```
 
 ### 3. Production Deployment
@@ -76,6 +80,6 @@ npx vercel deploy --prod --yes
 
 ## 📋 Rules for Future AI Contributors
 1. **No Framework Bloat**: React, Vue, Next.js 등 무거운 프레임워크로 무단 전환하지 말고 순수 바닐라 웹 표준(Vanilla JS / CSS)을 유지하세요.
-2. **Data Integrity**: `data/songs.json`의 필드 스키마(`title`, `sub_title`, `artist`, `composer`, `tj_number`, `ky_number`, `highest_pitch`, `level` 등)를 훼손하지 마세요.
+2. **Data Integrity**: `data/songs.json`의 필드 스키마(`id`, `title`, `artist`, `composer`, `pitch`, `tj_num`, `ky_num`)를 훼손하지 마세요.
 
 > 가사·음원 재생은 저작권 사유로 제공하지 않습니다 (MUS2-18 결정).
