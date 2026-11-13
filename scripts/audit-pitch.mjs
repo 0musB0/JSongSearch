@@ -22,6 +22,11 @@ export function toKo(token) {
   return `${octave - 2}옥 ${NOTE_KO[letter]}${acc}`;
 }
 
+const ORDER = ['도', '도#', '레', '레#', '미', '파', '파#', '솔', '솔#', '라', '라#', '시'];
+const rank = ko => { const m = /^(\d)옥 (.+)$/.exec(ko || ''); return m ? m[1] * 12 + ORDER.indexOf(m[2]) : -1; };
+// 최고음 기준: 메인 멜로디의 진성·가성 중 높은 쪽 (사용자 결정 2026-11-13)
+export const peakOf = ({ chest, falsetto }) => (rank(falsetto) > rank(chest) ? falsetto : chest) || null;
+
 export function parseRange(text) {
   const t = text.replace(/＃/g, '#');
   const grab = label => {
@@ -60,8 +65,9 @@ async function main() {
       const hits = await search(`site:vocal-range.com 「${jp}」 ${s.artist} 音域 地声最高音`, key);
       const hit = hits.find(h => h.url.includes('vocal-range.com') && (h.title || '').includes(jp));
       const r = hit ? parseRange(hit.description || '') : { chest: null, falsetto: null };
-      out[s.id] = { title: s.title, stored: s.pitch, ...r, url: hit?.url || null,
-        status: !hit || (!r.chest && !r.falsetto) ? 'no-source' : [r.chest, r.falsetto].includes(s.pitch) ? 'match' : 'diff' };
+      const peak = peakOf(r);
+      out[s.id] = { title: s.title, stored: s.pitch, ...r, peak, url: hit?.url || null,
+        status: !peak ? 'no-source' : peak === s.pitch ? 'match' : 'diff' };
     } catch (e) {
       out[s.id] = { title: s.title, stored: s.pitch, status: 'error', error: e.message };
     }
