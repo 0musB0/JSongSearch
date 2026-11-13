@@ -1249,20 +1249,15 @@ function bindEvents() {
     const feedback = document.getElementById('syncFeedback');
     if (feedback) {
       feedback.classList.remove('hidden');
-      feedback.textContent = '나무위키 신곡 목록을 확인하고 있습니다...';
+      feedback.textContent = '최신 동기화 상태를 확인하고 있습니다...';
     }
     try {
-      const res = await fetch('/api/cron-sync');
-      const data = await res.json();
-      if (data.success) {
-        if (feedback) {
-          feedback.textContent = `동기화 완료! (총 ${data.data?.totalSongs || allSongs.length}곡, 신규 추가: ${data.data?.newlyAddedCount || 0}곡)`;
-        }
-      } else {
-        if (feedback) feedback.textContent = `동기화 완료 (현재 최신 상태: ${allSongs.length}곡)`;
-      }
+      const res = await fetch('/api/songs?meta=true');
+      const meta = await res.json();
+      const when = meta.lastSyncedAt ? new Date(meta.lastSyncedAt).toLocaleDateString('ko-KR') : '기록 없음';
+      if (feedback) feedback.textContent = `마지막 갱신 ${when} · 총 ${meta.totalSongs || allSongs.length}곡`;
     } catch {
-      if (feedback) feedback.textContent = `최신 데이터 유지 중 (총 ${allSongs.length}곡)`;
+      if (feedback) feedback.textContent = `총 ${allSongs.length}곡`;
     }
   });
 
