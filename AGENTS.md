@@ -34,7 +34,7 @@ api/cron-sync.js           일일 신곡 동기화 트리거 서버리스 함수
 scripts/dev-server.mjs     로컬 개발용 HTTP 서버 (정적 파일 + API 모킹)
 scripts/sync-namuwiki.mjs  TJ Media 및 나무위키 신곡 동기화 스크립트
 scripts/parse-namuwiki.mjs 나무위키 마크다운 파싱 및 음역 매핑 유틸리티
-scripts/fill-pitch.mjs      pitch X 곡 최고음 조회·채우기 (Firecrawl, 캐시·상한)
+scripts/fill-pitch.mjs      pitch X 곡 최고음 조회·채우기 (Firecrawl, 캐시·상한, --retry)
 scripts/audit-pitch.mjs     기존 pitch 와 vocal-range.com 대조 (수정 안 함)
 logo.png, og-banner.png, .agents/skills/, .claude/skills/  생성물·자산
 docs/PERSONAL_GUIDELINES.md  개인 지침
