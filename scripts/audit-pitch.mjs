@@ -36,7 +36,7 @@ export function parseRange(text) {
   return { chest: grab('地声最高音'), falsetto: grab('裏声最高音') };
 }
 
-function jpTitle(song) {
+export function jpTitle(song) {
   const m = /\(([^)]*[ぁ-んァ-ヶ一-龠][^)]*)\)/.exec(song.title);
   return (m ? m[1] : song.title).trim();
 }

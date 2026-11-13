@@ -34,6 +34,8 @@ api/cron-sync.js           일일 신곡 동기화 트리거 서버리스 함수
 scripts/dev-server.mjs     로컬 개발용 HTTP 서버 (정적 파일 + API 모킹)
 scripts/sync-namuwiki.mjs  TJ Media 및 나무위키 신곡 동기화 스크립트
 scripts/parse-namuwiki.mjs 나무위키 마크다운 파싱 및 음역 매핑 유틸리티
+scripts/fill-pitch.mjs      pitch X 곡 최고음 조회·채우기 (Firecrawl, 캐시·상한)
+scripts/audit-pitch.mjs     기존 pitch 와 vocal-range.com 대조 (수정 안 함)
 logo.png, og-banner.png, .agents/skills/, .claude/skills/  생성물·자산
 docs/PERSONAL_GUIDELINES.md  개인 지침
 data/songs.json 스키마: id, title, artist, composer, pitch, tj_num, ky_num (훼손 금지)
@@ -59,3 +61,6 @@ data/songs.json 스키마: id, title, artist, composer, pitch, tj_num, ky_num (�
 - 큰 파일/데이터: logo.png(414KB), og-banner.png(504KB), data/songs.json(94KB) - head로 일부만 볼 것(통째로 읽지 말 것), data/sync-meta.json
 - 환경변수 위치: GEMINI_API_KEY, FIRECRAWL_API_KEY, CRON_SECRET (Vercel 환경변수 또는 실행 환경에만 설정)
 <!-- 자동 배포 점검: 2026-11-11 -->
+
+최고음 자동 채우기:
+- 신곡 동기화(`npm run sync`) 직후 `node scripts/fill-pitch.mjs` 를 실행한다. pitch 가 X 인 곡만 vocal-range.com 에서 곡당 1회 조회(약 2크레딧)해 확인된 값만 채우고, 못 찾으면 X 유지. 시작 시 예상 크레딧 출력, `--max-credits=N` 상한, 결과 캐시 docs/pitch-fill-cache.json(중단 후 이어 실행), 보고서 docs/pitch-fill-report.md.
