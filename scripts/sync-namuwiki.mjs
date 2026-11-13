@@ -29,6 +29,7 @@ const NAMUWIKI_JAPANESE_URLS = [
 
 const LOCAL_FALLBACK_MD = 'C:\\Users\\LG\\.gemini\\antigravity\\brain\\7db566f1-df77-497b-8fee-239f8203917b\\scratch\\namuwiki_vocaloid_karaoke.md';
 
+// pitch = 메인 보컬 멜로디 최고음만 (하모니·코러스·애드립·화음 제외)
 // Curated Korean title, artist, composer, pitch metadata for newly released TJ/KY Japanese songs
 // Verified against Japanese vocal range databases (vocal-range.com, atwiki.jp/saikouon_dokoda, keytube.net, voice-key.news)
 const KNOWN_JP_SONG_METADATA = {
@@ -263,11 +264,13 @@ Normalize every row into a JSON array of song objects matching this EXACT 7-fiel
     "title": "<Korean title with Japanese original in parentheses if available, e.g. '아이돌 (アイドル)' or 'Lemon'>",
     "artist": "<singer/band name, e.g. 'YOASOBI', '요네즈 켄시'>",
     "composer": "<composer name, e.g. 'Ayase', '요네즈 켄시'>",
-    "pitch": "<highest pitch in Korean octave notation like '3옥 도#', '3옥 파#', '2옥 시', or 'X'>",
+    "pitch": "<highest note of the MAIN VOCAL MELODY only, in Korean octave notation like '3옥 도#', '3옥 파#', '2옥 시'. Copy the row's pitch as-is; if it is 'X', output 'X'. Never guess.>",
     "tj_num": "<TJ karaoke number keeping ⓗ/ⓢ if present, or 'XXX'>",
     "ky_num": "<KY karaoke number, or 'XXX'>"
   }
 ]
+
+PITCH RULE: pitch is the highest note of the main vocal melody only. Exclude harmony, chorus, backing vocals, ad-libs, and stacked vocal parts. If a value is unknown or you cannot confirm it is main-vocal-only, use 'X' instead of guessing.
 
 CRITICAL: Return ONLY a valid JSON array. No markdown codeblocks, no extra fields.`;
 
@@ -412,7 +415,7 @@ export async function runSync() {
     newlyAddedCount: newlyAddedSongs.length,
     newlyAddedSongs: newlyAddedSongs.slice(0, 10),
     sources: NAMUWIKI_JAPANESE_URLS,
-    schedule: '매일 10:00 KST (CRON_TZ=Asia/Seoul 0 10 * * *)',
+    schedule: '수동 (로컬 npm run sync 후 커밋)',
     engine: 'gemini-3.8-flash + FireCrawl'
   };
 

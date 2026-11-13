@@ -51,6 +51,10 @@ data/songs.json 스키마: id, title, artist, composer, pitch, tj_num, ky_num (�
 - 곡 DB 갱신은 로컬 `npm run sync` 후 커밋·push (Vercel 배포가 이어서 반영). 서버리스는 파일시스템이 읽기 전용이라 영구 갱신 불가.
 - vercel.json의 crons는 제거됨 (유료 Gemini/Firecrawl 호출 낭비 방지). api/cron-sync.js는 CRON_SECRET이 있을 때만 수동 호출 가능(미설정 시 401). 프론트 '최신 수록곡 확인' 버튼은 /api/songs?meta=true로 마지막 갱신일만 표시(유료 동기화 호출 안 함).
 
+최고음(pitch) 규칙:
+- 메인 보컬 멜로디 최고음만. 하모니·코러스·애드립·화음 제외. 모르면 'X', 추측·임의 변경 금지(출처 필요).
+- 재검토 후보 목록: docs/pitch-review.md
+
 건드리지 말 것:
 - 큰 파일/데이터: logo.png(414KB), og-banner.png(504KB), data/songs.json(94KB) - head로 일부만 볼 것(통째로 읽지 말 것), data/sync-meta.json
 - 환경변수 위치: GEMINI_API_KEY, FIRECRAWL_API_KEY, CRON_SECRET (Vercel 환경변수 또는 실행 환경에만 설정)
