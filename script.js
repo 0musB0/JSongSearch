@@ -1255,7 +1255,7 @@ function bindEvents() {
       const res = await fetch('/api/songs?meta=true');
       const meta = await res.json();
       const when = meta.lastSyncedAt ? new Date(meta.lastSyncedAt).toLocaleDateString('ko-KR') : '기록 없음';
-      if (feedback) feedback.textContent = `마지막 갱신 ${when} · 총 ${meta.totalSongs || allSongs.length}곡`;
+      if (feedback) feedback.textContent = `마지막 갱신 ${when} · 총 ${allSongs.length}곡`;
     } catch {
       if (feedback) feedback.textContent = `총 ${allSongs.length}곡`;
     }
