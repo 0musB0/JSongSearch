@@ -14,6 +14,11 @@ This workspace integrates strict engineering discipline, combining Superpowers d
 - **Verification Before Completion**: Never claim completion without executing test scripts and validating output.
 
 
+## 스킬·지침 위치
+- `.agents/skills/`: 워크스페이스 4대 스킬(taste-skill, ponytail, headroom, andrej-karpathy) 요약본
+- `.claude/skills/`: 소유자 Claude Desktop의 디자인 스킬 전체(taste-skill 계열)와 model-router, gemini-delegate 원문 사본
+- `docs/PERSONAL_GUIDELINES.md`: 소유자 개인 지침(자율 진행, 확인 대상, 끝맺음 형식). 작업 시작 시 따를 것
+
 ## 구조 지도
 한 줄 개요: 일본곡 노래방(TJ/금영) 번호·최고음 검색 웹 서비스 (가사·음원 재생 없음, 저작권)
 스택: JavaScript(ES Module), HTML5/CSS3, Node.js, Vercel Serverless/Cron, @google/genai
@@ -29,7 +34,9 @@ api/cron-sync.js           일일 신곡 동기화 트리거 서버리스 함수
 scripts/dev-server.mjs     로컬 개발용 HTTP 서버 (정적 파일 + API 모킹)
 scripts/sync-namuwiki.mjs  TJ Media 및 나무위키 신곡 동기화 스크립트
 scripts/parse-namuwiki.mjs 나무위키 마크다운 파싱 및 음역 매핑 유틸리티
-logo.png, og-banner.png, .agents/skills/  생성물·자산
+logo.png, og-banner.png, .agents/skills/, .claude/skills/  생성물·자산
+docs/PERSONAL_GUIDELINES.md  개인 지침
+data/songs.json 스키마: id, title, artist, composer, pitch, tj_num, ky_num (훼손 금지)
 
 데이터 흐름:
 - 정적 로드: 브라우저가 정적 자산 로드 후 /api/songs에서 data/songs.json을 가져와 인메모리 검색/필터링
