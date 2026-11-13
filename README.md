@@ -44,7 +44,8 @@ karaoke-search/
 - **최고음 검색**: `3옥 도#`, `2옥 시` 등 음역대 키워드 검색.
 
 ### 2. 최고음 & 조옮김(Key Transpose) 가이드
-- 각 곡마다 훈련된 최고음(`pitch`, 예: `3옥 레#`, `2옥 라`) 태그 제공.
+- 각 곡마다 최고음(`pitch`, 예: `3옥 레#`, `2옥 라`) 태그 제공.
+- **측정 기준**: 메인 보컬 멜로디의 최고음만 기록. 하모니·코러스·애드립·화음 제외. 불확실하면 `X`로 두고 추측하지 않는다. 재검토 후보는 `docs/pitch-review.md`.
 - 각 곡 카드 우측 상단의 `[ - ] [ 3옥 도# ] [ + ]` 버튼을 누르면 실시간으로 키를 올리거나 낮춰 노래방 리모컨 조작 가이드 제공.
 
 ---
@@ -80,6 +81,7 @@ npx vercel deploy --prod --yes
 
 ## 📋 Rules for Future AI Contributors
 1. **No Framework Bloat**: React, Vue, Next.js 등 무거운 프레임워크로 무단 전환하지 말고 순수 바닐라 웹 표준(Vanilla JS / CSS)을 유지하세요.
-2. **Data Integrity**: `data/songs.json`의 필드 스키마(`id`, `title`, `artist`, `composer`, `pitch`, `tj_num`, `ky_num`)를 훼손하지 마세요.
+2. **Pitch Rule**: `pitch`는 메인 보컬 멜로디 최고음만. 출처 없이 값을 임의 변경 금지.
+3. **Data Integrity**: `data/songs.json`의 필드 스키마(`id`, `title`, `artist`, `composer`, `pitch`, `tj_num`, `ky_num`)를 훼손하지 마세요.
 
 > 가사·음원 재생은 저작권 사유로 제공하지 않습니다 (MUS2-18 결정).

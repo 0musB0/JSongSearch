@@ -929,7 +929,7 @@ async function initApp() {
       }
     }
   } catch {
-    if (sidebarLastSync) sidebarLastSync.textContent = '매일 10:00 KST';
+    if (sidebarLastSync) sidebarLastSync.textContent = '확인 불가';
   }
 
   const params = new URLSearchParams(window.location.search);
