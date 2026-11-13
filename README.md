@@ -13,13 +13,13 @@
 ### 1. Key Tech Stack & Design Philosophy
 - **Frontend Architecture**: No-Build Vanilla Web (HTML5, Modern Responsive CSS3, Modular ES6+ JavaScript).
 - **Styling**: `style.css` 기반 커스텀 디자인 시스템 (Pink/Sakura 모던 글래스모피즘, 라이트/다크 테마 토글, 모바일 터치 최적화).
-- **Backend / Edge**: Vercel Serverless Function (`api/songs.js`, `api/cron-sync.js`).
+- **Backend / Edge**: Vercel Serverless Function (`api/songs.js`; `api/cron-sync.js`는 수동 호출용, 크론 스케줄 없음).
 - **Database**: Static Local JSON Database (`data/songs.json`, ~430+곡 정밀 검증 데이터).
 
 ### 2. Core Modules & Directory Layout
 ```text
 karaoke-search/
-├── api/                   # songs.js, cron-sync.js (서버리스 함수)
+├── api/                   # songs.js, cron-sync.js (서버리스 함수, DB 갱신은 로컬 `npm run sync` 후 커밋)
 ├── data/
 │   └── songs.json         # 430+ 곡의 TJ/KY 번호(`tj_num`/`ky_num`), 제목, 최고음(`pitch`), 가수/작곡가 메타데이터
 ├── scripts/               # 곡 데이터 동기화, 음역대 검증 및 정제용 배치 스크립트 모음
