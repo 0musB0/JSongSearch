@@ -52,7 +52,7 @@ karaoke-search/
 ## 🛠️ Local Development & Deployment
 
 ### 1. Requirements
-- Node.js 18+ (ES Modules 지원 필수)
+- Node.js 20+ (ES Modules 지원 필수)
 - Vercel CLI (`npm i -g vercel`)
 
 ### 2. Local Run

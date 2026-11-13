@@ -47,6 +47,10 @@ data/songs.json 스키마: id, title, artist, composer, pitch, tj_num, ky_num (�
 - 검색 필터링/키 계산/클라이언트 동작 수정: script.js
 - 신곡 수집 및 동기화 규칙 변경: scripts/sync-namuwiki.mjs, scripts/parse-namuwiki.mjs
 
+알려진 주의점 (미해결, 사용자 판단 필요):
+- api/cron-sync.js: CRON_SECRET 미설정 시 누구나 GET으로 동기화(Gemini/Firecrawl 유료 호출)를 실행 가능. Vercel 환경변수에 CRON_SECRET이 있는지 확인할 것.
+- sync-namuwiki.mjs: 서버리스는 파일시스템이 읽기 전용이고 git push도 불가하므로 크론 실행이 DB를 영구 갱신하지 못할 가능성이 큼. 갱신은 로컬 `npm run sync` 후 커밋이 확실한 경로.
+
 건드리지 말 것:
 - 큰 파일/데이터: logo.png(414KB), og-banner.png(504KB), data/songs.json(94KB) - head로 일부만 볼 것(통째로 읽지 말 것), data/sync-meta.json
 - 환경변수 위치: GEMINI_API_KEY, FIRECRAWL_API_KEY, CRON_SECRET (Vercel 환경변수 또는 실행 환경에만 설정)
