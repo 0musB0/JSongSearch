@@ -1,25 +1,25 @@
 {
-  "lastSyncedAt": "2026-11-12T01:02:07.659Z",
+  "lastSyncedAt": "2026-11-13T01:02:04.571Z",
   "lastSyncStatus": "success",
-  "totalSongs": 435,
+  "totalSongs": 437,
   "newlyAddedCount": 2,
   "newlyAddedSongs": [
     {
-      "id": 434,
-      "title": "ムーンライト",
-      "artist": "星街すいせい",
-      "composer": "なとり",
+      "id": 436,
+      "title": "再会",
+      "artist": "Vaundy",
+      "composer": "VAUNDY",
       "pitch": "X",
-      "tj_num": "90217",
+      "tj_num": "90246",
       "ky_num": "XXX"
     },
     {
-      "id": 435,
-      "title": "アリカ",
-      "artist": "マルシィ",
-      "composer": "吉田右京",
+      "id": 437,
+      "title": "みむかゥわナイストライ",
+      "artist": "ぬぬぬぬぬぬぬぬぬぬ...(Feat.初音ミク)",
+      "composer": "ぬぬぬぬぬぬぬぬぬぬ...",
       "pitch": "X",
-      "tj_num": "90216",
+      "tj_num": "90245",
       "ky_num": "XXX"
     }
   ],

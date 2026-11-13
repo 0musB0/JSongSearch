@@ -3913,5 +3913,23 @@
     "pitch": "X",
     "tj_num": "90216",
     "ky_num": "XXX"
+  },
+  {
+    "id": 436,
+    "title": "再会",
+    "artist": "Vaundy",
+    "composer": "VAUNDY",
+    "pitch": "X",
+    "tj_num": "90246",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 437,
+    "title": "みむかゥわナイストライ",
+    "artist": "ぬぬぬぬぬぬぬぬぬぬ...(Feat.初音ミク)",
+    "composer": "ぬぬぬぬぬぬぬぬぬぬ...",
+    "pitch": "X",
+    "tj_num": "90245",
+    "ky_num": "XXX"
   }
 ]
