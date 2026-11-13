@@ -4036,7 +4036,7 @@
     "title": "와인레드의 마음 (ワインレッドの心)",
     "artist": "안전지대 (安全地帯)",
     "composer": "玉置浩二",
-    "pitch": "X",
+    "pitch": "2옥 솔#",
     "tj_num": "6149",
     "ky_num": "XXX"
   },
@@ -4045,7 +4045,7 @@
     "title": "슬픔이여 안녕 (悲しみにさよなら)",
     "artist": "안전지대 (安全地帯)",
     "composer": "玉置浩二",
-    "pitch": "X",
+    "pitch": "2옥 파#",
     "tj_num": "6398",
     "ky_num": "XXX"
   },
@@ -4054,7 +4054,7 @@
     "title": "사랑의 예감 (恋の予感)",
     "artist": "안전지대 (安全地帯)",
     "composer": "玉置浩二",
-    "pitch": "X",
+    "pitch": "2옥 솔#",
     "tj_num": "6416",
     "ky_num": "XXX"
   },
@@ -4117,7 +4117,7 @@
     "title": "분명 잊지 않아 (きっと忘れない)",
     "artist": "ZARD",
     "composer": "織田哲郎",
-    "pitch": "X",
+    "pitch": "3옥 레#",
     "tj_num": "6974",
     "ky_num": "XXX"
   },
@@ -4207,7 +4207,7 @@
     "title": "낭만비행 (浪漫飛行)",
     "artist": "코메코메 클럽 (米米CLUB)",
     "composer": "米米CLUB",
-    "pitch": "X",
+    "pitch": "2옥 솔",
     "tj_num": "26422",
     "ky_num": "XXX"
   },
@@ -4333,7 +4333,7 @@
     "title": "실 (糸)",
     "artist": "나카지마 미유키 (中島みゆき)",
     "composer": "中島みゆき",
-    "pitch": "X",
+    "pitch": "2옥 라#",
     "tj_num": "28767",
     "ky_num": "XXX"
   },
@@ -4369,7 +4369,7 @@
     "title": "영혼의 루프런 (魂のルフラン)",
     "artist": "타카하시 요코 (高橋洋子)",
     "composer": "大森俊之",
-    "pitch": "X",
+    "pitch": "2옥 시",
     "tj_num": "25622",
     "ky_num": "XXX"
   },
@@ -4504,7 +4504,7 @@
     "title": "청춘 콤플렉스 (青春コンプレックス)",
     "artist": "결속밴드 (結束バンド)",
     "composer": "音羽-OTOHA-",
-    "pitch": "X",
+    "pitch": "3옥 도#",
     "tj_num": "68706",
     "ky_num": "XXX"
   },
@@ -4513,7 +4513,7 @@
     "title": "별자리가 될 수 있다면 (星座になれたら)",
     "artist": "결속밴드 (結束バンド)",
     "composer": "内藤英雅",
-    "pitch": "X",
+    "pitch": "3옥 도#",
     "tj_num": "68748",
     "ky_num": "XXX"
   },
@@ -4540,7 +4540,7 @@
     "title": "잊어주지 않아 (忘れてやらない)",
     "artist": "결속밴드 (結束バンド)",
     "composer": "吉岡大地",
-    "pitch": "X",
+    "pitch": "3옥 도#",
     "tj_num": "68763",
     "ky_num": "XXX"
   },
@@ -4549,7 +4549,7 @@
     "title": "그 밴드 (あのバンド)",
     "artist": "결속밴드 (結束バンド)",
     "composer": "草野華余子",
-    "pitch": "X",
+    "pitch": "3옥 레",
     "tj_num": "68751",
     "ky_num": "XXX"
   },
@@ -4594,7 +4594,7 @@
     "title": "이름 없는 괴물 (名前のない怪物)",
     "artist": "EGOIST",
     "composer": "RYO",
-    "pitch": "X",
+    "pitch": "3옥 솔",
     "tj_num": "27663",
     "ky_num": "XXX"
   },
@@ -4684,7 +4684,7 @@
     "title": "D-tecno Life",
     "artist": "UVERworld",
     "composer": "TAKUYA∞",
-    "pitch": "X",
+    "pitch": "2옥 라",
     "tj_num": "26327",
     "ky_num": "XXX"
   },
@@ -4720,7 +4720,7 @@
     "title": "샤카비치 ~Laka Laka La~ (シャカビーチ ～Laka Laka La～)",
     "artist": "UVERworld",
     "composer": "UVERworld",
-    "pitch": "X",
+    "pitch": "3옥 도#",
     "tj_num": "26645",
     "ky_num": "XXX"
   },
@@ -4738,7 +4738,7 @@
     "title": "멜리사 (メリッサ)",
     "artist": "포르노그라피티 (ポルノグラフィティ)",
     "composer": "ak.homma",
-    "pitch": "X",
+    "pitch": "2옥 라",
     "tj_num": "25625",
     "ky_num": "XXX"
   },
@@ -4765,7 +4765,7 @@
     "title": "혼자의 밤 (ヒトリノ夜)",
     "artist": "포르노그라피티 (ポルノグラフィティ)",
     "composer": "AK.HOMMA",
-    "pitch": "X",
+    "pitch": "2옥 라",
     "tj_num": "6943",
     "ky_num": "XXX"
   },

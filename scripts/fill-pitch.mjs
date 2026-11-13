@@ -10,7 +10,7 @@ const CACHE = 'docs/pitch-fill-cache.json';
 const REPORT = 'docs/pitch-fill-report.md';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-async function fc(path, body, key) {
+export async function fc(path, body, key) {
   for (let attempt = 0; ; attempt++) {
     const res = await fetch('https://api.firecrawl.dev/v2/' + path, {
       method: 'POST',
@@ -69,9 +69,9 @@ export async function fillPitch({ key, maxCredits = 300, dry = false, retry = fa
   fs.writeFileSync(REPORT, [
     '# 최고음 X 곡 채우기 보고서', '',
     `- 채움 누계(캐시 found): ${rows.length}곡`, `- 여전히 X: ${left}곡 (출처에서 못 찾음·불확실·상한 초과)`,
-    `- 규칙: 메인 보컬 멜로디 최고음만, 진성·가성 중 높은 쪽, vocal-range.com 확인값만`, '',
+    `- 규칙: 메인 보컬 멜로디 최고음만, 진성·가성 중 높은 쪽, vocal-range.com 확인값 또는 서로 다른 신뢰 출처 2곳 이상 일치값(사람이 정리한 출처 포함)만`, '',
     '## 근거 출처', '', '| id | 곡 | 최고음 | 출처 |', '|---|---|---|---|',
-    ...rows.map(([id, v]) => `| ${id} | ${v.title} | ${v.peak} | ${v.url} |`), ''
+    ...rows.map(([id, v]) => `| ${id} | ${v.title} | ${v.peak} | ${(v.sources || [v.url]).join(" ")} |`), ''
   ].join('\n'));
   console.log({ filled, left });
 }

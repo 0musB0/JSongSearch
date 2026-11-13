@@ -35,6 +35,7 @@ scripts/dev-server.mjs     로컬 개발용 HTTP 서버 (정적 파일 + API 모
 scripts/sync-namuwiki.mjs  TJ Media 및 나무위키 신곡 동기화 스크립트
 scripts/parse-namuwiki.mjs 나무위키 마크다운 파싱 및 음역 매핑 유틸리티
 scripts/fill-pitch.mjs      pitch X 곡 최고음 조회·채우기 (Firecrawl, 캐시·상한, --retry)
+scripts/fill-pitch-alt.mjs  vocal-range.com 에 없는 X 곡을 다른 신뢰 출처(2곳 이상 일치)로 판정해 캐시에 기록
 scripts/audit-pitch.mjs     기존 pitch 와 vocal-range.com 대조 (수정 안 함)
 logo.png, og-banner.png, .agents/skills/, .claude/skills/  생성물·자산
 docs/PERSONAL_GUIDELINES.md  개인 지침
@@ -62,5 +63,7 @@ data/songs.json 스키마: id, title, artist, composer, pitch, tj_num, ky_num (�
 - 환경변수 위치: GEMINI_API_KEY, FIRECRAWL_API_KEY, CRON_SECRET (Vercel 환경변수 또는 실행 환경에만 설정)
 <!-- 자동 배포 점검: 2026-11-11 -->
 
-최고음 자동 채우기:
-- 신곡 동기화(`npm run sync`) 직후 `node scripts/fill-pitch.mjs` 를 실행한다. pitch 가 X 인 곡만 vocal-range.com 에서 곡당 1회 조회(약 2크레딧)해 확인된 값만 채우고, 못 찾으면 X 유지. 시작 시 예상 크레딧 출력, `--max-credits=N` 상한, 결과 캐시 docs/pitch-fill-cache.json(중단 후 이어 실행), 보고서 docs/pitch-fill-report.md.
+최고음 자동 채우기 (Mus 결정 2026-11-13: vocal-range.com 외 출처 허용, 별도 허락 불필요):
+- 신곡 동기화(`npm run sync`) 직후 순서대로 실행: `node scripts/fill-pitch.mjs`(vocal-range.com, 곡당 약 2크레딧) → `node scripts/fill-pitch-alt.mjs`(못 찾은 곡을 다른 출처로, 곡당 약 2크레딧+표 페이지 1크레딧) → `node scripts/fill-pitch.mjs`(반영·보고서). 시작 시 예상 크레딧 출력, `--max-credits=N` 상한, 결과 캐시 docs/pitch-fill-cache.json·docs/pitch-alt-cache.json(재실행 시 크레딧 0).
+- 다른 출처 채택 규칙: 서로 다른 사이트 2곳 이상이 같은 값이고 사람이 정리한 출처(atwiki 音域データ, vocal-range.com, music-key.com, karaoto.net, stepupkaraoke 등) 1곳 이상 포함. utakey.jp·keytube.net(자동 분석)만으로는 채택 안 함. 사람이 정리한 출처가 더 높은 값을 주면 X 유지. 근거 URL은 docs/pitch-fill-report.md 에 곡마다 남는다.
+- 불확실하면 X 유지(추측 금지).
