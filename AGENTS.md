@@ -52,7 +52,7 @@ data/songs.json 스키마: id, title, artist, composer, pitch, tj_num, ky_num (�
 - vercel.json의 crons는 제거됨 (유료 Gemini/Firecrawl 호출 낭비 방지). api/cron-sync.js는 CRON_SECRET이 있을 때만 수동 호출 가능(미설정 시 401). 프론트 '최신 수록곡 확인' 버튼은 /api/songs?meta=true로 마지막 갱신일만 표시(유료 동기화 호출 안 함).
 
 최고음(pitch) 규칙:
-- 메인 보컬 멜로디 최고음만. 하모니·코러스·애드립·화음 제외. 모르면 'X', 추측·임의 변경 금지(출처 필요).
+- 메인 보컬 멜로디 최고음만(진성·가성 중 높은 음). 하모니·코러스·애드립·화음 제외. 모르면 'X', 추측·임의 변경 금지(출처 필요).
 - 재검토 후보 목록: docs/pitch-review.md
 
 건드리지 말 것:
