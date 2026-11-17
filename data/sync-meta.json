@@ -1,25 +1,97 @@
 {
-  "lastSyncedAt": "2026-11-16T04:54:55.880Z",
+  "lastSyncedAt": "2026-11-17T01:01:59.849Z",
   "lastSyncStatus": "success",
-  "totalSongs": 535,
-  "newlyAddedCount": 2,
+  "totalSongs": 724,
+  "newlyAddedCount": 189,
   "newlyAddedSongs": [
     {
-      "id": 534,
-      "title": "再会",
-      "artist": "Vaundy",
-      "composer": "VAUNDY",
+      "id": 536,
+      "title": "고 고 유령선 (ゴーゴー幽霊船)",
+      "artist": "요네즈 켄시",
+      "composer": "요네즈 켄시",
       "pitch": "X",
-      "tj_num": "90246",
+      "tj_num": "27941",
+      "ky_num": "44057"
+    },
+    {
+      "id": 537,
+      "title": "vivi \"vivi(요네즈 켄시)\")",
+      "artist": "요네즈 켄시",
+      "composer": "요네즈 켄시",
+      "pitch": "X",
+      "tj_num": "27915",
+      "ky_num": "44048"
+    },
+    {
+      "id": 538,
+      "title": "멜랑콜리 키친 (メランコリーキッチン)",
+      "artist": "요네즈 켄시",
+      "composer": "요네즈 켄시",
+      "pitch": "X",
+      "tj_num": "52997",
       "ky_num": "XXX"
     },
     {
-      "id": 535,
-      "title": "みむかゥわナイストライ",
-      "artist": "ぬぬぬぬぬぬぬぬぬぬ...(Feat.初音ミク)",
-      "composer": "ぬぬぬぬぬぬぬぬぬぬ...",
+      "id": 539,
+      "title": "MAD HEAD LOVE",
+      "artist": "요네즈 켄시",
+      "composer": "요네즈 켄시",
       "pitch": "X",
-      "tj_num": "90245",
+      "tj_num": "28596",
+      "ky_num": "44195"
+    },
+    {
+      "id": 540,
+      "title": "메트로놈 (メトロノーム)",
+      "artist": "요네즈 켄시",
+      "composer": "요네즈 켄시",
+      "pitch": "X",
+      "tj_num": "27945",
+      "ky_num": "44066"
+    },
+    {
+      "id": 541,
+      "title": "orion \"orion(요네즈 켄시)\")",
+      "artist": "요네즈 켄시",
+      "composer": "요네즈 켄시",
+      "pitch": "X",
+      "tj_num": "28660",
+      "ky_num": "44128"
+    },
+    {
+      "id": 542,
+      "title": "잿빛과 푸름 (灰色と青)",
+      "artist": "요네즈 켄시, 스다 마사키",
+      "composer": "요네즈 켄시",
+      "pitch": "X",
+      "tj_num": "28789",
+      "ky_num": "44207"
+    },
+    {
+      "id": 543,
+      "title": "춘뢰 (春雷)",
+      "artist": "요네즈 켄시",
+      "composer": "요네즈 켄시",
+      "pitch": "X",
+      "tj_num": "28795ⓗ",
+      "ky_num": "44227"
+    },
+    {
+      "id": 544,
+      "title": "파프리카 (パプリカ)",
+      "artist": "Foorin",
+      "composer": "요네즈 켄시",
+      "pitch": "X",
+      "tj_num": "68089",
+      "ky_num": "XXX"
+    },
+    {
+      "id": 545,
+      "title": "틀린 그림 찾기 (まちがいさがし)",
+      "artist": "요네즈 켄시",
+      "composer": "요네즈 켄시",
+      "pitch": "X",
+      "tj_num": "52728",
       "ky_num": "XXX"
     }
   ],

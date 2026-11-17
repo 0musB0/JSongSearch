@@ -4813,5 +4813,1256 @@
     "pitch": "X",
     "tj_num": "90245",
     "ky_num": "XXX"
+  },
+  {
+    "id": 536,
+    "title": "고 고 유령선 (ゴーゴー幽霊船)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "27941",
+    "ky_num": "44057"
+  },
+  {
+    "id": 537,
+    "title": "멜랑콜리 키친 (メランコリーキッチン)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52997",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 538,
+    "title": "MAD HEAD LOVE",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "28596",
+    "ky_num": "44195"
+  },
+  {
+    "id": 539,
+    "title": "메트로놈 (メトロノーム)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "27945",
+    "ky_num": "44066"
+  },
+  {
+    "id": 540,
+    "title": "잿빛과 푸름 (灰色と青)",
+    "artist": "요네즈 켄시, 스다 마사키",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "28789",
+    "ky_num": "44207"
+  },
+  {
+    "id": 541,
+    "title": "춘뢰 (春雷)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "28795ⓗ",
+    "ky_num": "44227"
+  },
+  {
+    "id": 542,
+    "title": "파프리카 (パプリカ)",
+    "artist": "Foorin",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "68089",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 543,
+    "title": "틀린 그림 찾기 (まちがいさがし)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52728",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 544,
+    "title": "말과 사슴 (馬と鹿)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "68094",
+    "ky_num": "44448"
+  },
+  {
+    "id": 545,
+    "title": "달을 보고 있었다 (月を見ていた)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "68824",
+    "ky_num": "44971"
+  },
+  {
+    "id": 546,
+    "title": "안녕, 또 언젠가! (さよーならまたいつか！)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52580",
+    "ky_num": "75948"
+  },
+  {
+    "id": 547,
+    "title": "매일 (毎日)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "68478",
+    "ky_num": "75974"
+  },
+  {
+    "id": 548,
+    "title": "잡동사니 (がらくた)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52725",
+    "ky_num": "76529"
+  },
+  {
+    "id": 549,
+    "title": "RED OUT",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52737",
+    "ky_num": "76537"
+  },
+  {
+    "id": 550,
+    "title": "비몽사몽 (ゆめうつつ)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52764",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 551,
+    "title": "M87 (M八七)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52892",
+    "ky_num": "57796"
+  },
+  {
+    "id": 552,
+    "title": "POP SONG",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52481",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 553,
+    "title": "Plazma",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52905",
+    "ky_num": "57825"
+  },
+  {
+    "id": 554,
+    "title": "BOW AND ARROW",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52796",
+    "ky_num": "57822"
+  },
+  {
+    "id": 555,
+    "title": "Azalea",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52828",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 556,
+    "title": "JANE DOE",
+    "artist": "요네즈 켄시, 우타다 히카루",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52972",
+    "ky_num": "57784"
+  },
+  {
+    "id": 557,
+    "title": "IRIS OUT",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52959",
+    "ky_num": "57785"
+  },
+  {
+    "id": 558,
+    "title": "惑う糸",
+    "artist": "스다 마사키",
+    "composer": "Vaundy",
+    "pitch": "X",
+    "tj_num": "68624",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 559,
+    "title": "いばら",
+    "artist": "Ado",
+    "composer": "Vaundy",
+    "pitch": "X",
+    "tj_num": "68866",
+    "ky_num": "44991"
+  },
+  {
+    "id": 560,
+    "title": "거짓말의 불꽃 (嘘の火花)",
+    "artist": "96네코",
+    "composer": "타니구치 나오히사",
+    "pitch": "X",
+    "tj_num": "28659",
+    "ky_num": "44149"
+  },
+  {
+    "id": 561,
+    "title": "시끄러워 (うっせぇわ)",
+    "artist": "Ado",
+    "composer": "syudou",
+    "pitch": "X",
+    "tj_num": "68458",
+    "ky_num": "75999"
+  },
+  {
+    "id": 562,
+    "title": "레디메이드 (レディメイド)",
+    "artist": "Ado",
+    "composer": "스리이",
+    "pitch": "X",
+    "tj_num": "52495",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 563,
+    "title": "번쩍번쩍 (ギラギラ)",
+    "artist": "Ado",
+    "composer": "테니오하",
+    "pitch": "X",
+    "tj_num": "52716",
+    "ky_num": "76000"
+  },
+  {
+    "id": 564,
+    "title": "만나고 싶어서 (会いたくて)",
+    "artist": "Ado",
+    "composer": "미유항",
+    "pitch": "X",
+    "tj_num": "68613",
+    "ky_num": "44798"
+  },
+  {
+    "id": 565,
+    "title": "마음이라는 이름의 불가해 (心という名の不可解)",
+    "artist": "Ado",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "68831",
+    "ky_num": "44964"
+  },
+  {
+    "id": 566,
+    "title": "영원의 이튿날 (永遠のあくる日)",
+    "artist": "Ado",
+    "composer": "테니오하",
+    "pitch": "X",
+    "tj_num": "68873",
+    "ky_num": "44984"
+  },
+  {
+    "id": 567,
+    "title": "Tot Musica",
+    "artist": "Ado",
+    "composer": "사와노 히로유키",
+    "pitch": "X",
+    "tj_num": "68648",
+    "ky_num": "44825"
+  },
+  {
+    "id": 568,
+    "title": "세계의 이어짐 (世界のつづき)",
+    "artist": "Ado",
+    "composer": "오리사카 유타",
+    "pitch": "X",
+    "tj_num": "52755",
+    "ky_num": "76547"
+  },
+  {
+    "id": 569,
+    "title": "바람의 행방 (風のゆくえ)",
+    "artist": "Ado",
+    "composer": "하타 모토히로",
+    "pitch": "X",
+    "tj_num": "90157",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 570,
+    "title": "리벨리온 (リベリオン)",
+    "artist": "Ado",
+    "composer": "Chinozo",
+    "pitch": "X",
+    "tj_num": "68674",
+    "ky_num": "44847"
+  },
+  {
+    "id": 571,
+    "title": "행방불명 (行方知れず)",
+    "artist": "Ado",
+    "composer": "시이나 링고",
+    "pitch": "X",
+    "tj_num": "68678",
+    "ky_num": "44844"
+  },
+  {
+    "id": 572,
+    "title": "Episode X",
+    "artist": "Ado",
+    "composer": "Ayase",
+    "pitch": "X",
+    "tj_num": "52753",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 573,
+    "title": "나는 문제작 (アタシは問題作)",
+    "artist": "Ado",
+    "composer": "피노키오피",
+    "pitch": "X",
+    "tj_num": "68851",
+    "ky_num": "44973"
+  },
+  {
+    "id": 574,
+    "title": "어질어질 (クラクラ)",
+    "artist": "Ado",
+    "composer": "meiyo",
+    "pitch": "X",
+    "tj_num": "68864",
+    "ky_num": "75845"
+  },
+  {
+    "id": 575,
+    "title": "누케가라 (抜け空)",
+    "artist": "Ado",
+    "composer": "유노스케",
+    "pitch": "X",
+    "tj_num": "52768",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 576,
+    "title": "쇼콜라카다브라 (ショコラカタブラ)",
+    "artist": "Ado",
+    "composer": "TAKU INOUE",
+    "pitch": "X",
+    "tj_num": "52566",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 577,
+    "title": "바람과 나의 이야기 (風と私の物語)",
+    "artist": "Ado",
+    "composer": "미야모토 히로지",
+    "pitch": "X",
+    "tj_num": "52975",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 578,
+    "title": "비바리움 (ビバリウム)",
+    "artist": "Ado",
+    "composer": "Ado",
+    "pitch": "X",
+    "tj_num": "52554",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 579,
+    "title": "벚꽃 날씨와 타임머신 (桜日和とタイムマシン)",
+    "artist": "Ado, 初音ミク",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "52821",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 580,
+    "title": "극락정토 (極樂淨土)",
+    "artist": "GARNiDELiA",
+    "composer": "GARNiDELiR",
+    "pitch": "X",
+    "tj_num": "28656",
+    "ky_num": "44119"
+  },
+  {
+    "id": 581,
+    "title": "Smiling",
+    "artist": "halyosy",
+    "composer": "halyosy",
+    "pitch": "X",
+    "tj_num": "28729",
+    "ky_num": "44178"
+  },
+  {
+    "id": 582,
+    "title": "귀여워서 미안해 (可愛くてごめん)",
+    "artist": "하야미 사오리",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68823",
+    "ky_num": "57746"
+  },
+  {
+    "id": 583,
+    "title": "나, 아이돌 선언 (私、アイドル宣言)",
+    "artist": "CHiCO",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "28909",
+    "ky_num": "44302"
+  },
+  {
+    "id": 584,
+    "title": "정말 싫었을 터였어 (大嫌いなはずだった。)",
+    "artist": "하나에 나츠키, 아사쿠라 모모",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "28828",
+    "ky_num": "44599"
+  },
+  {
+    "id": 585,
+    "title": "결전 스피릿 (決戦スピリット)",
+    "artist": "CHiCO",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68214",
+    "ky_num": "44529"
+  },
+  {
+    "id": 586,
+    "title": "프라이드 혁명 (プライド革命)",
+    "artist": "CHiCO",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "27767",
+    "ky_num": "43944"
+  },
+  {
+    "id": 587,
+    "title": "오늘도 벚꽃이 흩날리는 새벽에 (今日もサクラ舞う暁に)",
+    "artist": "CHiCO",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "28708",
+    "ky_num": "44153"
+  },
+  {
+    "id": 588,
+    "title": "세계는 사랑에 빠져있어 (世界は恋に落ちている)",
+    "artist": "CHiCO",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "28352",
+    "ky_num": "43839"
+  },
+  {
+    "id": 589,
+    "title": "사랑의 시나리오 (アイのシナリオ)",
+    "artist": "CHiCO",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "27705",
+    "ky_num": "43894"
+  },
+  {
+    "id": 590,
+    "title": "울프 (ウルフ)",
+    "artist": "CHiCO",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "28862",
+    "ky_num": "44280"
+  },
+  {
+    "id": 591,
+    "title": "빛 증명론 (ヒカリ証明論)",
+    "artist": "CHiCO",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "28912",
+    "ky_num": "44320"
+  },
+  {
+    "id": 592,
+    "title": "악착같이 (我武者羅)",
+    "artist": "CHiCO",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68558",
+    "ky_num": "44738"
+  },
+  {
+    "id": 593,
+    "title": "말할 수 없는 사랑의 마음 (ヒミツ恋ゴコロ)",
+    "artist": "CHiCO",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68813",
+    "ky_num": "44947"
+  },
+  {
+    "id": 594,
+    "title": "하트의 주장 (ハートの主張)",
+    "artist": "CHiCO",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68827",
+    "ky_num": "44958"
+  },
+  {
+    "id": 595,
+    "title": "찌리릿 러브 (ビビっとラブ)",
+    "artist": "CHiCO, 마후마후",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68833",
+    "ky_num": "44960"
+  },
+  {
+    "id": 596,
+    "title": "나의 편 (ワタシノミカタ)",
+    "artist": "나츠카와 시이나",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68764",
+    "ky_num": "44906"
+  },
+  {
+    "id": 597,
+    "title": "히로인 된 자! (ヒロインたるもの！)",
+    "artist": "미나세 이노리",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68308",
+    "ky_num": "44592"
+  },
+  {
+    "id": 598,
+    "title": "도쿄 서니 파티 (東京サニーパーティー)",
+    "artist": "미나세 이노리",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68773",
+    "ky_num": "44912"
+  },
+  {
+    "id": 599,
+    "title": "나의 천사 (ワタシノテンシ)",
+    "artist": "아마미야 소라",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68245",
+    "ky_num": "44555"
+  },
+  {
+    "id": 600,
+    "title": "수요일의 약속 -another story- (水曜日の約束-another story-)",
+    "artist": "아마미야 소라",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68345",
+    "ky_num": "44620"
+  },
+  {
+    "id": 601,
+    "title": "시스×러브 (シス×ラブ)",
+    "artist": "아마미야 소라, 나츠카와 시이나",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68315",
+    "ky_num": "44659"
+  },
+  {
+    "id": 602,
+    "title": "렌즈 너머의 풍경 (レンズ越しの景色)",
+    "artist": "마츠오카 요시츠구",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68645",
+    "ky_num": "44807"
+  },
+  {
+    "id": 603,
+    "title": "외로움쟁이 (さみしがりや)",
+    "artist": "에구치 타쿠야, 시마자키 노부나가",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68367",
+    "ky_num": "44626"
+  },
+  {
+    "id": 604,
+    "title": "약혼전쟁 (婚約戦争)",
+    "artist": "카미야 히로시, 카지 유우키, 스즈무라 켄이치",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68528",
+    "ky_num": "44717"
+  },
+  {
+    "id": 605,
+    "title": "선배. (センパイ。)",
+    "artist": "TrySail",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "28837",
+    "ky_num": "44259"
+  },
+  {
+    "id": 606,
+    "title": "논 판타지 (ノンファンタジー)",
+    "artist": "LIP×LIP",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "28792",
+    "ky_num": "44228"
+  },
+  {
+    "id": 607,
+    "title": "꿈 팡파르 (夢ファンファーレ)",
+    "artist": "LIP×LIP",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "28928",
+    "ky_num": "44328"
+  },
+  {
+    "id": 608,
+    "title": "역시 최강! (やっぱ最強！)",
+    "artist": "LIP×LIP",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68044",
+    "ky_num": "44409"
+  },
+  {
+    "id": 609,
+    "title": "LOVE&KISS",
+    "artist": "LIP×LIP",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68388",
+    "ky_num": "44650"
+  },
+  {
+    "id": 610,
+    "title": "푸르름을 향해 (青へ)",
+    "artist": "LIP×LIP",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68654",
+    "ky_num": "44814"
+  },
+  {
+    "id": 611,
+    "title": "소녀는 사이코패스 (乙女はサイコパス)",
+    "artist": "P丸様。",
+    "composer": "코레사와",
+    "pitch": "X",
+    "tj_num": "68744",
+    "ky_num": "44884"
+  },
+  {
+    "id": 612,
+    "title": "없어 바이탈리티 (ないばいたりてぃ)",
+    "artist": "P丸様。",
+    "composer": "마시마 유로",
+    "pitch": "X",
+    "tj_num": "68735",
+    "ky_num": "44877"
+  },
+  {
+    "id": 613,
+    "title": "MOTTAI",
+    "artist": "P丸様。",
+    "composer": "마시마 유로",
+    "pitch": "X",
+    "tj_num": "68469",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 614,
+    "title": "연애 편차치 상승 중! (恋愛偏差値上昇中！)",
+    "artist": "P丸様。",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68794",
+    "ky_num": "44926"
+  },
+  {
+    "id": 615,
+    "title": "사이사키 (サイサキ)",
+    "artist": "레오루",
+    "composer": "레오루",
+    "pitch": "X",
+    "tj_num": "28918",
+    "ky_num": "44316"
+  },
+  {
+    "id": 616,
+    "title": "No title",
+    "artist": "레오루, 기가P",
+    "composer": "레오루, 기가P",
+    "pitch": "X",
+    "tj_num": "28704",
+    "ky_num": "44158"
+  },
+  {
+    "id": 617,
+    "title": "제육감 (第六感)",
+    "artist": "레오루, 기가P",
+    "composer": "레오루, 기가P",
+    "pitch": "X",
+    "tj_num": "68302",
+    "ky_num": "44607"
+  },
+  {
+    "id": 618,
+    "title": "심해의 리틀 크라이 (深海のリトルクライ)",
+    "artist": "토키 아사코",
+    "composer": "sasakure.UK",
+    "pitch": "X",
+    "tj_num": "28993",
+    "ky_num": "44377"
+  },
+  {
+    "id": 619,
+    "title": "늑대소년 독백 (オオカミ少年独白)",
+    "artist": "Cana(Sotte Bosse)",
+    "composer": "sasakure.UK",
+    "pitch": "X",
+    "tj_num": "68071",
+    "ky_num": "44427"
+  },
+  {
+    "id": 620,
+    "title": "봄을 고하다 (春を告げる)",
+    "artist": "yama",
+    "composer": "쿠지라 \"쿠지라(프로듀서)\")",
+    "pitch": "X",
+    "tj_num": "52453",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 621,
+    "title": "a.m.3:21 (a.m.3:21 - From THE FIRST TAKE)",
+    "artist": "yama",
+    "composer": "쿠지라 \"쿠지라(프로듀서)\")",
+    "pitch": "X",
+    "tj_num": "68756",
+    "ky_num": "44899"
+  },
+  {
+    "id": 622,
+    "title": "마비 (麻痺)",
+    "artist": "yama",
+    "composer": "TOOBOE",
+    "pitch": "X",
+    "tj_num": "68760",
+    "ky_num": "44903"
+  },
+  {
+    "id": 623,
+    "title": "색채 (色彩)",
+    "artist": "yama",
+    "composer": "쿠지라 \"쿠지라(프로듀서)\")",
+    "pitch": "X",
+    "tj_num": "68693",
+    "ky_num": "44850"
+  },
+  {
+    "id": 624,
+    "title": "slash",
+    "artist": "yama",
+    "composer": "바바 류우키(馬場龍樹)",
+    "pitch": "X",
+    "tj_num": "68817",
+    "ky_num": "44949"
+  },
+  {
+    "id": 625,
+    "title": "거품눈 (沫雪)",
+    "artist": "yama",
+    "composer": "ACIDMAN",
+    "pitch": "X",
+    "tj_num": "68974",
+    "ky_num": "75904"
+  },
+  {
+    "id": 626,
+    "title": "다다다다천사 (ダダダダ天使)",
+    "artist": "나나오아카리",
+    "composer": "나유탄 성인",
+    "pitch": "X",
+    "tj_num": "25876",
+    "ky_num": "44776"
+  },
+  {
+    "id": 627,
+    "title": "디스커뮤성인 (ディスコミュ星人)",
+    "artist": "나나오아카리",
+    "composer": "나유탄 성인",
+    "pitch": "X",
+    "tj_num": "68584",
+    "ky_num": "44775"
+  },
+  {
+    "id": 628,
+    "title": "기연 로맨스 (奇縁ロマンス)",
+    "artist": "나나오아카리",
+    "composer": "와누카",
+    "pitch": "X",
+    "tj_num": "68884",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 629,
+    "title": "내일의 나에게 행복이 있으리 (明日の私に幸あれ)",
+    "artist": "나나오아카리",
+    "composer": "玉屋2060%",
+    "pitch": "X",
+    "tj_num": "52971",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 630,
+    "title": "튜링 러브 (チューリングラブ)",
+    "artist": "나나오아카리",
+    "composer": "나유탄 성인",
+    "pitch": "X",
+    "tj_num": "52536",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 631,
+    "title": "추형공포증 (醜形恐怖症)",
+    "artist": "나루미야",
+    "composer": "나루미야",
+    "pitch": "X",
+    "tj_num": "52979",
+    "ky_num": "57786"
+  },
+  {
+    "id": 632,
+    "title": "귀여운 그 아이가 마음에 들지 않아 (可愛いあの子が気にゐらない)",
+    "artist": "나루미야",
+    "composer": "나루미야",
+    "pitch": "X",
+    "tj_num": "68899",
+    "ky_num": "75848"
+  },
+  {
+    "id": 633,
+    "title": "리드 컨트롤 (リードコントロール)",
+    "artist": "나루미야",
+    "composer": "나루미야",
+    "pitch": "X",
+    "tj_num": "52992",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 634,
+    "title": "몸팔이 (身売り)",
+    "artist": "ロス",
+    "composer": "ロス",
+    "pitch": "X",
+    "tj_num": "52799",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 635,
+    "title": "사시사철 요동치며 (四季折々に揺蕩いて)",
+    "artist": "After the Rain",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "28829",
+    "ky_num": "44245"
+  },
+  {
+    "id": 636,
+    "title": "CocktaiL",
+    "artist": "XYZ",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "68045",
+    "ky_num": "44408"
+  },
+  {
+    "id": 637,
+    "title": "해독불능 (解読不能)",
+    "artist": "After the Rain",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "28722",
+    "ky_num": "44164"
+  },
+  {
+    "id": 638,
+    "title": "안티 클락 와이즈 (アンチクロックワイズ)",
+    "artist": "After the Rain",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "28685",
+    "ky_num": "44150"
+  },
+  {
+    "id": 639,
+    "title": "１・２・３",
+    "artist": "After the Rain",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "68153",
+    "ky_num": "44483"
+  },
+  {
+    "id": 640,
+    "title": "절대 착한 아이의 에트세트라 (絶対よい子のエトセトラ)",
+    "artist": "After the Rain",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "68222",
+    "ky_num": "44536"
+  },
+  {
+    "id": 641,
+    "title": "청춘 초콜릿 (青春チョコレート)",
+    "artist": "스토푸리",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68587",
+    "ky_num": "44764"
+  },
+  {
+    "id": 642,
+    "title": "좋아좋아 성인 (スキスキ星人)",
+    "artist": "스토푸리",
+    "composer": "나유탄 성인",
+    "pitch": "X",
+    "tj_num": "52995",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 643,
+    "title": "셔터 찬스! (シャッターチャンス！)",
+    "artist": "리누",
+    "composer": "리누, 루토 \"루토(스토푸리)\"), 마츠",
+    "pitch": "X",
+    "tj_num": "68598",
+    "ky_num": "44771"
+  },
+  {
+    "id": 644,
+    "title": "참 잘했어요◎ (よくできました◎)",
+    "artist": "리누",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "52964",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 645,
+    "title": "우라타네코♀ (うらたねこ♀)",
+    "artist": "우라타누키",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68705",
+    "ky_num": "44853"
+  },
+  {
+    "id": 646,
+    "title": "달이 아름다워 (月が綺麗)",
+    "artist": "카미키타 켄(KK)",
+    "composer": "카미키타 켄(KK)",
+    "pitch": "X",
+    "tj_num": "28868",
+    "ky_num": "44274"
+  },
+  {
+    "id": 647,
+    "title": "마음나누기 (心分け)",
+    "artist": "카미키타 켄(KK)",
+    "composer": "카미키타 켄(KK)",
+    "pitch": "X",
+    "tj_num": "68147",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 648,
+    "title": "미스트 (ミスト)",
+    "artist": "카미키타 켄(KK)",
+    "composer": "카미키타 켄(KK)",
+    "pitch": "X",
+    "tj_num": "28735",
+    "ky_num": "44179"
+  },
+  {
+    "id": 649,
+    "title": "블루타운 (ブルータウン)",
+    "artist": "카미키타 켄(KK)",
+    "composer": "카미키타 켄(KK)",
+    "pitch": "X",
+    "tj_num": "28884ⓗ",
+    "ky_num": "44289"
+  },
+  {
+    "id": 650,
+    "title": "사랑이 아니야 (愛じゃない)",
+    "artist": "DAZBEE",
+    "composer": "meiyo",
+    "pitch": "X",
+    "tj_num": "52800",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 651,
+    "title": "ECLIPSE",
+    "artist": "DAZBEE, Raon",
+    "composer": "Atsushi Shimada, Kenichi Sakamuro, Jordyn Kane, Le'mon",
+    "pitch": "X",
+    "tj_num": "44498",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 652,
+    "title": "호랑풍류가",
+    "artist": "Narae",
+    "composer": "상록수 \"상록수(프로듀서)\")",
+    "pitch": "X",
+    "tj_num": "98701",
+    "ky_num": "80648"
+  },
+  {
+    "id": 653,
+    "title": "호랑수월가",
+    "artist": "Narae",
+    "composer": "상록수 \"상록수(프로듀서)\")",
+    "pitch": "X",
+    "tj_num": "75574",
+    "ky_num": "28106"
+  },
+  {
+    "id": 654,
+    "title": "Hi, dream",
+    "artist": "Raon",
+    "composer": "INFX",
+    "pitch": "X",
+    "tj_num": "44499",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 655,
+    "title": "너로피어오라 (Flowering)",
+    "artist": "달의하루",
+    "composer": "ampstyle",
+    "pitch": "X",
+    "tj_num": "75452",
+    "ky_num": "21867"
+  },
+  {
+    "id": 656,
+    "title": "염라 (Karma)",
+    "artist": "달의하루",
+    "composer": "ampstyle",
+    "pitch": "X",
+    "tj_num": "75449",
+    "ky_num": "27816"
+  },
+  {
+    "id": 657,
+    "title": "바람이 되고 싶었던 아이",
+    "artist": "밤푸딩",
+    "composer": "상록수 \"상록수(프로듀서)\")",
+    "pitch": "X",
+    "tj_num": "81947",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 658,
+    "title": "握(AKU)",
+    "artist": "악월",
+    "composer": "악월, 최용수, 만쥬",
+    "pitch": "X",
+    "tj_num": "50529",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 659,
+    "title": "마에스트로",
+    "artist": "악월",
+    "composer": "악월, 최용수, 만쥬",
+    "pitch": "X",
+    "tj_num": "50548",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 660,
+    "title": "Look at Me!",
+    "artist": "악월",
+    "composer": "악월, 최용수, 만쥬",
+    "pitch": "X",
+    "tj_num": "50551",
+    "ky_num": "50433"
+  },
+  {
+    "id": 661,
+    "title": "Scars",
+    "artist": "악월",
+    "composer": "Pe2ny, 최용수, 만쥬",
+    "pitch": "X",
+    "tj_num": "50902",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 662,
+    "title": "GOT(Gospel of Terra)",
+    "artist": "악월",
+    "composer": "ddim",
+    "pitch": "X",
+    "tj_num": "52633",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 663,
+    "title": "Blink Gone",
+    "artist": "BL8M, 악월",
+    "composer": "STUDIO LICO, 최용수, 만쥬",
+    "pitch": "X",
+    "tj_num": "44755",
+    "ky_num": "71872"
+  },
+  {
+    "id": 664,
+    "title": "Cure",
+    "artist": "악월, 박병훈",
+    "composer": "STUDIO LICO, 최용수, 만쥬",
+    "pitch": "X",
+    "tj_num": "44756",
+    "ky_num": "71925"
+  },
+  {
+    "id": 665,
+    "title": "Undertown Dogs",
+    "artist": "악월",
+    "composer": "향성(向性),Under Dog",
+    "pitch": "X",
+    "tj_num": "44866",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 666,
+    "title": "Mi Vida Loca",
+    "artist": "악월",
+    "composer": "XENO VIBE",
+    "pitch": "X",
+    "tj_num": "88050",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 667,
+    "title": "TELEROCK",
+    "artist": "악월, EUGENE",
+    "composer": "향성(向性), EUGENE",
+    "pitch": "X",
+    "tj_num": "87875",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 668,
+    "title": "Anti Buzzing Club",
+    "artist": "악월",
+    "composer": "향성(向性)",
+    "pitch": "X",
+    "tj_num": "70347",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 669,
+    "title": "Cistus",
+    "artist": "악월",
+    "composer": "향성(向性)",
+    "pitch": "X",
+    "tj_num": "70775",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 670,
+    "title": "We're the moonlight",
+    "artist": "악월",
+    "composer": "이날, 페니",
+    "pitch": "X",
+    "tj_num": "70356",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 671,
+    "title": "Unknown (Till The End...)",
+    "artist": "악월",
+    "composer": "XENO VIBE, BL8M",
+    "pitch": "X",
+    "tj_num": "91243",
+    "ky_num": "75550"
+  },
+  {
+    "id": 672,
+    "title": "soramimi",
+    "artist": "Vaundy",
+    "composer": "VAUNDY",
+    "pitch": "X",
+    "tj_num": "90221",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 673,
+    "title": "C.h.a.o.s.m.y.t.h.",
+    "artist": "ONE OK ROCK",
+    "composer": "ONE OK ROCK",
+    "pitch": "X",
+    "tj_num": "90219",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 674,
+    "title": "愛して愛して愛して",
+    "artist": "きくお(Feat.初音ミク)",
+    "composer": "きくお",
+    "pitch": "X",
+    "tj_num": "90218",
+    "ky_num": "XXX"
   }
 ]
