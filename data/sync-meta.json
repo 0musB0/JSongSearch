@@ -1,21 +1,12 @@
 {
-  "lastSyncedAt": "2026-11-17T01:01:59.849Z",
+  "lastSyncedAt": "2026-11-19T01:02:28.486Z",
   "lastSyncStatus": "success",
-  "totalSongs": 724,
-  "newlyAddedCount": 189,
+  "totalSongs": 727,
+  "newlyAddedCount": 53,
   "newlyAddedSongs": [
     {
-      "id": 536,
-      "title": "고 고 유령선 (ゴーゴー幽霊船)",
-      "artist": "요네즈 켄시",
-      "composer": "요네즈 켄시",
-      "pitch": "X",
-      "tj_num": "27941",
-      "ky_num": "44057"
-    },
-    {
-      "id": 537,
-      "title": "vivi \"vivi(요네즈 켄시)\")",
+      "id": 675,
+      "title": "vivi",
       "artist": "요네즈 켄시",
       "composer": "요네즈 켄시",
       "pitch": "X",
@@ -23,35 +14,8 @@
       "ky_num": "44048"
     },
     {
-      "id": 538,
-      "title": "멜랑콜리 키친 (メランコリーキッチン)",
-      "artist": "요네즈 켄시",
-      "composer": "요네즈 켄시",
-      "pitch": "X",
-      "tj_num": "52997",
-      "ky_num": "XXX"
-    },
-    {
-      "id": 539,
-      "title": "MAD HEAD LOVE",
-      "artist": "요네즈 켄시",
-      "composer": "요네즈 켄시",
-      "pitch": "X",
-      "tj_num": "28596",
-      "ky_num": "44195"
-    },
-    {
-      "id": 540,
-      "title": "메트로놈 (メトロノーム)",
-      "artist": "요네즈 켄시",
-      "composer": "요네즈 켄시",
-      "pitch": "X",
-      "tj_num": "27945",
-      "ky_num": "44066"
-    },
-    {
-      "id": 541,
-      "title": "orion \"orion(요네즈 켄시)\")",
+      "id": 676,
+      "title": "orion",
       "artist": "요네즈 켄시",
       "composer": "요네즈 켄시",
       "pitch": "X",
@@ -59,40 +23,76 @@
       "ky_num": "44128"
     },
     {
-      "id": 542,
-      "title": "잿빛과 푸름 (灰色と青)",
-      "artist": "요네즈 켄시, 스다 마사키",
-      "composer": "요네즈 켄시",
-      "pitch": "X",
-      "tj_num": "28789",
-      "ky_num": "44207"
-    },
-    {
-      "id": 543,
-      "title": "춘뢰 (春雷)",
+      "id": 677,
+      "title": "LADY",
       "artist": "요네즈 켄시",
       "composer": "요네즈 켄시",
       "pitch": "X",
-      "tj_num": "28795ⓗ",
-      "ky_num": "44227"
+      "tj_num": "68495",
+      "ky_num": "76514"
     },
     {
-      "id": 544,
-      "title": "파프리카 (パプリカ)",
-      "artist": "Foorin",
-      "composer": "요네즈 켄시",
-      "pitch": "X",
-      "tj_num": "68089",
-      "ky_num": "XXX"
-    },
-    {
-      "id": 545,
-      "title": "틀린 그림 찾기 (まちがいさがし)",
+      "id": 678,
+      "title": "LOST CORNER",
       "artist": "요네즈 켄시",
       "composer": "요네즈 켄시",
       "pitch": "X",
-      "tj_num": "52728",
+      "tj_num": "52952",
       "ky_num": "XXX"
+    },
+    {
+      "id": 679,
+      "title": "사신 (死神)",
+      "artist": "요네즈 켄시",
+      "composer": "요네즈 켄시",
+      "pitch": "X",
+      "tj_num": "52430",
+      "ky_num": "XXX"
+    },
+    {
+      "id": 680,
+      "title": "1991",
+      "artist": "요네즈 켄시",
+      "composer": "요네즈 켄시",
+      "pitch": "X",
+      "tj_num": "52977",
+      "ky_num": "57782"
+    },
+    {
+      "id": 681,
+      "title": "까마귀 (烏)",
+      "artist": "요네즈 켄시",
+      "composer": "요네즈 켄시",
+      "pitch": "X",
+      "tj_num": "52689",
+      "ky_num": "57740"
+    },
+    {
+      "id": 682,
+      "title": "나는 최강 (私は最強)",
+      "artist": "Ado",
+      "composer": "오모리 모토키",
+      "pitch": "X",
+      "tj_num": "52717",
+      "ky_num": "76515"
+    },
+    {
+      "id": 683,
+      "title": "해바라기 (向日葵)",
+      "artist": "Ado",
+      "composer": "미유항",
+      "pitch": "X",
+      "tj_num": "68900",
+      "ky_num": "76533"
+    },
+    {
+      "id": 684,
+      "title": "Show (唱)",
+      "artist": "Ado",
+      "composer": "Giga, TeddyLoid",
+      "pitch": "X",
+      "tj_num": "68883",
+      "ky_num": "75832"
     }
   ],
   "sources": [

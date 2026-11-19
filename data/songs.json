@@ -6064,5 +6064,482 @@
     "pitch": "X",
     "tj_num": "90218",
     "ky_num": "XXX"
+  },
+  {
+    "id": 675,
+    "title": "vivi",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "27915",
+    "ky_num": "44048"
+  },
+  {
+    "id": 676,
+    "title": "orion",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "28660",
+    "ky_num": "44128"
+  },
+  {
+    "id": 677,
+    "title": "LADY",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "68495",
+    "ky_num": "76514"
+  },
+  {
+    "id": 678,
+    "title": "LOST CORNER",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52952",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 679,
+    "title": "사신 (死神)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52430",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 680,
+    "title": "1991",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52977",
+    "ky_num": "57782"
+  },
+  {
+    "id": 681,
+    "title": "까마귀 (烏)",
+    "artist": "요네즈 켄시",
+    "composer": "요네즈 켄시",
+    "pitch": "X",
+    "tj_num": "52689",
+    "ky_num": "57740"
+  },
+  {
+    "id": 682,
+    "title": "나는 최강 (私は最強)",
+    "artist": "Ado",
+    "composer": "오모리 모토키",
+    "pitch": "X",
+    "tj_num": "52717",
+    "ky_num": "76515"
+  },
+  {
+    "id": 683,
+    "title": "해바라기 (向日葵)",
+    "artist": "Ado",
+    "composer": "미유항",
+    "pitch": "X",
+    "tj_num": "68900",
+    "ky_num": "76533"
+  },
+  {
+    "id": 684,
+    "title": "Show (唱)",
+    "artist": "Ado",
+    "composer": "Giga, TeddyLoid",
+    "pitch": "X",
+    "tj_num": "68883",
+    "ky_num": "75832"
+  },
+  {
+    "id": 685,
+    "title": "DIGNITY",
+    "artist": "Ado",
+    "composer": "B'z",
+    "pitch": "X",
+    "tj_num": "68905",
+    "ky_num": "75851"
+  },
+  {
+    "id": 686,
+    "title": "MAGIC",
+    "artist": "Ado",
+    "composer": "츠미키",
+    "pitch": "X",
+    "tj_num": "52989",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 687,
+    "title": "룰 (ルル)",
+    "artist": "Ado",
+    "composer": "MARETU",
+    "pitch": "X",
+    "tj_num": "68470",
+    "ky_num": "75978"
+  },
+  {
+    "id": 688,
+    "title": "미러 (MIRROR)",
+    "artist": "Ado",
+    "composer": "나토리",
+    "pitch": "X",
+    "tj_num": "68464",
+    "ky_num": "75982"
+  },
+  {
+    "id": 689,
+    "title": "회회기담 (廻廻奇譚)",
+    "artist": "Eve",
+    "composer": "Eve",
+    "pitch": "X",
+    "tj_num": "68350",
+    "ky_num": "44634"
+  },
+  {
+    "id": 690,
+    "title": "우리들의 (ぼくらの)",
+    "artist": "Eve",
+    "composer": "Eve",
+    "pitch": "X",
+    "tj_num": "68800",
+    "ky_num": "44937"
+  },
+  {
+    "id": 691,
+    "title": "인섬니아 (インソムニア)",
+    "artist": "Eve",
+    "composer": "Eve",
+    "pitch": "X",
+    "tj_num": "52876",
+    "ky_num": "57800"
+  },
+  {
+    "id": 692,
+    "title": "언더독 (UnderDog)",
+    "artist": "Eve",
+    "composer": "Eve",
+    "pitch": "X",
+    "tj_num": "52431",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 693,
+    "title": "고스트 애비뉴 (ゴーストアベニュー)",
+    "artist": "Eve",
+    "composer": "Eve",
+    "pitch": "X",
+    "tj_num": "52539",
+    "ky_num": "57751"
+  },
+  {
+    "id": 694,
+    "title": "귀여워지고 싶어 (可愛くなりたい)",
+    "artist": "사나",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "28737",
+    "ky_num": "44183"
+  },
+  {
+    "id": 695,
+    "title": "도쿄 서머 세션 (東京サマーセッション)",
+    "artist": "CHiCO, 사나",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "28309ⓗ",
+    "ky_num": "43948"
+  },
+  {
+    "id": 696,
+    "title": "No.1",
+    "artist": "나츠카와 시이나",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68755",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 697,
+    "title": "선향불꽃 (線香花火)",
+    "artist": "키무라 료헤이",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68682",
+    "ky_num": "44833"
+  },
+  {
+    "id": 698,
+    "title": "좋아한다는 거야! (すきっちゅーの！)",
+    "artist": "하야미 사오리",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "XXX",
+    "ky_num": "75870"
+  },
+  {
+    "id": 699,
+    "title": "디어♡마이 프렌드 (ディア♡マイフレンド)",
+    "artist": "하야미 사오리",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "XXX",
+    "ky_num": "75888"
+  },
+  {
+    "id": 700,
+    "title": "귀여워진다면 좋을 텐데 (可愛くなれたらいいのに)",
+    "artist": "카피",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "XXX",
+    "ky_num": "75883"
+  },
+  {
+    "id": 701,
+    "title": "줄리에타 (ジュリエッタ)",
+    "artist": "LIP×LIP",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68643",
+    "ky_num": "44805"
+  },
+  {
+    "id": 702,
+    "title": "Oz.#s.6",
+    "artist": "yama",
+    "composer": "나키무시",
+    "pitch": "X",
+    "tj_num": "68573",
+    "ky_num": "44761"
+  },
+  {
+    "id": 703,
+    "title": "가짜 얼굴 (偽顔)",
+    "artist": "yama",
+    "composer": "빨간 머리 아저씨(赤髪のとも)",
+    "pitch": "X",
+    "tj_num": "XXX",
+    "ky_num": "75985"
+  },
+  {
+    "id": 704,
+    "title": "경화수월 (鏡花水月)",
+    "artist": "마후마후",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "28657ⓗ",
+    "ky_num": "44121"
+  },
+  {
+    "id": 705,
+    "title": "꿈속의 꿈 (夢のまた夢)",
+    "artist": "마후마후",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "28830",
+    "ky_num": "44250"
+  },
+  {
+    "id": 706,
+    "title": "베르세르크 (ベルセルク)",
+    "artist": "마후마후",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "68185",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 707,
+    "title": "윤회전생 (輪廻転生)",
+    "artist": "마후마후",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "28782ⓗ",
+    "ky_num": "44212"
+  },
+  {
+    "id": 708,
+    "title": "으스름달 (朧月)",
+    "artist": "마후마후",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "28845ⓗ",
+    "ky_num": "44263"
+  },
+  {
+    "id": 709,
+    "title": "종점 (終点)",
+    "artist": "마후마후",
+    "composer": "마후마후",
+    "pitch": "X",
+    "tj_num": "68119",
+    "ky_num": "44453"
+  },
+  {
+    "id": 710,
+    "title": "뫼비우스 (メビウス)",
+    "artist": "메이쨩",
+    "composer": "히이라기 키라이",
+    "pitch": "X",
+    "tj_num": "52957",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 711,
+    "title": "회심의 일격! (かいしんのいちげき！)",
+    "artist": "아마츠키",
+    "composer": "아마츠키",
+    "pitch": "X",
+    "tj_num": "28921",
+    "ky_num": "44327"
+  },
+  {
+    "id": 712,
+    "title": "월요일의 우울 (月曜日の憂鬱)",
+    "artist": "아마츠키",
+    "composer": "HoneyWorks",
+    "pitch": "X",
+    "tj_num": "68072",
+    "ky_num": "44421"
+  },
+  {
+    "id": 713,
+    "title": "너만은。 (きみだけは。)",
+    "artist": "아마츠키",
+    "composer": "나츠시로 타카아키",
+    "pitch": "X",
+    "tj_num": "68093",
+    "ky_num": "44444"
+  },
+  {
+    "id": 714,
+    "title": "르마르소르시에 (ルマルソルシエ)",
+    "artist": "아마츠키",
+    "composer": "halyosy",
+    "pitch": "X",
+    "tj_num": "68949",
+    "ky_num": "75889"
+  },
+  {
+    "id": 715,
+    "title": "아마테라스 (アマテラス)",
+    "artist": "KK(카미키타 켄)",
+    "composer": "HarryP",
+    "pitch": "X",
+    "tj_num": "28724ⓗ",
+    "ky_num": "44171"
+  },
+  {
+    "id": 716,
+    "title": "DIARY",
+    "artist": "카미키타 켄(KK)",
+    "composer": "카미키타 켄(KK)",
+    "pitch": "X",
+    "tj_num": "28761",
+    "ky_num": "44205"
+  },
+  {
+    "id": 717,
+    "title": "꽃의 노래 (花の歌)",
+    "artist": "하나땅",
+    "composer": "카와에 미나코",
+    "pitch": "X",
+    "tj_num": "28696ⓗ",
+    "ky_num": "44155"
+  },
+  {
+    "id": 718,
+    "title": "소나기 (ニワカアメ)",
+    "artist": "하나땅",
+    "composer": "아마노 츠키",
+    "pitch": "X",
+    "tj_num": "28701ⓗ",
+    "ky_num": "44145"
+  },
+  {
+    "id": 719,
+    "title": "Weigh Anchor!",
+    "artist": "Raon",
+    "composer": "M2U",
+    "pitch": "X",
+    "tj_num": "XXX",
+    "ky_num": "22055"
+  },
+  {
+    "id": 720,
+    "title": "꺼내 보는 세상 (Let's Get it Out)",
+    "artist": "Raon, CRYING NUT",
+    "composer": "이상면, Raon",
+    "pitch": "X",
+    "tj_num": "XXX",
+    "ky_num": "22685"
+  },
+  {
+    "id": 721,
+    "title": "Promise",
+    "artist": "Raon",
+    "composer": "GrooPark(지루박)",
+    "pitch": "X",
+    "tj_num": "77776",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 722,
+    "title": "해라",
+    "artist": "Raon",
+    "composer": "KZ, 김태영, 비오(B.O.)",
+    "pitch": "X",
+    "tj_num": "50194",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 723,
+    "title": "소생",
+    "artist": "Raon",
+    "composer": "민쇼크(MEANSHOCK)",
+    "pitch": "X",
+    "tj_num": "43834",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 724,
+    "title": "순혈주의자 (Pure Blood)",
+    "artist": "달의하루",
+    "composer": "ampstyle",
+    "pitch": "X",
+    "tj_num": "84327",
+    "ky_num": "98007"
+  },
+  {
+    "id": 725,
+    "title": "うさぎラップ (リズム感のある者たちver.)('映画ちいかわ 人魚の島のひみつ' OST)",
+    "artist": "うさぎ(CV:小澤亜李),モモンガ(CV:井口裕香) 他2名",
+    "composer": "トクマルシューゴ",
+    "pitch": "X",
+    "tj_num": "90264",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 726,
+    "title": "ノンブレス・ オブリージュ",
+    "artist": "ピノキオピー(Feat.初音ミク)",
+    "composer": "ピノキオピー",
+    "pitch": "X",
+    "tj_num": "90229",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 727,
+    "title": "ないものねだり",
+    "artist": "KANA-BOON",
+    "composer": "谷口鮪",
+    "pitch": "X",
+    "tj_num": "90224",
+    "ky_num": "XXX"
   }
 ]
