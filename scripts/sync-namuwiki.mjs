@@ -3,7 +3,6 @@ import { existsSync, readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { GoogleGenAI } from '@google/genai';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -182,12 +181,37 @@ async function fetchNamuwikiMarkdown() {
   return '';
 }
 
+function stripMarkdownLinks(text) {
+  let result = '';
+  let i = 0;
+  while (i < text.length) {
+    if (text[i] === '[') {
+      const closeBracket = text.indexOf(']', i + 1);
+      if (closeBracket !== -1 && text[closeBracket + 1] === '(') {
+        let depth = 1;
+        let j = closeBracket + 2;
+        while (j < text.length && depth > 0) {
+          if (text[j] === '(') depth++;
+          else if (text[j] === ')') depth--;
+          j++;
+        }
+        if (depth === 0) {
+          result += text.slice(i + 1, closeBracket);
+          i = j;
+          continue;
+        }
+      }
+    }
+    result += text[i];
+    i++;
+  }
+  return result;
+}
+
 function cleanCell(text) {
   if (!text) return '';
-  return text
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/\[\\?\[?\d+\\?\]?\]\([^)]+\)/g, '')
-    .replace(/\[\d+\]/g, '')
+  return stripMarkdownLinks(text)
+    .replace(/\\?\[\d+\\?\]/g, '')
     .replace(/~~([^~]+)~~/g, '$1')
     .replace(/<(?!\s*br\s*\/?)[^>]+>/gi, '')
     .trim();
@@ -237,68 +261,10 @@ function extractRawRows(markdown) {
 }
 
 /**
- * 3. Gemini 3.8 Flash Processing:
- * Uses @google/genai interactions.create with model gemini-3.8-flash to normalize song data
+ * 3. Deterministic Row Normalization (no external Gemini API call; Multica task handles review/pitch):
  * Strictly outputs the 7-field DB schema: id, title, artist, composer, pitch, tj_num, ky_num
  */
-async function normalizeWithGeminiFlash(newRows, startingId) {
-  if (newRows.length === 0) return [];
-
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    console.warn('[Gemini] GEMINI_API_KEY not set. Using rule-based fallback normalization.');
-    return fallbackNormalize(newRows, startingId);
-  }
-
-  const client = new GoogleGenAI({});
-  console.log(`[Gemini 3.8 Flash] Sending ${newRows.length} compressed Japanese song rows to gemini-3.8-flash...`);
-
-  const prompt = `You are a Japanese Karaoke song database normalizer.
-Given the following raw Namuwiki table rows:
-${JSON.stringify(newRows, null, 2)}
-
-Normalize every row into a JSON array of song objects matching this EXACT 7-field schema (do NOT add any extra fields):
-[
-  {
-    "id": <number starting from ${startingId}>,
-    "title": "<Korean title with Japanese original in parentheses if available, e.g. '아이돌 (アイドル)' or 'Lemon'>",
-    "artist": "<singer/band name, e.g. 'YOASOBI', '요네즈 켄시'>",
-    "composer": "<composer name, e.g. 'Ayase', '요네즈 켄시'>",
-    "pitch": "<highest note of the MAIN VOCAL MELODY only, in Korean octave notation like '3옥 도#', '3옥 파#', '2옥 시'. Copy the row's pitch as-is; if it is 'X', output 'X'. Never guess.>",
-    "tj_num": "<TJ karaoke number keeping ⓗ/ⓢ if present, or 'XXX'>",
-    "ky_num": "<KY karaoke number, or 'XXX'>"
-  }
-]
-
-PITCH RULE: pitch is the highest note of the main vocal melody only. Exclude harmony, chorus, backing vocals, ad-libs, and stacked vocal parts. If a value is unknown or you cannot confirm it is main-vocal-only, use 'X' instead of guessing.
-
-CRITICAL: Return ONLY a valid JSON array. No markdown codeblocks, no extra fields.`;
-
-  try {
-    const interaction = await client.interactions.create({
-      model: 'gemini-3.8-flash',
-      input: prompt
-    });
-
-    const output = interaction.output_text?.trim() || '';
-    const cleanJson = output.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
-    const parsed = JSON.parse(cleanJson);
-    return parsed.map((item, idx) => ({
-      id: startingId + idx,
-      title: String(item.title || '').trim(),
-      artist: String(item.artist || '-').trim(),
-      composer: String(item.composer || '-').trim(),
-      pitch: String(item.pitch || 'X').trim(),
-      tj_num: String(item.tj_num || 'XXX').trim(),
-      ky_num: String(item.ky_num || 'XXX').trim()
-    }));
-  } catch (err) {
-    console.error('[Gemini 3.8 Flash] Error during interaction:', err.message);
-    return fallbackNormalize(newRows, startingId);
-  }
-}
-
-function fallbackNormalize(rows, startingId) {
+function normalizeRows(rows, startingId) {
   let id = startingId;
   return rows.map(r => {
     const rawTitle = r.raw_title || '';
@@ -316,8 +282,8 @@ function fallbackNormalize(rows, startingId) {
     return {
       id: id++,
       title: fullTitle,
-      artist: r.artist || '-',
-      composer: r.composer || '-',
+      artist: cleanCell(r.artist || '') || '-',
+      composer: cleanCell(r.composer || '') || '-',
       pitch: r.pitch || 'X',
       tj_num: r.tj_num || 'XXX',
       ky_num: r.ky_num || 'XXX'
@@ -396,7 +362,7 @@ export async function runSync() {
   if (newRows.length > 0 || updatedExistingCount > 0) {
     if (newRows.length > 0) {
       const nextId = existingSongs.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
-      newlyAddedSongs = await normalizeWithGeminiFlash(newRows, nextId);
+      newlyAddedSongs = normalizeRows(newRows, nextId);
       existingSongs.push(...newlyAddedSongs);
     }
 
