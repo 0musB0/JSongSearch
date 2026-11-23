@@ -210,7 +210,8 @@ function stripMarkdownLinks(text) {
 
 function cleanCell(text) {
   if (!text) return '';
-  return stripMarkdownLinks(text)
+  const withoutFootnotes = text.replace(/\[\\?\[?\d+\\?\]?\]\([^)]+\)/g, '');
+  return stripMarkdownLinks(withoutFootnotes)
     .replace(/\\?\[\d+\\?\]/g, '')
     .replace(/~~([^~]+)~~/g, '$1')
     .replace(/<(?!\s*br\s*\/?)[^>]+>/gi, '')
@@ -382,7 +383,7 @@ export async function runSync() {
     newlyAddedSongs: newlyAddedSongs.slice(0, 10),
     sources: NAMUWIKI_JAPANESE_URLS,
     schedule: '수동 (로컬 npm run sync 후 커밋)',
-    engine: 'gemini-3.8-flash + FireCrawl'
+    engine: 'deterministic-parser + FireCrawl'
   };
 
   if (!isDryRun) {
