@@ -1,9 +1,37 @@
 {
-  "lastSyncedAt": "2026-11-23T01:03:12.975Z",
+  "lastSyncedAt": "2026-11-24T01:03:16.190Z",
   "lastSyncStatus": "success",
-  "totalSongs": 727,
-  "newlyAddedCount": 0,
-  "newlyAddedSongs": [],
+  "totalSongs": 730,
+  "newlyAddedCount": 3,
+  "newlyAddedSongs": [
+    {
+      "id": 728,
+      "title": "pupa",
+      "artist": "なとり",
+      "composer": "なとり",
+      "pitch": "X",
+      "tj_num": "90239",
+      "ky_num": "XXX"
+    },
+    {
+      "id": 729,
+      "title": "共犯",
+      "artist": "Mrs. GREEN APPLE",
+      "composer": "大森元貴",
+      "pitch": "X",
+      "tj_num": "90232",
+      "ky_num": "XXX"
+    },
+    {
+      "id": 730,
+      "title": "一二三",
+      "artist": "Penthouse",
+      "composer": "浪岡真太郎",
+      "pitch": "X",
+      "tj_num": "90230",
+      "ky_num": "XXX"
+    }
+  ],
   "sources": [
     "https://namu.wiki/w/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D",
     "https://namu.wiki/w/YOASOBI/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D",
@@ -18,5 +46,5 @@
     "https://namu.wiki/w/%EC%9D%8C%EC%84%B1%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%20%EC%98%A4%EB%A6%AC%EC%A7%80%EB%84%90%20%EA%B3%A1/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D"
   ],
   "schedule": "수동 (로컬 npm run sync 후 커밋)",
-  "engine": "gemini-3.8-flash + FireCrawl"
+  "engine": "deterministic-parser + FireCrawl"
 }
