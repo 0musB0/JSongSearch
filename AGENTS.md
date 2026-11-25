@@ -21,46 +21,53 @@ This workspace integrates strict engineering discipline, combining Superpowers d
 
 ## 구조 지도
 한 줄 개요: 일본곡 노래방(TJ/금영) 번호·최고음 검색 웹 서비스 (가사·음원 재생 없음, 저작권)
-스택: JavaScript(ES Module), HTML5/CSS3, Node.js, Vercel Serverless/Cron, @google/genai
-실행/검증: npm start (로컬 개발 서버), npm run sync (신곡 동기화), npm run parse (데이터 파싱)
+스택: JavaScript(ES Module), HTML5/CSS3, Node.js, Vercel Serverless
+실행/검증: npm start (로컬 개발 서버), npm run sync (신곡 동기화), npm run verify (DB 스키마·무결성 검증)
 
 파일 지도:
 경로                      역할 (한 줄)
 index.html                 검색 UI, 모달, 헤더/필터 마크업 구조
 script.js                  초성 검색, 음역 키 계산, 프론트엔드 인터랙션
 style.css                  반응형 레이아웃, 테마, 카드 및 모달 스타일
+vercel.json                Vercel 함수 파일 포함 및 보안/캐시 헤더 설정
 api/songs.js               곡 목록 및 동기화 메타 반환 서버리스 함수
-api/cron-sync.js           일일 신곡 동기화 트리거 서버리스 함수
-scripts/dev-server.mjs     로컬 개발용 HTTP 서버 (정적 파일 + API 모킹)
+api/cron-sync.js           레거시 크론 엔드포인트 (서버리스 읽기 전용 FS 보호를 위해 501 비활성화)
+scripts/dev-server.mjs     로컬 개발용 HTTP 서버 (정적 파일 화이트리스트 + API 모킹)
+scripts/verify.mjs         data/songs.json 7필드 스키마·중복·pitch 검증 및 원자적 저장 유틸
 scripts/sync-namuwiki.mjs  TJ Media 및 나무위키 신곡 동기화 스크립트
-scripts/parse-namuwiki.mjs 나무위키 마크다운 파싱 및 음역 매핑 유틸리티
+scripts/parse-namuwiki.mjs 레거시 나무위키 마크다운 파싱 유틸리티 (npm scripts 노출 제거)
 scripts/fill-pitch.mjs      pitch X 곡 최고음 조회·채우기 (Firecrawl, 캐시·상한, --retry)
 scripts/fill-pitch-alt.mjs  vocal-range.com 에 없는 X 곡을 다른 신뢰 출처(2곳 이상 일치)로 판정해 캐시에 기록
 scripts/audit-pitch.mjs     기존 pitch 와 vocal-range.com 대조 (수정 안 함)
+scripts/tj/apply.mjs        TJ 번호 수정 및 신곡 일괄 반영 스크립트 (fixnums.json·newsongs.json 기반)
+scripts/tj/fixnums.mjs      TJ 번호 불일치 수정 후보 추출 스크립트
+scripts/tj/verify.mjs       TJ 수록곡 번호 대조 검증 스크립트
+scripts/tj/*.json           TJ 검증·수정·신곡 데이터 스냅샷 (fixnums.json, newsongs.json, verify.json)
+CLAUDE.md, README.md        프로젝트 안내 및 Claude 작업 지침
 logo.png, og-banner.png, .agents/skills/, .claude/skills/  생성물·자산
-docs/PERSONAL_GUIDELINES.md  개인 지침
+docs/                       작업 지침·인수인계·음역 감사/채우기 캐시 및 보고서 (PERSONAL_GUIDELINES.md, HANDOFF.md, pitch-review.md, pitch-fill-report.md 등)
 data/songs.json 스키마: id, title, artist, composer, pitch, tj_num, ky_num (훼손 금지)
 
 데이터 흐름:
 - 정적 로드: 브라우저가 정적 자산 로드 후 /api/songs에서 data/songs.json을 가져와 인메모리 검색/필터링
-- 데이터 동기화: 로컬 `npm run sync` + 커밋 -> TJ API/나무위키 크롤링 -> data/songs.json 갱신
+- 데이터 동기화: 로컬 `npm run sync` + `npm run verify` + 커밋 -> TJ API/나무위키 크롤링 -> data/songs.json 갱신
 
 자주 고치는 곳:
 - UI 마크업 및 디자인 수정: index.html, style.css
 - 검색 필터링/키 계산/클라이언트 동작 수정: script.js
-- 신곡 수집 및 동기화 규칙 변경: scripts/sync-namuwiki.mjs, scripts/parse-namuwiki.mjs
+- 신곡 수집 및 동기화 규칙 변경: scripts/sync-namuwiki.mjs
 
 동기화 정책 (확정):
-- 곡 DB 갱신은 로컬 `npm run sync` 후 커밋·push (Vercel 배포가 이어서 반영). 서버리스는 파일시스템이 읽기 전용이라 영구 갱신 불가.
-- vercel.json의 crons는 제거됨 (유료 Gemini/Firecrawl 호출 낭비 방지). api/cron-sync.js는 CRON_SECRET이 있을 때만 수동 호출 가능(미설정 시 401). 프론트 '최신 수록곡 확인' 버튼은 /api/songs?meta=true로 마지막 갱신일만 표시(유료 동기화 호출 안 함).
+- 곡 DB 갱신은 로컬 `npm run sync` 후 `npm run verify`·커밋·push (Vercel 배포가 이어서 반영). 서버리스는 파일시스템이 읽기 전용이라 영구 갱신 불가.
+- vercel.json의 crons는 제거됨 (유료 Firecrawl 호출 낭비 방지). api/cron-sync.js는 CRON_SECRET 검증 후 501 안내만 반환(파일 쓰기 차단). 프론트 '최신 수록곡 확인' 버튼은 /api/songs?meta=true로 마지막 갱신일만 표시(유료 동기화 호출 안 함).
 
 최고음(pitch) 규칙:
 - 메인 보컬 멜로디 최고음만(진성·가성 중 높은 음). 하모니·코러스·애드립·화음 제외. 모르면 'X', 추측·임의 변경 금지(출처 필요).
 - 재검토 후보 목록: docs/pitch-review.md
 
 건드리지 말 것:
-- 큰 파일/데이터: logo.png(414KB), og-banner.png(504KB), data/songs.json(94KB) - head로 일부만 볼 것(통째로 읽지 말 것), data/sync-meta.json
-- 환경변수 위치: GEMINI_API_KEY, FIRECRAWL_API_KEY, CRON_SECRET (Vercel 환경변수 또는 실행 환경에만 설정)
+- 큰 파일/데이터: logo.png(414KB), og-banner.png(504KB), data/songs.json(약 156KB) - head로 일부만 볼 것(통째로 읽지 말 것), data/sync-meta.json
+- 환경변수 위치: FIRECRAWL_API_KEY, CRON_SECRET (Vercel 환경변수 또는 실행 환경에만 설정)
 <!-- 자동 배포 점검: 2026-11-11 -->
 
 최고음 자동 채우기 (Mus 결정 2026-11-13: vocal-range.com 외 출처 허용, 별도 허락 불필요):

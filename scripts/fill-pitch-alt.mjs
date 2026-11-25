@@ -15,16 +15,28 @@ const SEP = '\\s*[,|]?\\s*', ANY = '(?:low\\d?|mid[12]|hi)[A-G]#?';
 const esc = x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const nk = x => x.toLowerCase().replace(/[\s・･'’]/g, '');
 const ORDER = ['도', '도#', '레', '레#', '미', '파', '파#', '솔', '솔#', '라', '라#', '시'];
-const rank = ko => { const m = /^(\d)옥 (.+)$/.exec(ko); return m[1] * 12 + ORDER.indexOf(m[2]); };
-const host = u => new URL(u).hostname.replace('w.atwiki.jp', 'atwiki').replace('www.', '');
+const rank = ko => {
+  const m = /^(\d)옥 (.+)$/.exec(ko || '');
+  if (!m) return -1;
+  const idx = ORDER.indexOf(m[2]);
+  return idx < 0 ? -1 : Number(m[1]) * 12 + idx;
+};
+const host = u => {
+  if (!u || typeof u !== 'string') return '';
+  try {
+    return new URL(u).hostname.replace('w.atwiki.jp', 'atwiki').replace('www.', '');
+  } catch {
+    return '';
+  }
+};
 const artistJp = s => /\(([^)]*[ぁ-んァ-ヶ一-龠A-Za-z][^)]*)\)/.exec(s.artist)?.[1] || s.artist;
 
 // 한 곡에 대해 (출처 URL, 최고음 한글표기) 후보를 모은다.
 export function candidates(song, hits, scrapes) {
   const jp = jpTitle(song), key = jp.split(' ')[0], c = [];
   const push = (url, n) => { const k = n && n !== '-' && toKo(n); if (k) c.push({ url, ko: k }); };
-  for (const h of hits) {
-    if (!TRUST.some(d => h.url.includes(d))) continue;
+  for (const h of hits || []) {
+    if (!h?.url || !TRUST.some(d => h.url.includes(d))) continue;
     const txt = ((h.title || '') + ' ' + (h.d || '')).replace(/＃/g, '#').replace(/\s+/g, ' ');
     if (!txt.includes(key)) continue;
     const i = txt.indexOf(key);
@@ -50,7 +62,7 @@ export function candidates(song, hits, scrapes) {
 // 사이트별 최댓값(진성·가성 중 높은 쪽)을 모아 다수결. 확정 못 하면 null.
 export function decide(cands) {
   const per = {};
-  for (const x of cands) { const h = host(x.url); if (!per[h] || rank(x.ko) > rank(per[h].ko)) per[h] = x; }
+  for (const x of cands) { const h = host(x.url); if (h && (!per[h] || rank(x.ko) > rank(per[h].ko))) per[h] = x; }
   const votes = {};
   for (const [h, x] of Object.entries(per)) (votes[x.ko] ||= []).push({ h, url: x.url });
   const best = Object.entries(votes).sort((a, b) => b[1].length - a[1].length || rank(b[0]) - rank(a[0]))[0];
@@ -72,15 +84,23 @@ async function main() {
   if (todo.length && !key) throw new Error('FIRECRAWL_API_KEY 필요');
   for (const s of todo) {
     if (spent + 2 > maxCredits) break;
-    const web = (await fc('search', { query: `『${jpTitle(s)}』 ${artistJp(s)} 最高音 音域 カラオケ`, limit: 5 }, key))?.web || [];
-    alt.probe[s.id] = { hits: web.map(h => ({ url: h.url, title: h.title, d: h.description })) };
-    spent += 2; save();
+    try {
+      const web = (await fc('search', { query: `『${jpTitle(s)}』 ${artistJp(s)} 最高音 音域 カラオケ`, limit: 5 }, key))?.web || [];
+      alt.probe[s.id] = { hits: web.filter(h => h?.url).map(h => ({ url: h.url, title: h.title, d: h.description })) };
+      spent += 2; save();
+    } catch (e) {
+      console.warn(`[fill-pitch-alt] search failed for id=${s.id}:`, e.message);
+    }
   }
-  const urls = new Set(Object.values(alt.probe).flatMap(p => p.hits.map(h => h.url)).filter(u => TABLE.test(u)));
+  const urls = new Set(Object.values(alt.probe).flatMap(p => (p.hits || []).map(h => h.url)).filter(u => u && TABLE.test(u)));
   for (const url of urls) {
     if (alt.scrapes[url] !== undefined || spent + 1 > maxCredits) continue;
-    alt.scrapes[url] = (await fc('scrape', { url, formats: ['markdown'], onlyMainContent: true }, key))?.markdown || '';
-    spent += 1; save();
+    try {
+      alt.scrapes[url] = (await fc('scrape', { url, formats: ['markdown'], onlyMainContent: true }, key))?.markdown || '';
+      spent += 1; save();
+    } catch (e) {
+      console.warn(`[fill-pitch-alt] scrape failed for ${url}:`, e.message);
+    }
   }
   const fill = fs.existsSync(FILL) ? JSON.parse(fs.readFileSync(FILL, 'utf8')) : {};
   let n = 0;

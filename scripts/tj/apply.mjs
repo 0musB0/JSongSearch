@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { writeSongsAtomicallySync } from '../verify.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
 const strip = h => h.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/\s+/g, ' ').trim();
@@ -14,6 +15,7 @@ const stripTag = t => t.replace(/^60이상 반주기 전용곡\s*/, '').replace(
 
 const songsPath = path.join(ROOT, 'data/songs.json');
 const songs = JSON.parse(fs.readFileSync(songsPath, 'utf8'));
+const prevCount = songs.length;
 const byId = Object.fromEntries(songs.map(s => [s.id, s]));
 const fx = JSON.parse(fs.readFileSync(path.join(HERE, 'fixnums.json'), 'utf8'));
 const manual = { 44: 25569, 126: 27374, 212: 29809, 247: 25407, 319: 25589, 383: 26784, 233: 28285, 393: 68217, 171: 26506, 400: 68759 };
@@ -41,7 +43,7 @@ for (const [artist, list] of JSON.parse(fs.readFileSync(path.join(HERE, 'newsong
     have.add(String(num)); log.added.push(`${num} ${ko ? ko + ' ' : ''}(${jp}) / ${artist}`);
   }
 }
-fs.writeFileSync(songsPath, JSON.stringify(songs, null, 2));
+writeSongsAtomicallySync(songsPath, songs, prevCount);
 fs.writeFileSync(path.join(HERE, 'apply-log.json'), JSON.stringify(log, null, 1));
 console.log({ fixed: log.fixed.length, added: log.added.length, skipped: log.skipped.length, total: songs.length });
 console.log(log.skipped.join('\n'));

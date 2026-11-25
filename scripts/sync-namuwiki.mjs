@@ -1,8 +1,9 @@
 import fs from 'node:fs/promises';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { writeSongsAtomically, writeJsonAtomically } from './verify.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,8 +26,6 @@ const NAMUWIKI_JAPANESE_URLS = [
   'https://namu.wiki/w/%EC%9A%B0%ED%83%80%EC%9D%B4%ED%85%8C%20%EC%98%A4%EB%A6%AC%EC%A7%80%EB%84%90%20%EA%B3%A1/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D',
   'https://namu.wiki/w/%EC%9D%8C%EC%84%B1%20%ED%95%A9%EC%84%B1%20%EC%97%94%EC%A7%84%20%EC%98%A4%EB%A6%AC%EC%A7%80%EB%84%90%20%EA%B3%A1/%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D'
 ];
-
-const LOCAL_FALLBACK_MD = 'C:\\Users\\LG\\.gemini\\antigravity\\brain\\7db566f1-df77-497b-8fee-239f8203917b\\scratch\\namuwiki_vocaloid_karaoke.md';
 
 // pitch = 메인 보컬 멜로디 최고음만 (하모니·코러스·애드립·화음 제외)
 // Curated Korean title, artist, composer, pitch metadata for newly released TJ/KY Japanese songs
@@ -88,7 +87,8 @@ async function fetchLiveTJJapaneseRows() {
       const response = await fetch('https://www.tjmedia.com/legacy/api/newSongOfMonth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-        body: `searchYm=${ym}`
+        body: `searchYm=${ym}`,
+        signal: AbortSignal.timeout(15000)
       });
       if (!response.ok) continue;
       const json = await response.json();
@@ -153,7 +153,8 @@ async function fetchNamuwikiMarkdown() {
             url,
             formats: ['markdown'],
             onlyMainContent: true
-          })
+          }),
+          signal: AbortSignal.timeout(20000)
         });
 
         if (response.ok) {
@@ -171,11 +172,7 @@ async function fetchNamuwikiMarkdown() {
       return chunks.join('\n\n');
     }
   } else {
-    console.log('[FireCrawl] No FIRECRAWL_API_KEY detected in env. Using local/direct fallback.');
-  }
-
-  if (existsSync(LOCAL_FALLBACK_MD)) {
-    return readFileSync(LOCAL_FALLBACK_MD, 'utf8');
+    console.log('[FireCrawl] No FIRECRAWL_API_KEY detected in env. Skipping Namuwiki scrape.');
   }
 
   return '';
@@ -298,16 +295,16 @@ export async function runSync() {
   console.log(`📅 Execution time: ${new Date().toISOString()}`);
   console.log('====================================================');
 
-  let existingSongs = [];
-  if (existsSync(SONGS_FILE)) {
-    try {
-      const content = await fs.readFile(SONGS_FILE, 'utf8');
-      existingSongs = JSON.parse(content);
-      console.log(`[Existing DB] Loaded ${existingSongs.length} Japanese songs from data/songs.json`);
-    } catch (err) {
-      console.warn('[Existing DB] Error reading data/songs.json:', err.message);
-    }
+  if (!existsSync(SONGS_FILE)) {
+    throw new Error(`[Existing DB] Missing ${SONGS_FILE}`);
   }
+  const content = await fs.readFile(SONGS_FILE, 'utf8');
+  const existingSongs = JSON.parse(content);
+  if (!Array.isArray(existingSongs)) {
+    throw new Error('[Existing DB] data/songs.json must be an array');
+  }
+  const prevCount = existingSongs.length;
+  console.log(`[Existing DB] Loaded ${prevCount} Japanese songs from data/songs.json`);
 
   const existingSet = new Set();
   const existingByTitle = new Map();
@@ -368,16 +365,22 @@ export async function runSync() {
     }
 
     if (!isDryRun) {
-      await fs.writeFile(SONGS_FILE, JSON.stringify(existingSongs, null, 2), 'utf8');
+      await writeSongsAtomically(SONGS_FILE, existingSongs, prevCount);
       console.log(`[DB Update] Appended ${newlyAddedSongs.length} new songs (${updatedExistingCount} backfilled). Total now: ${existingSongs.length}`);
     }
   } else {
     console.log('[Headroom Diff] All songs are up to date! Zero LLM tokens wasted.');
   }
 
+  const crawlFailed = namuRows.length === 0 && liveTjRows.length === 0;
+  if (crawlFailed) {
+    process.exitCode = 1;
+    console.error('❌ [Crawl] Both Namuwiki and TJ Media crawls returned 0 rows.');
+  }
+
   const meta = {
     lastSyncedAt: new Date().toISOString(),
-    lastSyncStatus: 'success',
+    lastSyncStatus: crawlFailed ? 'error' : 'success',
     totalSongs: existingSongs.length,
     newlyAddedCount: newlyAddedSongs.length,
     newlyAddedSongs: newlyAddedSongs.slice(0, 10),
@@ -387,17 +390,21 @@ export async function runSync() {
   };
 
   if (!isDryRun) {
-    await fs.writeFile(META_FILE, JSON.stringify(meta, null, 2), 'utf8');
+    await writeJsonAtomically(META_FILE, meta);
   }
 
-  if (isCommit && !isDryRun && (newlyAddedSongs.length > 0 || updatedExistingCount > 0)) {
+  if (isCommit && !isDryRun && !crawlFailed && (newlyAddedSongs.length > 0 || updatedExistingCount > 0)) {
     try {
       console.log('[Git] Committing and pushing updated song database...');
-      execSync('git add data/songs.json data/sync-meta.json scripts/sync-namuwiki.mjs', { cwd: rootDir, stdio: 'inherit' });
+      execSync('git add data/songs.json data/sync-meta.json', { cwd: rootDir, stdio: 'inherit' });
       execSync(`git commit -m "chore(sync): add ${newlyAddedSongs.length} new Japanese karaoke songs (total ${existingSongs.length})"`, { cwd: rootDir, stdio: 'inherit' });
       execSync('git push origin main', { cwd: rootDir, stdio: 'inherit' });
     } catch (gitErr) {
-      console.warn('[Git] Auto-commit/push warning:', gitErr.message);
+      console.error('[Git] Auto-commit/push failed, resetting staged data files:', gitErr.message);
+      try {
+        execSync('git reset HEAD -- data/songs.json data/sync-meta.json', { cwd: rootDir, stdio: 'inherit' });
+      } catch {}
+      process.exitCode = 1;
     }
   }
 

@@ -41,29 +41,47 @@ export function jpTitle(song) {
   return (m ? m[1] : song.title).trim();
 }
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const CREDITS_PER_SONG = 2;
+
 async function search(query, key) {
-  const res = await fetch('https://api.firecrawl.dev/v2/search', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-    body: JSON.stringify({ query, limit: 3 })
-  });
-  if (!res.ok) throw new Error(`firecrawl ${res.status}`);
-  return (await res.json()).data?.web || [];
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch('https://api.firecrawl.dev/v2/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+      body: JSON.stringify({ query, limit: 3 }),
+      signal: AbortSignal.timeout(20000)
+    });
+    if (res.status === 429 && attempt < 6) {
+      await sleep(2000 * 2 ** attempt);
+      continue;
+    }
+    if (!res.ok) throw new Error(`firecrawl ${res.status}`);
+    return (await res.json()).data?.web || [];
+  }
 }
 
 async function main() {
   const key = process.env.FIRECRAWL_API_KEY;
   if (!key) throw new Error('FIRECRAWL_API_KEY 필요');
-  const [from = 0, to = Infinity] = process.argv.slice(2).map(Number);
+  const maxCredits = Number(process.argv.find(a => a.startsWith('--max-credits='))?.split('=')[1]) || 300;
+  const posArgs = process.argv.slice(2).filter(a => !a.startsWith('--')).map(Number);
+  const [from = 0, to = Infinity] = posArgs;
   const songs = JSON.parse(fs.readFileSync('data/songs.json', 'utf8')).filter(s => s.id >= from && s.id <= to);
   const outPath = 'docs/pitch-audit.json';
   const out = fs.existsSync(outPath) ? JSON.parse(fs.readFileSync(outPath, 'utf8')) : {};
+  let spent = 0;
   for (const s of songs) {
     if (out[s.id]) continue;
+    if (spent + CREDITS_PER_SONG > maxCredits) {
+      console.log(`크레딧 상한(${maxCredits}) 도달로 중단 (사용 ${spent} 크레딧)`);
+      break;
+    }
     const jp = jpTitle(s);
     try {
       const hits = await search(`site:vocal-range.com 「${jp}」 ${s.artist} 音域 地声最高音`, key);
-      const hit = hits.find(h => h.url.includes('vocal-range.com') && (h.title || '').includes(jp));
+      spent += CREDITS_PER_SONG;
+      const hit = hits.find(h => h.url?.includes('vocal-range.com') && (h.title || '').includes(jp));
       const r = hit ? parseRange(hit.description || '') : { chest: null, falsetto: null };
       const peak = peakOf(r);
       out[s.id] = { title: s.title, stored: s.pitch, ...r, peak, url: hit?.url || null,
@@ -72,7 +90,7 @@ async function main() {
       out[s.id] = { title: s.title, stored: s.pitch, status: 'error', error: e.message };
     }
     fs.writeFileSync(outPath, JSON.stringify(out, null, 2));
-    await new Promise(r => setTimeout(r, 400));
+    await sleep(400);
   }
   const c = {};
   for (const v of Object.values(out)) c[v.status] = (c[v.status] || 0) + 1;
