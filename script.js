@@ -74,13 +74,29 @@ async function copyTextSafe(text) {
 function loadUserPreferences() {
   try {
     const savedFavs = JSON.parse(localStorage.getItem('jsong_favorites') || '[]');
-    favoriteIds = new Set(savedFavs.map(Number));
+    favoriteIds = new Set(
+      Array.isArray(savedFavs)
+        ? savedFavs.map(Number).filter(n => Number.isInteger(n) && n > 0)
+        : []
+    );
   } catch {
     favoriteIds = new Set();
   }
 
   try {
-    recentCopied = JSON.parse(localStorage.getItem('jsong_recent_copied') || '[]');
+    const savedRecent = JSON.parse(localStorage.getItem('jsong_recent_copied') || '[]');
+    recentCopied = Array.isArray(savedRecent)
+      ? savedRecent
+          .filter(
+            x =>
+              x &&
+              typeof x === 'object' &&
+              typeof x.brand === 'string' &&
+              typeof x.num === 'string' &&
+              typeof x.title === 'string'
+          )
+          .slice(0, 8)
+      : [];
   } catch {
     recentCopied = [];
   }
@@ -246,7 +262,34 @@ function escapeHtml(str) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function buildSongSearchIndex(songs) {
+  for (const song of songs) {
+    const titleNs = (song.title || '').replace(/\s+/g, '').toLowerCase();
+    const artistNs = (song.artist || '').replace(/\s+/g, '').toLowerCase();
+    const composerNs = (song.composer || '').replace(/\s+/g, '').toLowerCase();
+    const pitchNs = (song.pitch || '').replace(/\s+/g, '').toLowerCase();
+    const engPitchNs = convertPitch(song.pitch).replace(/\s+/g, '').toLowerCase();
+    song._idx = {
+      id: Number(song.id) || 0,
+      titleNs,
+      titleChosung: extractChosung(titleNs),
+      artistNs,
+      artistChosung: extractChosung(artistNs),
+      composerNs,
+      composerChosung: extractChosung(composerNs),
+      pitchNs,
+      engPitchNs,
+      tjNs: (song.tj_num || '').replace(/\s+/g, '').toLowerCase(),
+      kyNs: (song.ky_num || '').replace(/\s+/g, '').toLowerCase(),
+      tjInt: parseInt(String(song.tj_num).replace(/\D/g, ''), 10) || 999999,
+      kyInt: parseInt(String(song.ky_num).replace(/\D/g, ''), 10) || 999999,
+      pitchRank: parsePitchRank(song.pitch)
+    };
+  }
 }
 
 function normalizeSearchQuery(rawSearch) {
@@ -334,26 +377,26 @@ function getFilteredAndSortedSongs() {
     if (activeFilter === 'my-range') {
       if (!myComfortPitch) return true;
       const u = parsePitchRank(myComfortPitch);
-      const s = parsePitchRank(song.pitch);
+      const s = song._idx?.pitchRank || parsePitchRank(song.pitch);
       return u.valid && s.valid && s.semitones <= u.semitones;
     }
     if (activeFilter === 'pitch-2down') {
-      const r = parsePitchRank(song.pitch);
+      const r = song._idx?.pitchRank || parsePitchRank(song.pitch);
       return r.valid && r.octave <= 2;
     }
     if (activeFilter === 'pitch-3mid') {
-      const r = parsePitchRank(song.pitch);
+      const r = song._idx?.pitchRank || parsePitchRank(song.pitch);
       return r.valid && r.score >= 300 && r.score <= 320; // 3옥 도 ~ 3옥 미
     }
     if (activeFilter === 'pitch-3high') {
-      const r = parsePitchRank(song.pitch);
+      const r = song._idx?.pitchRank || parsePitchRank(song.pitch);
       return r.valid && r.score >= 330; // 3옥 파 이상
     }
     if (activeFilter.startsWith('artist:')) {
       const pattern = activeFilter.slice('artist:'.length);
       const keywords = pattern.split('|').map(k => k.replace(/\s+/g, '').toLowerCase());
-      const artistNoSpace = (song.artist || '').replace(/\s+/g, '').toLowerCase();
-      const composerNoSpace = (song.composer || '').replace(/\s+/g, '').toLowerCase();
+      const artistNoSpace = song._idx?.artistNs ?? (song.artist || '').replace(/\s+/g, '').toLowerCase();
+      const composerNoSpace = song._idx?.composerNs ?? (song.composer || '').replace(/\s+/g, '').toLowerCase();
       return keywords.some(k => artistNoSpace.includes(k) || composerNoSpace.includes(k));
     }
     return true;
@@ -363,16 +406,17 @@ function getFilteredAndSortedSongs() {
   if (trimmed !== '') {
     const rawNoSpace = trimmed.replace(/\s+/g, '').toLowerCase();
     list = list.filter(song => {
-      const titleNs = (song.title || '').replace(/\s+/g, '').toLowerCase();
-      const titleChosung = extractChosung(titleNs);
-      const pitchNs = (song.pitch || '').replace(/\s+/g, '').toLowerCase();
-      const engPitchNs = convertPitch(song.pitch).replace(/\s+/g, '').toLowerCase();
-      const artistNs = (song.artist || '').replace(/\s+/g, '').toLowerCase();
-      const artistChosung = extractChosung(artistNs);
-      const composerNs = (song.composer || '').replace(/\s+/g, '').toLowerCase();
-      const composerChosung = extractChosung(composerNs);
-      const tjNs = (song.tj_num || '').replace(/\s+/g, '').toLowerCase();
-      const kyNs = (song.ky_num || '').replace(/\s+/g, '').toLowerCase();
+      const idx = song._idx;
+      const titleNs = idx ? idx.titleNs : (song.title || '').replace(/\s+/g, '').toLowerCase();
+      const titleChosung = idx ? idx.titleChosung : extractChosung(titleNs);
+      const pitchNs = idx ? idx.pitchNs : (song.pitch || '').replace(/\s+/g, '').toLowerCase();
+      const engPitchNs = idx ? idx.engPitchNs : convertPitch(song.pitch).replace(/\s+/g, '').toLowerCase();
+      const artistNs = idx ? idx.artistNs : (song.artist || '').replace(/\s+/g, '').toLowerCase();
+      const artistChosung = idx ? idx.artistChosung : extractChosung(artistNs);
+      const composerNs = idx ? idx.composerNs : (song.composer || '').replace(/\s+/g, '').toLowerCase();
+      const composerChosung = idx ? idx.composerChosung : extractChosung(composerNs);
+      const tjNs = idx ? idx.tjNs : (song.tj_num || '').replace(/\s+/g, '').toLowerCase();
+      const kyNs = idx ? idx.kyNs : (song.ky_num || '').replace(/\s+/g, '').toLowerCase();
 
       if (isPitchSearch && /[가-힣]/.test(searchNoSpace)) {
         const wantsSharp = searchNoSpace.endsWith('#');
@@ -405,28 +449,28 @@ function getFilteredAndSortedSongs() {
 
   list.sort((a, b) => {
     if (sortMode === 'pitch-search-auto' || sortMode === 'pitch-asc') {
-      const ra = parsePitchRank(a.pitch);
-      const rb = parsePitchRank(b.pitch);
+      const ra = a._idx?.pitchRank || parsePitchRank(a.pitch);
+      const rb = b._idx?.pitchRank || parsePitchRank(b.pitch);
       if (ra.valid !== rb.valid) return ra.valid ? -1 : 1;
       if (ra.semitones !== rb.semitones) return ra.semitones - rb.semitones;
       return (a.title || '').localeCompare(b.title || '', 'ko');
     }
     if (sortMode === 'pitch-desc') {
-      const ra = parsePitchRank(a.pitch);
-      const rb = parsePitchRank(b.pitch);
+      const ra = a._idx?.pitchRank || parsePitchRank(a.pitch);
+      const rb = b._idx?.pitchRank || parsePitchRank(b.pitch);
       if (ra.valid !== rb.valid) return ra.valid ? -1 : 1;
       if (ra.semitones !== rb.semitones) return rb.semitones - ra.semitones;
       return (a.title || '').localeCompare(b.title || '', 'ko');
     }
     if (sortMode === 'tj-asc') {
-      const na = parseInt(String(a.tj_num).replace(/\D/g, ''), 10) || 999999;
-      const nb = parseInt(String(b.tj_num).replace(/\D/g, ''), 10) || 999999;
+      const na = a._idx?.tjInt ?? (parseInt(String(a.tj_num).replace(/\D/g, ''), 10) || 999999);
+      const nb = b._idx?.tjInt ?? (parseInt(String(b.tj_num).replace(/\D/g, ''), 10) || 999999);
       if (na !== nb) return na - nb;
       return (a.title || '').localeCompare(b.title || '', 'ko');
     }
     if (sortMode === 'ky-asc') {
-      const na = parseInt(String(a.ky_num).replace(/\D/g, ''), 10) || 999999;
-      const nb = parseInt(String(b.ky_num).replace(/\D/g, ''), 10) || 999999;
+      const na = a._idx?.kyInt ?? (parseInt(String(a.ky_num).replace(/\D/g, ''), 10) || 999999);
+      const nb = b._idx?.kyInt ?? (parseInt(String(b.ky_num).replace(/\D/g, ''), 10) || 999999);
       if (na !== nb) return na - nb;
       return (a.title || '').localeCompare(b.title || '', 'ko');
     }
@@ -518,36 +562,37 @@ function renderSongs() {
 
   const html = filtered
     .map(song => {
+      const safeId = Number(song.id) || 0;
       const { effectivePitch, converted, keyAdvice, offset, offsetLabel } = buildPitchMarkup(song);
       const pitchRank = parsePitchRank(effectivePitch);
       const isHighPitch = pitchRank.valid && pitchRank.score >= 330; // >= 3옥 파
-      const isFav = favoriteIds.has(Number(song.id));
+      const isFav = favoriteIds.has(safeId);
 
       const tjInfo = parseKaraokeNumber(song.tj_num);
       const kyInfo = parseKaraokeNumber(song.ky_num);
 
       return `
-        <article class="song-card ${isHighPitch ? 'high-pitch' : ''}" data-song-id="${song.id}">
+        <article class="song-card ${isHighPitch ? 'high-pitch' : ''}" data-song-id="${safeId}">
           <!-- Row 1: 2-Line Reserved Title Group (Left) + Unified Pitch Stepper & Heart (Right) -->
           <div class="card-top">
             <div class="card-title-group">
               <h3 class="card-title">${formatSongTitle(song.title)}</h3>
             </div>
             <div class="card-top-right">
-              <span data-advice-box="${song.id}">
+              <span data-advice-box="${safeId}">
                 ${keyAdvice ? `<span class="key-advice-pill ${keyAdvice.isDown ? 'key-down' : ''}">${escapeHtml(keyAdvice.text)}</span>` : ''}
               </span>
               ${effectivePitch !== '-' ? `
-              <div class="pitch-stepper-capsule ${offset !== 0 ? 'key-shifted' : ''}" data-pitch-capsule="${song.id}" title="최고음: ${escapeHtml(effectivePitch)} (${escapeHtml(converted)}) · 중앙 클릭시 원키 초기화">
-                <button type="button" class="key-step-btn" data-key-step="-1" data-song-id="${song.id}" title="반음 내리기 (♭)" aria-label="반음 내리기">−</button>
-                <button type="button" class="pitch-readout-btn" data-key-reset="${song.id}" title="클릭시 원키로 초기화 (${escapeHtml(converted)})">
+              <div class="pitch-stepper-capsule ${offset !== 0 ? 'key-shifted' : ''}" data-pitch-capsule="${safeId}" title="최고음: ${escapeHtml(effectivePitch)} (${escapeHtml(converted)}) · 중앙 클릭시 원키 초기화">
+                <button type="button" class="key-step-btn" data-key-step="-1" data-song-id="${safeId}" title="반음 내리기 (♭)" aria-label="반음 내리기">−</button>
+                <button type="button" class="pitch-readout-btn" data-key-reset="${safeId}" title="클릭시 원키로 초기화 (${escapeHtml(converted)})">
                   ${offsetLabel ? `<span class="pitch-shift-tag">${escapeHtml(offsetLabel)}</span>` : ''}
                   <strong class="pitch-kor">${escapeHtml(effectivePitch)}</strong>
                 </button>
-                <button type="button" class="key-step-btn" data-key-step="1" data-song-id="${song.id}" title="반음 올리기 (♯)" aria-label="반음 올리기">+</button>
+                <button type="button" class="key-step-btn" data-key-step="1" data-song-id="${safeId}" title="반음 올리기 (♯)" aria-label="반음 올리기">+</button>
               </div>
               ` : `<span class="pitch-empty-pill">음역 미상</span>`}
-              <button type="button" class="btn-fav-card ${isFav ? 'active' : ''}" data-fav-id="${song.id}" aria-label="애창곡 찜하기" title="내 애창곡 찜하기">
+              <button type="button" class="btn-fav-card ${isFav ? 'active' : ''}" data-fav-id="${safeId}" aria-label="애창곡 찜하기" title="내 애창곡 찜하기">
                 ${isFav ? '♥' : '♡'}
               </button>
             </div>
@@ -669,7 +714,7 @@ function renderFavoritesUI() {
             ${tj ? `<span class="fav-mini-num tj" data-copy="${escapeHtml(tj)}" data-brand="TJ" data-title="${escapeHtml(shortTitle)}">TJ ${escapeHtml(tj)}</span>` : ''}
             ${ky ? `<span class="fav-mini-num ky" data-copy="${escapeHtml(ky)}" data-brand="KY" data-title="${escapeHtml(shortTitle)}">KY ${escapeHtml(ky)}</span>` : ''}
           </div>
-          <button type="button" class="fav-remove-btn" data-remove-fav="${s.id}" title="찜 해제">✕</button>
+          <button type="button" class="fav-remove-btn" data-remove-fav="${Number(s.id) || 0}" title="찜 해제">✕</button>
         </div>
       `;
     })
@@ -678,18 +723,30 @@ function renderFavoritesUI() {
 
 function toggleFavorite(songId) {
   const id = Number(songId);
+  if (!Number.isInteger(id) || id <= 0) return;
+  let isFav;
   if (favoriteIds.has(id)) {
     favoriteIds.delete(id);
+    isFav = false;
     showToast('애창곡 찜 목록에서 제외했어요.');
   } else {
     favoriteIds.add(id);
+    isFav = true;
     showToast('♥ 내 애창곡 찜 목록에 담았어요!');
   }
   try {
     localStorage.setItem('jsong_favorites', JSON.stringify([...favoriteIds]));
   } catch {}
   renderFavoritesUI();
-  renderSongs();
+  if (activeFilter === 'favorites') {
+    renderSongs();
+  } else {
+    const btn = document.querySelector(`.btn-fav-card[data-fav-id="${id}"]`);
+    if (btn) {
+      btn.classList.toggle('active', isFav);
+      btn.textContent = isFav ? '♥' : '♡';
+    }
+  }
 }
 
 async function copyAllFavoritesToClipboard() {
@@ -902,6 +959,7 @@ async function initApp() {
       res = await fetch('/api/songs');
     }
     allSongs = await res.json();
+    buildSongSearchIndex(allSongs);
   } catch (err) {
     console.error('Failed to load songs:', err);
     allSongs = [];
@@ -982,16 +1040,22 @@ function bindEvents() {
   const scrollTopBtn = document.getElementById('scrollTopBtn');
 
   // Dismiss mobile/iOS virtual keyboard on Search Enter
+  let searchDebounceTimer = null;
   searchForm?.addEventListener('submit', e => {
     e.preventDefault();
+    clearTimeout(searchDebounceTimer);
     searchInput?.blur();
     renderSongs();
   });
 
-  searchInput?.addEventListener('input', () => renderSongs());
+  searchInput?.addEventListener('input', () => {
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => renderSongs(), 120);
+  });
 
   clearBtn?.addEventListener('click', () => {
     if (searchInput) {
+      clearTimeout(searchDebounceTimer);
       searchInput.value = '';
       searchInput.focus();
       renderSongs();

@@ -4,6 +4,7 @@
 // 출처에서 값이 확인된 곡만 채우고, 못 찾으면 X 유지. 보고서는 docs/pitch-fill-report.md.
 import fs from 'node:fs';
 import { parseRange, peakOf, jpTitle } from './audit-pitch.mjs';
+import { writeSongsAtomicallySync } from './verify.mjs';
 
 const CREDITS_PER_SONG = 3; // 최악: 검색 2 + scrape 1
 const CACHE = 'docs/pitch-fill-cache.json';
@@ -15,7 +16,8 @@ export async function fc(path, body, key) {
     const res = await fetch('https://api.firecrawl.dev/v2/' + path, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(20000)
     });
     if (res.status === 429 && attempt < 6) { await sleep(2000 * 2 ** attempt); continue; } // 지수 백오프
     if (!res.ok) throw new Error(`firecrawl ${res.status}`);
@@ -25,11 +27,12 @@ export async function fc(path, body, key) {
 const search = async (query, key) => (await fc('search', { query, limit: 5 }, key))?.web || [];
 const scrape = async (url, key) => (await fc('scrape', { url, formats: ['markdown'], onlyMainContent: true }, key))?.markdown || '';
 
-const norm = x => x.toLowerCase().replace(/[s・･]/g, '');
+export const norm = x => String(x || '').toLowerCase().replace(/[\s・･]/g, '');
+export const stripArtistParens = artist => String(artist || '').replace(/\s*\(.*$/, '').trim();
 // 글 제목이 『곡명』(아티스트)의 音域 형식. DB 아티스트는 "한글 (日本語)" 혼합이라 괄호 안 원문을 우선 쓴다.
-function titleMatches(h, jp, artist) {
+export function titleMatches(h, jp, artist) {
   const t = norm(h.title || '');
-  const a = norm(/(([^)]*[ぁ-んァ-ヶ一-龠A-Za-z][^)]*))/.exec(artist)?.[1] || artist);
+  const a = norm(/\(([^)]*[ぁ-んァ-ヶ一-龠A-Za-z][^)]*)\)/.exec(artist)?.[1] || artist);
   return t.includes(norm(`『${jp}』`)) && t.includes(a);
 }
 // 음역 요약 문장(「の音域についてですが、【地声最高音】…」) 이후만 파싱해 본문 중간 언급에 속지 않는다.
@@ -37,6 +40,7 @@ const rangeOf = text => { const i = text.indexOf('の音域についてですが
 
 export async function fillPitch({ key, maxCredits = 300, dry = false, retry = false } = {}) {
   const songs = JSON.parse(fs.readFileSync('data/songs.json', 'utf8'));
+  const prevCount = songs.length;
   const cache = fs.existsSync(CACHE) ? JSON.parse(fs.readFileSync(CACHE, 'utf8')) : {};
   const targets = songs.filter(s => s.pitch === 'X');
   const todo = targets.filter(s => !cache[s.id] || cache[s.id].status === 'error' || (retry && cache[s.id].status === 'not-found'));
@@ -48,8 +52,8 @@ export async function fillPitch({ key, maxCredits = 300, dry = false, retry = fa
   for (const s of todo.slice(0, budget)) {
     const jp = jpTitle(s);
     try {
-      const hits = await search(`site:vocal-range.com 『${jp}』(${s.artist.replace(/s*(.*)/, '')}) 音域`, key);
-      const hit = hits.find(h => h.url.includes('vocal-range.com') && titleMatches(h, jp, s.artist));
+      const hits = await search(`site:vocal-range.com 『${jp}』(${stripArtistParens(s.artist)}) 音域`, key);
+      const hit = hits.find(h => h.url?.includes('vocal-range.com') && titleMatches(h, jp, s.artist));
       let peak = hit ? peakOf(rangeOf(hit.description || '')) : null;
       if (hit && !peak) peak = peakOf(rangeOf(await scrape(hit.url, key)));
       cache[s.id] = { title: s.title, peak, url: hit?.url || null, status: peak ? 'found' : 'not-found' };
@@ -62,7 +66,7 @@ export async function fillPitch({ key, maxCredits = 300, dry = false, retry = fa
 
   let filled = 0;
   for (const s of songs) if (s.pitch === 'X' && cache[s.id]?.status === 'found') { s.pitch = cache[s.id].peak; filled++; }
-  fs.writeFileSync('data/songs.json', JSON.stringify(songs, null, 2));
+  writeSongsAtomicallySync('data/songs.json', songs, prevCount);
 
   const rows = Object.entries(cache).filter(([, v]) => v.status === 'found');
   const left = songs.filter(s => s.pitch === 'X').length;

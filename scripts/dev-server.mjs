@@ -52,9 +52,26 @@ function createMockRes(res) {
   };
 }
 
+const ALLOWED_STATIC_FILES = new Set([
+  'index.html',
+  'style.css',
+  'script.js',
+  'logo.png',
+  'og-banner.png',
+  'favicon.ico',
+  'data/songs.json',
+  'data/sync-meta.json'
+]);
+
 const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-  let pathname = decodeURIComponent(parsedUrl.pathname);
+  let pathname;
+  try {
+    pathname = decodeURIComponent(parsedUrl.pathname);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('Bad Request');
+  }
 
   // API Routes
   if (pathname === '/api/songs') {
@@ -71,11 +88,18 @@ const server = http.createServer(async (req, res) => {
 
   // Static File Serving
   if (pathname === '/') pathname = '/index.html';
-  const filePath = path.join(rootDir, pathname.replace(/^\//, ''));
+  const filePath = path.resolve(rootDir, pathname.replace(/^\/+/, ''));
+  const relPath = path.relative(rootDir, filePath).replace(/\\/g, '/');
 
-  // Security check: stay within rootDir
-  if (!filePath.startsWith(rootDir)) {
-    res.writeHead(403);
+  // Security check: stay within rootDir, block hidden/internal paths, enforce static asset whitelist
+  if (
+    !relPath ||
+    relPath.startsWith('..') ||
+    path.isAbsolute(relPath) ||
+    relPath.split('/').some(seg => seg.startsWith('.')) ||
+    !ALLOWED_STATIC_FILES.has(relPath)
+  ) {
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
     return res.end('Forbidden');
   }
 
@@ -87,7 +111,7 @@ const server = http.createServer(async (req, res) => {
   try {
     const stat = await fs.stat(filePath);
     if (stat.isDirectory()) {
-      res.writeHead(403);
+      res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
       return res.end('Forbidden directory');
     }
 
@@ -96,8 +120,9 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, { 'Content-Type': contentType });
     createReadStream(filePath).pipe(res);
   } catch (err) {
+    console.error('[Dev Server] Error serving file:', err);
     res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end(`Internal Server Error: ${err.message}`);
+    res.end('Internal Server Error');
   }
 });
 
