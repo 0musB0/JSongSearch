@@ -6568,5 +6568,32 @@
     "pitch": "X",
     "tj_num": "90230",
     "ky_num": "XXX"
+  },
+  {
+    "id": 731,
+    "title": "スーパースターになったら",
+    "artist": "back number",
+    "composer": "清水依与吏",
+    "pitch": "2옥 라",
+    "tj_num": "90244",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 732,
+    "title": "帰ろう",
+    "artist": "藤井風",
+    "composer": "藤井風",
+    "pitch": "2옥 라",
+    "tj_num": "90243",
+    "ky_num": "XXX"
+  },
+  {
+    "id": 733,
+    "title": "雲を抜け風下へ私だけ",
+    "artist": "ヨルシカ",
+    "composer": "N-BUNA",
+    "pitch": "X",
+    "tj_num": "90240",
+    "ky_num": "XXX"
   }
 ]

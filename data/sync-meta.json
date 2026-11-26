@@ -1,34 +1,34 @@
 {
-  "lastSyncedAt": "2026-11-24T01:03:16.190Z",
+  "lastSyncedAt": "2026-11-26T01:03:28.513Z",
   "lastSyncStatus": "success",
-  "totalSongs": 730,
+  "totalSongs": 733,
   "newlyAddedCount": 3,
   "newlyAddedSongs": [
     {
-      "id": 728,
-      "title": "pupa",
-      "artist": "なとり",
-      "composer": "なとり",
+      "id": 731,
+      "title": "スーパースターになったら",
+      "artist": "back number",
+      "composer": "清水依与吏",
       "pitch": "X",
-      "tj_num": "90239",
+      "tj_num": "90244",
       "ky_num": "XXX"
     },
     {
-      "id": 729,
-      "title": "共犯",
-      "artist": "Mrs. GREEN APPLE",
-      "composer": "大森元貴",
+      "id": 732,
+      "title": "帰ろう",
+      "artist": "藤井風",
+      "composer": "藤井風",
       "pitch": "X",
-      "tj_num": "90232",
+      "tj_num": "90243",
       "ky_num": "XXX"
     },
     {
-      "id": 730,
-      "title": "一二三",
-      "artist": "Penthouse",
-      "composer": "浪岡真太郎",
+      "id": 733,
+      "title": "雲を抜け風下へ私だけ",
+      "artist": "ヨルシカ",
+      "composer": "N-BUNA",
       "pitch": "X",
-      "tj_num": "90230",
+      "tj_num": "90240",
       "ky_num": "XXX"
     }
   ],
